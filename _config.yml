@@ -5,7 +5,7 @@ email: jamwaffles@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
   Personal blog of web developer and hobby machinist James Waples
 url: "https://jamwaffles.co.uk" # the base hostname & protocol for your site
-baseurl: /blog # the subpath of your site, e.g. /blog/
+# baseurl: /blog # the subpath of your site, e.g. /blog/
 twitter_username: Jam_Waffles
 github_username:  jamwaffles
 
