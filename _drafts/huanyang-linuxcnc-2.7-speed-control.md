@@ -14,7 +14,7 @@ categories: cnc
 - Someone wrote a HAL component [in this forum thread](http://www.cnczone.com/forums/phase-converters/91847-software.html)
 - HAL component modified a bit and **bundled with LinuxCNC!**, docs [here](http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html)
 
-- VFD register config
+- VFD register config (mainly inspired from [the docs](http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html))
 	- Bla
 	- Bla
 
