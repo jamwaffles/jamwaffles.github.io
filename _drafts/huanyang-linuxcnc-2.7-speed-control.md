@@ -30,8 +30,7 @@ My Notes
 - VFD is not modbus compliant but...
 - Someone wrote a HAL component [in this forum thread](http://www.cnczone.com/forums/phase-converters/91847-software.html)
 - Now this HAL component is **bundled with LinuxCNC**, so no more fucking about with compiling modules. Docs [here](http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html)
-	- The signal names it produces are modified from the original in that thread, however
-TODO: Upload latest config file to OneDrive
+	- The signal names it produces are modified from the original in that thread, however, but the command is actually documented now.
 
 ---
 
@@ -52,7 +51,7 @@ My notes:
 
 TODO: Complete ZIP of Allie conf
 
-For completeness' sake, I'm making available my entire machine config [here](TODO) to help make configuring the VFD clearer if you need it. Read on for step by step config instructions and make reference to the config files in the download if need be. It's provided purely as an example of what to add to it to get the Huanyang VFD working, so don't use it on your machine verbatim.
+For completeness' sake, I'm making available my entire machine config [here]({{ site.url }}/content/files/hy-vfd-config-rs485.zip) to help make configuring the VFD clearer if you need it. Read on for step by step config instructions and make reference to the config files in the download if need be. It's provided purely as an example of what to add to it to get the Huanyang VFD working, so don't use it on your machine verbatim.
 
 I didn't need most of the signals made available by the `hy_vfd` module so I didn't add them to the configuration. You can add them yourself by looking at the HAL meter in LinuxCNC for the names.
 
@@ -69,14 +68,13 @@ TODO: Screenshot
 # Load the Huanyang VFD user component
 loadusr -Wn spindle-vfd hy_vfd -n spindle-vfd -t 1 -d /dev/ttyUSB0 -p none -r 38400 -s 1
 
-# Enable the VFD
+#net vfd-comms halui.machine.is-on => spindle-vfd.enable
 setp spindle-vfd.enable 1
-
-# Map VFD HAL component pins to LinuxCNC pins
 net spindle-fwd motion.spindle-forward => spindle-vfd.spindle-forward
 net spindle-reverse motion.spindle-reverse => spindle-vfd.spindle-reverse
 net spindle-speed-cmd  motion.spindle-speed-out-abs => spindle-vfd.speed-command
 net spindle-on motion.spindle-on => spindle-vfd.spindle-on
+net spindle-at-speed motion.spindle-at-speed => spindle-vfd.spindle-at-speed
 ```
 
 ## `custom_postgui.hal`
@@ -85,10 +83,9 @@ net spindle-on motion.spindle-on => spindle-vfd.spindle-on
 # Include your customized HAL commands here
 # The commands in this file are run after the AXIS GUI (including PyVCP panel) starts
 
-TODO: Latest lines
-net hy-spindle-at-speed spindle-vfd.spindle-at-speed => pyvcp.spindle-at-speed
-net hy-spindle-rpm spindle-vfd.spindle-speed-fb => pyvcp.spindle-speed
-net hy-modbus-ok spindle-vfd.hycomm-ok => pyvcp.hycomm-ok
+net spindle-at-speed => pyvcp.spindle-at-speed
+net pyvcp-spindle-rpm spindle-vfd.spindle-speed-fb => pyvcp.spindle-speed
+net pyvcp-modbus-ok spindle-vfd.hycomm-ok => pyvcp.hycomm-ok
 ```
 
 ## `custompanel.xml`
@@ -103,76 +100,76 @@ TODO: Screenshot
 
 And here's the PyVCP XML to generate it:
 
-```
+```xml
 <?xml version='1.0' encoding='UTF-8'?>
 <pyvcp>
-	<labelframe text="Huanyang VFD">
-	<font>("Helvetica",12)</font>
-	<table>
-	    	<tablerow/>
-    			<tablespan columns="2"/>
-    			<tablesticky sticky="nsew" />
-    			<label>
-    				<text>" "</text>
-    				<font>("Helvetica",2)</font>
-	    		</label>
-		<tablerow/>
-			<tablesticky sticky="w" />
-			<label>
-				<text>"Modbus Communication:"</text>
-    			</label>
-    			<tablesticky sticky="e" />
- 			<led>
- 				<halpin>"hycomm-ok"</halpin>
- 				<size>"10"</size>
- 				<on_color>"green"</on_color>
- 				<off_color>"red"</off_color>
- 			</led>
-		<tablerow/>
-			<tablesticky sticky="w" />
-			<label>
-				<text>"Spindle at speed:"</text>
-    			</label>
-    			<tablesticky sticky="e" />
- 			<led>
- 				<halpin>"spindle-at-speed"</halpin>
- 				<size>"10"</size>
- 				<on_color>"green"</on_color>
- 				<off_color>"red"</off_color>
- 			</led>
-		<tablerow/>
-			<label>
-				<text>"  "</text>
-    			</label>
- 	</table>
- 	<table>
- 		<tablesticky sticky="nsew"/>
-  		<tablerow/>
- 			<tablesticky sticky="nsew"/>
- 		    	<label>
-	    			<text>"Spindle Speed (RPM)"</text>
-	    			<font>("Helvetica",10)</font>
-	    		</label>
-	    	<tablerow/>
-     			<tablesticky sticky="nsew"/>
-    			<label>
-    				<text>" "</text>
-    				<font>("Helvetica",2)</font>
-	    		</label>
-	    	<tablerow/>
-	    		<tablesticky sticky="nsew"/>
-	    	    	<bar>
-	    			<halpin>"spindle-speed"</halpin>
-	    			<max_>24000</max_>
-	    		</bar>
- 	</table>
- 	</labelframe>
+    <labelframe text="Huanyang VFD">
+        <font>("Helvetica",12)</font>
+        <table>
+            <tablerow/>
+            <tablespan columns="2" />
+            <tablesticky sticky="nsew" />
+            <label>
+                <text>" "</text>
+                <font>("Helvetica",2)</font>
+            </label>
+            <tablerow/>
+            <tablesticky sticky="w" />
+            <label>
+                <text>"Modbus Communication:"</text>
+            </label>
+            <tablesticky sticky="e" />
+            <led>
+                <halpin>"hycomm-ok"</halpin>
+                <size>"10"</size>
+                <on_color>"green"</on_color>
+                <off_color>"red"</off_color>
+            </led>
+            <tablerow/>
+            <tablesticky sticky="w" />
+            <label>
+                <text>"Spindle at speed:"</text>
+            </label>
+            <tablesticky sticky="e" />
+            <led>
+                <halpin>"spindle-at-speed"</halpin>
+                <size>"10"</size>
+                <on_color>"green"</on_color>
+                <off_color>"red"</off_color>
+            </led>
+            <tablerow/>
+            <label>
+                <text>" "</text>
+            </label>
+        </table>
+        <table>
+            <tablesticky sticky="nsew" />
+            <tablerow/>
+            <tablesticky sticky="nsew" />
+            <label>
+                <text>"Spindle Speed (RPM)"</text>
+                <font>("Helvetica",10)</font>
+            </label>
+            <tablerow/>
+            <tablesticky sticky="nsew" />
+            <label>
+                <text>" "</text>
+                <font>("Helvetica",2)</font>
+            </label>
+            <tablerow/>
+            <tablesticky sticky="nsew" />
+            <bar>
+                <halpin>"spindle-speed"</halpin>
+                <max_>24000</max_>
+            </bar>
+        </table>
+    </labelframe>
 </pyvcp>
 ```
 
 ### `Machine.ini`
 
-We need to get LinuxCNC to load the custom panel and wiring. To do so, modify the machine `.ini` file. This is the `.ini` file inside the folder created by Stepconf. If your machine is called `Allie` like mine, this will be `Alli/Allie.ini`.
+We need to get LinuxCNC to load the custom panel and wiring. To do so, modify the machine `.ini` file. This is the `.ini` file inside the folder created by Stepconf. If your machine is called `Allie` like mine, this will be `Allie/Allie.ini`.
 
 Find the `[DISPLAY]` section and add the following line to load the custom control panel (assuming you called the file `custompanel.xml`):
 
@@ -194,12 +191,12 @@ TODO: Screenshot of LinuxCNC with panel on the right
 - Start LinuxCNC
 - You should see the custom control panel on the right
 - Home all axes to allow manual control if required
-- Go to the MDI panel (<kbd>F5</kbd>) and type `M3 S5000` to start the spindle at 5k RPM. Run `M5` to stop **TODO: Does reverse (`M4`) work as well? Might need to change register settings**. The display on the VFD when set to show frequency should show a value close to 5000 RPM.
+- Go to the MDI panel (<kbd>F5</kbd>) and type `M3 S5000` to start the spindle at 5k RPM. Run `M5` to stop. The display on the VFD when set to show frequency should show a value close to 5000 RPM. You should also be able to use `M4` (reverse rotation), but you'll need to set `PD023` to `1` on the VFD to enable it (untested).
 - To see the spindle-at-speed indicator in action, enter `M3 240000` from stopped to see the `spindle-at-speed` LED stay red until 24k RPM is reached after a couple of seconds. It is important that this works otherwise LinuxCNC won't wait for the spindle to come up to speed before starting a cut.
 
 ## Final notes and gotchas
 
 - My spindle would go no lower than 3000 RPM. Change the [whichever the lowest freq register is] value to [new value]. I can get as low as 600 RPM now, not bothered about going lower. TODO: Add this note to the register configs in the VFD config block
 - VFD must be on before you open LinuxCNC, otherwise HAL component will not start comms properly (component is loaded at startup and only attempts connection on load)
-- Had huge trouble getting VFD to communicate, make sure `spindle-vfd.enable` is set to `1`.
+- I had huge trouble getting the VFD to communicate. Simple solution: make sure `spindle-vfd.enable` is set to `1`.
 - `Modbus comms ok` LED in PyVCP goes red during run; possibly because bus is busy reporting values back or whatever. We don't really care, you just don't want it red when the spindle is stopped.
