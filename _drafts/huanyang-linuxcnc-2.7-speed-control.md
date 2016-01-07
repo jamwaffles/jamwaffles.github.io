@@ -32,13 +32,9 @@ Change the following registers to make the VFD listen on the RS-485 bus for cont
 
 Check your VFD manual for other values for these registers. I've included a PDF of the manual [here]({{ site.url }}/content/files/hy-vfd-manual.pdf) if you've lost the one included with your VFD.
 
-My notes:
-
-- Make sure the baud rate is explained; it must match whatever you set in the `loadusr` line in `custom.hal`
+- My spindle would go no lower than 3000 RPM. Change the [whichever the lowest freq register is] value to [new value]. I can get as low as 600 RPM now, not bothered about going lower. TODO: Add this note to the register configs in the VFD config block
 
 # LinuxCNC Configuration
-
-TODO: Complete ZIP of Allie conf
 
 For completeness' sake, I'm making available my entire machine config [here]({{ site.url }}/content/files/hy-vfd-config-rs485.zip) to help make configuring the VFD clearer if you need it. Read on for step by step config instructions and make reference to the config files in the download if need be. It's provided purely as an example of what to add to it to get the Huanyang VFD working, so don't use it on your machine verbatim.
 
@@ -197,7 +193,6 @@ TODO: Screenshot of LinuxCNC with panel on the right
 
 ## Final notes and gotchas
 
-- My spindle would go no lower than 3000 RPM. Change the [whichever the lowest freq register is] value to [new value]. I can get as low as 600 RPM now, not bothered about going lower. TODO: Add this note to the register configs in the VFD config block
 - VFD must be on before you open LinuxCNC, otherwise HAL component will not start comms properly (component is loaded at startup and only attempts connection on load)
 - I had huge trouble getting the VFD to communicate. Simple solution: make sure `spindle-vfd.enable` is set to `1`.
 - `Modbus comms ok` LED in PyVCP goes red during run; possibly because bus is busy reporting values back or whatever. We don't really care, you just don't want it red when the spindle is stopped.
