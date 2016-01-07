@@ -93,7 +93,7 @@ net pyvcp-modbus-ok spindle-vfd.hycomm-ok => pyvcp.hycomm-ok
 
 We want/need to display some info about the VFD in the LinuxCNC interface, so we'll write a PyVCP panel to do so.
 
-This panel is a stripped down version of the default supplied in the original hy-vfd module. There is a downloadable ZIP in the [original forum thread]() containing the complete panel XML if you wish to set up extra fields. Note that you'll have to add more signals in your `.hal` files, and change the signal names in the PyVCP XML.
+This panel is a stripped down version of the default supplied in the original hy-vfd module. There is a downloadable ZIP in the [original forum thread](http://www.cnczone.com/forums/phase-converters/91847-software-8.html#post_704008) containing the complete panel XML if you wish to set up extra fields. Note that you'll have to add more signals in your `.hal` files, and change the signal names in the PyVCP XML.
 
 All I need from the panel is the spindle RPM, a spindle-at-speed indicator and a Modbus comm OK light. It currently looks like this:
 
