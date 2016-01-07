@@ -17,22 +17,7 @@ Most Huanyang VFDs have an RS-485 two-wire interface, so let's use this to commu
 - A computer running LinuxCNC 2.7+ with at least one USB port
 - A USB ↔ RS-485 converter. I got one on eBay for less than a fiver.
 - Huanyang VFD
-- Two core signal (light gauge) wire to hook up between the VFD and converter
-
----
-
-My Notes
-
-- You can sort of control the speed using [crappy PDM like this](http://wiki.linuxcnc.org/cgi-bin/wiki.pl?VFD_Digital/Analog_Interface)
-- VFD has an RS-485 bus
-- Get a USB ↔ RS-485 converter for dirt cheap on eBay. Mine looked like this:
-	- Pic
-- VFD is not modbus compliant but...
-- Someone wrote a HAL component [in this forum thread](http://www.cnczone.com/forums/phase-converters/91847-software.html)
-- Now this HAL component is **bundled with LinuxCNC**, so no more fucking about with compiling modules. Docs [here](http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html)
-	- The signal names it produces are modified from the original in that thread, however, but the command is actually documented now.
-
----
+- Two core signal (light gauge) wire to hook up between the VFD and converter. I used one of the twisted pairs out of an ethernet cable.
 
 # VFD configuration
 
@@ -40,8 +25,12 @@ We first need to change some settings in the VFD. Most of these settings are ide
 
 Change the following registers to make the VFD listen on the RS-485 bus for control signals:
 
-- **PDxxxx**: `0`
-- Bla
+- **PD001** `2` (listen for run commands on the RS-485 bus)
+- **PD002** `2` (listen for frequency/speed commands on the RS-485 bus)
+- **PD164** `3` (baud rate - 38400 baud)
+- **PD165** `3` (communication data method to 8N1 RTU)
+
+Check your VFD manual for other values for these registers. I've included a PDF of the manual [here]({{ site.url }}/content/files/hy-vfd-manual.pdf) if you've lost the one included with your VFD.
 
 My notes:
 
@@ -76,6 +65,18 @@ net spindle-speed-cmd  motion.spindle-speed-out-abs => spindle-vfd.speed-command
 net spindle-on motion.spindle-on => spindle-vfd.spindle-on
 net spindle-at-speed motion.spindle-at-speed => spindle-vfd.spindle-at-speed
 ```
+
+It's worth explaining this line in more detail:
+
+```
+loadusr -Wn spindle-vfd hy_vfd -n spindle-vfd -t 1 -d /dev/ttyUSB0 -p none -r 38400 -s 1
+```
+
+- Assumes the serial port is located at `/dev/ttyUSB0` (because I'm using a USB converter here). If you're using a serial port directly, use `/dev/ttys0` or similar.
+- `-p none -s 1` assumes the VFD's PD165 register is set to `3`, which is 8N1 for RTU (Remote Terminal Unit) mode. The hy_vfd HAL module doesn't support ASCII modes.
+- `-r 38400` sets the communication speed to 38400 baud. You need to make sure PD164 is set to `3` to match this value.
+
+All options for the `hy_vfd` command are explained in detail in [the user manual](http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html).
 
 ## `custom_postgui.hal`
 
