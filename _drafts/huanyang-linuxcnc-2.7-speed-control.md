@@ -40,9 +40,7 @@ For completeness' sake, I'm making available my entire machine config [here]({{ 
 
 I didn't need most of the signals made available by the `hy_vfd` module so I didn't add them to the configuration. You can add them yourself by looking at the HAL meter in LinuxCNC for the names.
 
-**Note:** If you use stepconf a lot, make sure you stop it overwriting your custom config by changing [TODO: Settings]
-
-TODO: Screenshot
+**Note:** Stepconf will overwrite a lot of settings if you run it again, so either take backups of your files or edit them manually without Stepconf.
 
 ## `custom.hal`
 
@@ -72,7 +70,7 @@ loadusr -Wn spindle-vfd hy_vfd -n spindle-vfd -t 1 -d /dev/ttyUSB0 -p none -r 38
 - `-p none -s 1` assumes the VFD's PD165 register is set to `3`, which is 8N1 for RTU (Remote Terminal Unit) mode. The hy_vfd HAL module doesn't support ASCII modes.
 - `-r 38400` sets the communication speed to 38400 baud. You need to make sure PD164 is set to `3` to match this value.
 
-All options for the `hy_vfd` command are explained in detail in [the user manual](http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html).
+All options for the `hy_vfd` command are explained in [the user manual](http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html).
 
 ## `custom_postgui.hal`
 
