@@ -6,16 +6,16 @@ categories: cnc
 image: huanyang-header.jpg
 ---
 
-Huanyang branded VFD drives are ubiquitous on eBay and other sites like AliExpress. I bought one some time ago and have been controlling the speed manually with the difficult to use control panel on the front. It is, however, possible to control the VFD from within LinuxCNC, which I'll go through setting up in this post.
+Huanyang branded VFD drives are ubiquitous on eBay and other sites like AliExpress. I bought one some time ago with a 1.5KW spindle and have been controlling the speed manually with the difficult to use control panel on the front. It is, however, possible to control the VFD from within LinuxCNC using the [`M3` and `M5` commands](http://linuxcnc.org/docs/html/gcode/m-code.html#mcode:m3-m4-m5) (I haven't been able to get `M4`, reverse rotation, working yet). What's also neat is we can get the machine to wait for the spindle to come up to speed before moving to the next line of GCode.
 
 The first thing I tried was [PDM](https://en.wikipedia.org/wiki/Pulse-density_modulation) using signals from the parallel port. This doesn't set the speed accurately _at all_ and the PDM/speed conversion curve is hilariously inaccurate. If you want to try this method for whatever reason, there's a [guide in the LinuxCNC documentation](http://wiki.linuxcnc.org/cgi-bin/wiki.pl?VFD_Digital/Analog_Interface).
 
-Most Huanyang VFDs have an RS-485 two-wire interface, so let's use this to communicate with the drive from LinuxCNC. They supposedly support Modbus, but aren't compliant, so a custom HAL component for LinuxCNC is required. Since LinuxCNC 2.7, this component is now bundled with the default image so all we need to do is set it up properly.
+Most Huanyang VFDs have an RS-485 two-wire interface, so let's use this to communicate with the drive from LinuxCNC. These inverters supposedly support Modbus but aren't compliant, so a custom HAL component for LinuxCNC is required. Since LinuxCNC 2.7, [this component](http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html) is now bundled with the default image as a HAL component, so all we need to do is set it up properly. Easy!
 
 # Hardware required
 
 - A computer running LinuxCNC 2.7+ with at least one USB port
-- A USB ↔ RS-485 converter. I got one on eBay for less than a fiver.
+- A USB ↔ RS-485 converter. I got one on eBay for less than a fiver. You could use an RS-232 to RS-485 converter too
 - Huanyang VFD
 - Two core signal (light gauge) wire to hook up between the VFD and converter. I used one of the twisted pairs out of an ethernet cable.
 
@@ -40,7 +40,7 @@ For completeness' sake, I'm making available my entire machine config [here]({{ 
 
 I didn't need most of the signals made available by the `hy_vfd` module so I didn't add them to the configuration. You can add them yourself by looking at the HAL meter in LinuxCNC for the names.
 
-**Note:** Stepconf will overwrite a lot of settings if you run it again, so either take backups of your files or edit them manually without Stepconf.
+**Note:** Using stepconf again will overwrite some of your custom settings. The INI and other config files will have to be edited by hand, which is not that hard. You can always use stepconf to test things without saving and then edit the files manually later.
 
 ## `custom.hal`
 
