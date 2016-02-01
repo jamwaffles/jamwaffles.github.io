@@ -3,7 +3,7 @@ title: James' Internet Hole
 logo: logo.png
 email: jamwaffles@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-  Personal blog of web developer and hobby machinist James Waples from The United Britain
+  Personal blog of web developer and hobby machinist James Waples, who is from The United Britain
 url: "http://jamwaffles.co.uk" # the base hostname & protocol for your site
 # baseurl: /blog # the subpath of your site, e.g. /blog/
 twitter_username: jam_waffles
