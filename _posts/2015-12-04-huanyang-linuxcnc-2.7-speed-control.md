@@ -1,9 +1,9 @@
 ---
 layout: post
 title:  "Spindle speed control using LinuxCNC 2.7 with a Huanyang inverter"
-date:   2014-12-04 20:14:47
+date:   2015-12-04 20:14:47
 categories: cnc
-image: huanyang-header.jpg
+image: huanyang-header-2.jpg
 ---
 
 Huanyang branded VFD drives are ubiquitous on eBay and other sites like AliExpress. I bought one some time ago with a 1.5KW spindle and have been controlling the speed manually with the difficult to use control panel on the front. It is, however, possible to control the VFD from within LinuxCNC using the [`M3` and `M5` commands](http://linuxcnc.org/docs/html/gcode/m-code.html#mcode:m3-m4-m5) (I haven't been able to get `M4`, reverse rotation, working yet). What's also neat is we can get the machine to wait for the spindle to come up to speed before moving to the next line of GCode.
@@ -17,7 +17,7 @@ Most Huanyang VFDs have an RS-485 two-wire interface, so let's use this to commu
 - A computer running LinuxCNC 2.7+ with at least one USB port
 - A USB ↔ RS-485 converter. I got one on eBay for less than a fiver. You could use an RS-232 to RS-485 converter too
 - Huanyang VFD
-- Two core signal (light gauge) wire to hook up between the VFD and converter. I used one of the twisted pairs out of an ethernet cable.
+- Two core signal (light gauge) wire to hook up between the VFD and converter. I used one of the twisted pairs out of an ethernet cable. The twistedness might help over very long distances as RS-485 is differential. For shop use it doesn't really matter.
 
 # VFD configuration
 
@@ -32,7 +32,7 @@ Change the following registers to make the VFD listen on the RS-485 bus for cont
 
 Check your VFD manual for other values for these registers. I've included a PDF of the manual [here]({{ site.url }}/content/files/hy-vfd-manual.pdf) if you've lost the one included with your VFD.
 
-- My spindle would go no lower than 3000 RPM. Change the [whichever the lowest freq register is] value to [new value]. I can get as low as 600 RPM now, not bothered about going lower. TODO: Add this note to the register configs in the VFD config block
+<!-- - My spindle would go no lower than 3000 RPM. Change the [whichever the lowest freq register is] value to [new value]. I can get as low as 600 RPM now, not bothered about going lower. TODO: Add this note to the register configs in the VFD config block -->
 
 # LinuxCNC Configuration
 
@@ -91,7 +91,7 @@ This panel is a stripped down version of the default supplied in the original hy
 
 All I need from the panel is the spindle RPM, a spindle-at-speed indicator and a Modbus comm OK light. It currently looks like this:
 
-TODO: Screenshot
+<!-- TODO: Screenshot -->
 
 And here's the PyVCP XML to generate it:
 
@@ -181,8 +181,6 @@ POSTGUI_HALFILE = custom_postgui.hal
 
 ## Usage
 
-TODO: Screenshot of LinuxCNC with panel on the right
-
 - Start LinuxCNC
 - You should see the custom control panel on the right
 - Home all axes to allow manual control if required
@@ -191,6 +189,7 @@ TODO: Screenshot of LinuxCNC with panel on the right
 
 ## Final notes and gotchas
 
+- The VFD takes some time to respond to speed commands. **This can be an issue with emergency stops** because the spindle won't stop until about 2 seconds after the button is pressed. I've ruined a few tools because of this.
 - VFD must be on before you open LinuxCNC, otherwise HAL component will not start comms properly (component is loaded at startup and only attempts connection on load)
 - I had huge trouble getting the VFD to communicate. Simple solution: make sure `spindle-vfd.enable` is set to `1`.
 - `Modbus comms ok` LED in PyVCP goes red during run; possibly because bus is busy reporting values back or whatever. We don't really care, you just don't want it red when the spindle is stopped.
