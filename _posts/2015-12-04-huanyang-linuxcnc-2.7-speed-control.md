@@ -30,13 +30,13 @@ Change the following registers to make the VFD listen on the RS-485 bus for cont
 - **PD164** `3` (baud rate - 38400 baud)
 - **PD165** `3` (communication data method to 8N1 RTU)
 
-Check your VFD manual for other values for these registers. I've included a PDF of the manual [here]({{ site.url }}/content/files/hy-vfd-manual.pdf) if you've lost the one included with your VFD.
+Check your VFD manual for other values for these registers. I've included a PDF of the manual [here](/content/files/hy-vfd-manual.pdf) if you've lost the one included with your VFD.
 
 <!-- - My spindle would go no lower than 3000 RPM. Change the [whichever the lowest freq register is] value to [new value]. I can get as low as 600 RPM now, not bothered about going lower. TODO: Add this note to the register configs in the VFD config block -->
 
 # LinuxCNC Configuration
 
-For completeness' sake, I'm making available my entire machine config [here]({{ site.url }}/content/files/hy-vfd-config-rs485.zip) to help make configuring the VFD clearer if you need it. Read on for step by step config instructions and make reference to the config files in the download if need be. It's provided purely as an example of what to add to it to get the Huanyang VFD working, so don't use it on your machine verbatim.
+For completeness' sake, I'm making available my entire machine config [here](/content/files/hy-vfd-config-rs485.zip) to help make configuring the VFD clearer if you need it. Read on for step by step config instructions and make reference to the config files in the download if need be. It's provided purely as an example of what to add to it to get the Huanyang VFD working, so don't use it on your machine verbatim.
 
 I didn't need most of the signals made available by the `hy_vfd` module so I didn't add them to the configuration. You can add them yourself by looking at the HAL meter in LinuxCNC for the names.
 
@@ -89,9 +89,9 @@ We want/need to display some info about the VFD in the LinuxCNC interface, so we
 
 This panel is a stripped down version of the default supplied in the original hy-vfd module. There is a downloadable ZIP in the [original forum thread](http://www.cnczone.com/forums/phase-converters/91847-software-8.html#post_704008) containing the complete panel XML if you wish to set up extra fields. Note that you'll have to add more signals in your `.hal` files, and change the signal names in the PyVCP XML.
 
-<!-- All I need from the panel is the spindle RPM, a spindle-at-speed indicator and a Modbus comm OK light. It currently looks like this:
+All I need from the panel is the spindle RPM, a spindle-at-speed indicator and a Modbus comm OK light. It currently looks like this (panel on the right):
 
-TODO: Screenshot -->
+![LinuxCNC with custom Huanyang panel screenshot](/content/images/linuxcnc-spindle.png)
 
 And here's the PyVCP XML to generate it:
 
@@ -161,6 +161,8 @@ And here's the PyVCP XML to generate it:
     </labelframe>
 </pyvcp>
 ```
+
+It would be cool to have a tachometer type gauge and perhaps some more info, but this shows all the information I need.
 
 ### `Machine.ini`
 
