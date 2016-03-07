@@ -771,7 +771,7 @@ body.user>header h1 {
     font-weight: normal
 }
 body.user>header hr {
-    margin: 0 25%
+    margin: 0 25% 5px 25%;
 }
 body.user article {
     position: relative;
