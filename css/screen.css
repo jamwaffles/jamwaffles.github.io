@@ -497,12 +497,24 @@ article .text small {
     font-size: 13px;
     color: #909396
 }
+div.highlighter-rouge {
+    width: calc(100% + 100px);
+    margin-left: -50px;
+}
+
+@media(max-width: 780px) {
+    div.highlighter-rouge {
+        margin-left: 0;
+        width: auto;
+    }
+}
+
 article .text pre {
     padding: 14px 20px;
-    font-size: 16px;
+    font-size: 14px;
     max-width: 100%;
     overflow-x: auto;
-    line-height: 1.4em;
+    line-height: 1.6em;
     font-family: "Courier New", "Courier", monospace;
     -webkit-font-smoothing: subpixel-antialiased;
     border: 1px solid #ededee;
@@ -512,7 +524,7 @@ article .text pre {
     -ms-border-radius: 6px;
     -o-border-radius: 6px;
     border-radius: 6px;
-    word-wrap: normal
+    word-wrap: normal;
 }
 article .text pre code {
     padding: 0;
@@ -529,7 +541,7 @@ article .text code {
     max-width: 100%;
     overflow-x: auto;
     padding: 0 5px;
-    font-size: 16px;
+    font-size: 14px;
     font-family: "Courier New", "Courier", monospace;
     -webkit-font-smoothing: subpixel-antialiased;
     border: 1px solid #ededee;
