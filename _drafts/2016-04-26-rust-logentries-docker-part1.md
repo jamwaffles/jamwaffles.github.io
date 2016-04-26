@@ -11,9 +11,11 @@ categories: rust
 
 I'm fascinated by Rust for it's safety and speed, but also because it's simple to write low level code in what feels like a high level language. To that end, I've been working on a small Rust project at [TotallyMoney.com](http://www.totallymoney.com) (where I work) for the last week or so to see if it's viable for production use. It's a simple service that polls a [Logentries](https://logentries.com) endpoint for JSON, parses it and saves some values in a Postgres database. It's not a very complicated task, but I saw this as a good opportunity to try Rust in a production-ish role. For this series of articles I want to walk through writing the service and deploying it to production using Docker.
 
+> Note: I could very well have written this in NodeJS like the rest of the app it fits into, but I wanted to learn Rust a little better. The memory safety of Rust is somewhat lost on this task but it's interesting how the language handles errors and optional types. Read on for more.
+
 ## Dependencies
 
-I'm assuming you've got Rust, Cargo and a project folder (`cargo init --bin` will do) set up for this project. I'm going to use the following crates to make my life easier:
+I'm assuming you've got Rust, Cargo and a project folder (`cargo init --bin` will do) set up for this project. I'm going to use the following crates:
 
 - `hyper`; HTTP library for making GET requests to Logentries
 - `chrono`; Date and time, we'll be using it to store the log entry timestamp
