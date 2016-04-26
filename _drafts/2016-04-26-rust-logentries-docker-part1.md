@@ -23,13 +23,13 @@ I'm assuming you've got Rust, Cargo and a project folder (`cargo init --bin` wil
 - `rustc_serialize`; JSON parsing
 - `postgres`; Postgres database connector
 
-At the time of writing, my `Cargo.toml` looks like this:
+My `Cargo.toml` looks like this:
 
 ```toml
 [package]
 name = "logentries_poller"
 version = "0.1.0"
-authors = ["James Waples <jwaples@totallymoney.com>"]
+authors = ["James Waples <jamwaffles@gmail.com>"]
 
 [dependencies]
 hyper = "^0.8.1"
@@ -40,4 +40,187 @@ postgres = { version = "^0.11.0", features = [ "chrono" ] }
 ```
 
 Crates will be installed/updated when you run `cargo build` or `cargo run` for the first time. Pretty neat!
+
+## Fetching Logentries data
+
+First, we need to fetch some stuff from Logentries to parse. Logentries provides a simple GET endpoint which returns lines of a particular log. Their [documentation](https://logentries.com/doc/api-download/) specifies the URL as something like this:
+
+    https://pull.logentries.com/YOUR_LOGENTRIES_ACCOUNT_KEY/hosts/YOUR_LOG_SET_NAME/YOUR_LOG_NAME/?start=1432080000000&end=1432092600000
+
+For our purposes we only want the last 10 seconds of data. The code will poll Logentries every 5 seconds, so requesting the last 10 seconds worth of data will provide a crude mechanism to deal with failures.
+
+Let's write some Rust:
+
+```rust
+extern crate hyper;
+
+use hyper::{ Client };
+
+fn main() {
+    // Create new Hyper HTTP client
+    let client = Client::new();
+
+    // We're going to request JSON from Logentries here:
+    let url = "https://pull.logentries.com/cafebabe-cafe-babe-cafe-babecafebabe/hosts/My.Log/logset/?start=-10000&filter=src:HddRestGateway";
+
+    // Make the request. This will quit if there is some kind of failure
+    let response = match client.get(url).send() {
+        Ok(response) => response,
+        Err(e) => panic!("Could not fetch Logentries data: {}", e)
+    };
+
+    // Turn response into stream so we can parse it line by line
+    let reader = BufReader::new(response);
+
+    // Go through each line in the result and just print it for now
+    for reader_line in reader.lines() {
+        // Get string result from `Result<>` container
+        // (assumes line always has a value)
+        let line = reader_line.unwrap();
+
+        println!("{}", line);
+    }
+}
+```
+
+Try running the code with `cargo run`. With any luck, you should have the last 10 seconds worth of Logentries submissions printed in your console. In my case, I see lines like this:
+
+```
+2016-04-26 15:18:23.1185 | lvl:INFO | ------------ src:HddRestGateway | { "message": { "status": "Success", "elapsed": 1089 } }
+2016-04-26 15:17:53.9890 | lvl:INFO | ------------ src:HddRestGateway | { "message": { "status": "NotFound", "elapsed": 2443 } }
+2016-04-26 15:17:56.8014 | lvl:INFO | ------------ src:HddRestGateway | { "message": { "status": "Success", "elapsed": 1375 } }
+2016-04-26 15:17:38.9468 | lvl:INFO | ------------ src:HddRestGateway | { "message": { "status": "Timeout", "elapsed": 5897 } }
+2016-04-26 15:18:38.6810 | lvl:INFO | ------------ src:HddRestGateway | { "message": { "status": "NotFound", "elapsed": 1100 } }
+2016-04-26 15:17:52.6964 | lvl:INFO | ------------ src:HddRestGateway | { "message": { "status": "Success", "elapsed": 2246 } }
+2016-04-26 15:18:14.7228 | lvl:INFO | ------------ src:HddRestGateway | { "message": { "status": "Success", "elapsed": 2987 } }
+```
+
+The rest of the code in this article assumes the data is in this format. It should be reasonably simple to change the code to suit your needs. Once we have the log output, it's just a matter of parsing strings however you see fit.
+
+## Filtering and parsing each line
+
+Each line contains some fields separated by a pipe character, the first of which is a timestamp and the latter of which is some JSON data. We're not interested in any of the other bits. We're also only interested in log lines with `{ "status": "Success" }`, so we'll do some simple filtering after parsing the line.
+
+Our program now becomes the following:
+
+```rust
+extern crate hyper;
+extern crate chrono;
+extern crate time;
+extern crate rustc_serialize;
+
+use std::thread;
+use std::env;
+use std::time::Duration;
+use chrono::{ DateTime };
+use std::error::Error;
+use rustc_serialize::json::Json;
+use std::io::{ BufReader, BufRead };
+use hyper::{ Client };
+
+fn main() {
+    // Create new Hyper HTTP client
+    let client = Client::new();
+
+    // We're going to request JSON from Logentries here:
+    let url = "https://pull.logentries.com/cafebabe-cafe-babe-cafe-babecafebabe/hosts/My.Log/logset/?start=-10000&filter=src:HddRestGateway";
+
+    // Make the request. This will quit if there is some kind of failure
+    let response = match client.get(url).send() {
+        Ok(response) => response,
+        Err(e) => panic!("Could not fetch Logentries data: {}", e)
+    };
+
+    // Turn response into stream so we can parse it line by line
+    let reader = BufReader::new(response);
+
+    // Go through each line in the result and just print it for now
+    for reader_line in reader.lines() {
+        // Get string result from `Result<>` container
+        // (assumes line always has a value)
+        let line = reader_line.unwrap();
+
+        // Split the string into it's constituent parts
+        let parts: Vec<&str> = line.split(" | ").collect();
+
+        // First item is timestamp. Turn it into a Chrono::DateTime
+        let created = match parts.first() {
+            Some(created) => {
+                let mut padded = String::from(*created);
+
+                // Logentries prints the date in a stupid format (or at least one Chrono
+                // can't parse), so let's add some zeroes and a fake timezone
+                padded.push_str("0000+0000");
+
+                match DateTime::parse_from_str(padded.as_str(), "%Y-%m-%d %H:%M:%S.%f%z") {
+                    Ok(parsed) => parsed,
+
+                    // If there's a parse error, don't do anything else with this line
+                    Err(_) => continue,
+                }
+            },
+
+            // No timestamp, must be a bad record, skip remaining processing for this line
+            None => continue
+        };
+
+        // JSON is last part of log entry (`parts.last()`). Parse it into an object.
+        let payload = match parts.last() {
+            Some(payload) => match Json::from_str(&payload) {
+                Ok(parsed) => parsed,
+
+                // Skip this record if there was an error
+                Err(e) => {
+                    println!("JSON parse error: {}", Error::description(&e));
+
+                    continue;
+                },
+            },
+
+            // If for whatever reason we can't find the last part of the
+            // split line (it might be blank), skip it completely
+            None => {
+                println!("Malformed log message");
+
+                continue;
+            }
+        };
+
+        // Look for response status in `message.status` key
+        let status = match payload.find_path(&[ "message", "status" ]) {
+            Some(status) => status.as_string().unwrap(),
+            None => "InvalidMessage"
+        };
+
+        // Look for elapsed time in `message.elapsed` key
+        let time = match payload.find_path(&[ "message", "elapsed" ]) {
+            Some(time) => time.as_u64().unwrap() as i32,
+            None => 0
+        };
+
+        // We only care about successful responses
+        if status == "Success" {
+            println!("------ Status: {}, elapsed time: {}ms at {}", status, time, created);
+        } else {
+            println!("Ignoring status {}", status)
+        }
+    }
+}
+```
+
+This is where Rust's safety starts to shine and look incredibly verbose at the same time. The code above deals with a lot of `Result<>` and `Option<>` types. These return `Ok()` or `Err()` and `Some()` or `None()` respectively. Rust _requires_ us to handle every possible return type from a call, meaning we have to handle the `Err()` or `None()` cases in the code above. Sometimes that means setting a sensible default (`0` for elapsed time, for example) or `continue`ing if the code can't do anything proper with the current line. This code is going to run as a persistent service so it makes sense to `continue` or otherwise bail on processing the current line instead of, say, `panic!`ing and quitting the program.
+
+Running the program again with `cargo run`, you should see something like the following:
+
+```
+------ Status: Success, elapsed time: 1089ms at 2016-04-26 15:18:23.1185
+Ignoring status NotFound
+------ Status: Success, elapsed time: 1375ms at 2016-04-26 15:17:56.8014
+Ignoring status Timeout
+Ignoring status NotFound
+------ Status: Success, elapsed time: 2246ms at 2016-04-26 15:17:52.6964
+------ Status: Success, elapsed time: 2987ms at 2016-04-26 15:18:14.7228
+```
+
+## Saving parsed data to the database
 
