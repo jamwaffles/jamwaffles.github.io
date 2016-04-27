@@ -24,7 +24,6 @@ I'm assuming you've got Rust, Cargo and a project folder (`cargo init --bin` wil
 - `chrono`; Date and time, we'll be using it to store the log entry timestamp
 - `time`; More date and time, used in this case for sleeping for a certain number of milliseconds
 - `rustc_serialize`; JSON parsing
-- `postgres`; Postgres database connector
 
 My `Cargo.toml` looks like this:
 
@@ -39,7 +38,6 @@ hyper = "^0.8.1"
 rustc-serialize = "^0.3.19"
 chrono = "^0.2"
 time = "^0.1"
-postgres = { version = "^0.11.0", features = [ "chrono" ] }
 ```
 
 Crates will be installed/updated when you run `cargo build` or `cargo run` for the first time. Pretty neat!
