@@ -48,9 +48,9 @@ Crates will be installed/updated when you run `cargo build` or `cargo run` for t
 
 First, we need to fetch some stuff from Logentries to parse. Logentries provides a simple GET endpoint which returns lines of a particular log. Their [documentation](https://logentries.com/doc/api-download/) specifies the URL as something like this:
 
-    https://pull.logentries.com/YOUR_LOGENTRIES_ACCOUNT_KEY/hosts/YOUR_LOG_SET_NAME/YOUR_LOG_NAME/?start-10000
+    https://pull.logentries.com/YOUR_LOGENTRIES_ACCOUNT_KEY/hosts/YOUR_LOG_SET_NAME/YOUR_LOG_NAME/?start=-10000
 
-For our purposes we only want the last 10 seconds of data (`?start-10000`). The code will poll Logentries every 5 seconds, so requesting the last 10 seconds worth of data will provide a crude mechanism to deal with failures.
+For our purposes we only want the last 10 seconds of data (`?start=-10000`). The code will poll Logentries every 5 seconds, so requesting the last 10 seconds worth of data will provide a crude mechanism to deal with failures.
 
 Let's write some Rust. Put this in `src/main.rs`:
 
