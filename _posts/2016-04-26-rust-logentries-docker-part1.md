@@ -7,8 +7,8 @@ categories: rust
 ---
 
 - Part 1 - Fetching and parsing Logentries data
-- Part 2 - Saving data to the database
-- Part 3 - Deployment using Docker
+- Part 2 - (coming soon) Saving data to the database
+- Part 3 - (coming soon) Deployment using Docker
 
 I'm fascinated by Rust for it's safety and speed, but also because it's simple to write low level code in what feels like a high level language. To that end, I've been working on a small Rust project at [TotallyMoney.com](http://www.totallymoney.com) (where I work) for the last week or so to see if it's viable for production use. It's a simple service that polls a [Logentries](https://logentries.com) endpoint for JSON, parses it and saves some values in a Postgres database. It's not a very complicated task, but I saw this as a good opportunity to try Rust in a production-ish role. For this series of articles I want to walk through writing the service and deploying it to production using Docker.
 
@@ -292,4 +292,4 @@ The rest of the code is similar to the above examples in terms of how `match` is
 
 Rust's strict type system caused me quite a bit of friction coming from a loosely-typed Node ecosystem, but once you get the hang of it the compile time checking and comprehensive, required error handling makes for very safe code. You'll notice above that only one variable is `mut`able. I'm not doing anything fancy with pointers so it doesn't add much for memory safety, but it allows the compiler to make sure I'm not doing anything stupid reassigning variables and such.
 
-In part 2 I'll go through taking our parsed data and writing it into a Postgres database periodically.
+In part 2 (coming soon) I'll go through taking our parsed data and writing it into a Postgres database periodically.
