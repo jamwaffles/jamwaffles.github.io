@@ -3,10 +3,12 @@ layout: post
 title:  "Parsing Logentries output safely using Rust"
 date:   2016-04-26 10:14:03
 categories: rust
-<!-- image: huanyang-header-2.jpg -->
+image: logentries-header.jpg
 ---
 
 I'm fascinated by Rust for it's safety and speed, but also because it's simple to write low level code in what feels like a high level language. To that end, I've been working on a small Rust project at [TotallyMoney.com](http://www.totallymoney.com) (where I work) for the last week or so to see if it's viable for production use. It's a simple service that polls a [Logentries](https://logentries.com) endpoint for JSON, parses it and saves some values in a Postgres database. It's not a very complicated task, but I saw this as a good opportunity to try Rust in a production-ish role.
+
+_Header photo by [Sandra Starke](https://unsplash.com/@fotospielerin)_
 
 > Note: I could very well have written this in NodeJS like the rest of the app it fits into, but I wanted to learn Rust a little better. The memory safety of Rust is somewhat lost on this task but it's interesting how the language handles errors and optional types. Read on for more.
 

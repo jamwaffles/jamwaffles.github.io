@@ -3,9 +3,12 @@ layout: post
 title:  "Faster, smoother, better, stronger (at high speeds): bipolar parallel stepper wiring"
 date:   2016-02-04 22:03:30
 categories: cnc
+image: stepper-header.jpg
 ---
 
 Quick tip: if you're looking for higher maximum speeds with your bipolar stepper motors, try wiring the windings in parallel instead of series. According to [a short National Instruments article](http://digital.ni.com/public.nsf/allkb/B1CC4C64ABBC7D3C86257BC70017B9E2), it can increase torque at higher speeds, reducing the chance that the motor will stall during fast rapids.
+
+_Header photo by [Yung Chang](https://unsplash.com/@yungnoma)_
 
 ![Parallel wiring diagram](/content/images/bipolar-parallel.jpg)
 
