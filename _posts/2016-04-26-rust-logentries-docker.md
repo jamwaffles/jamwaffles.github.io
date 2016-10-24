@@ -1,16 +1,12 @@
 ---
 layout: post
-title:  "Parsing Logentries output safely using Rust (part 1)"
+title:  "Parsing Logentries output safely using Rust"
 date:   2016-04-26 10:14:03
 categories: rust
 <!-- image: huanyang-header-2.jpg -->
 ---
 
-I'm fascinated by Rust for it's safety and speed, but also because it's simple to write low level code in what feels like a high level language. To that end, I've been working on a small Rust project at [TotallyMoney.com](http://www.totallymoney.com) (where I work) for the last week or so to see if it's viable for production use. It's a simple service that polls a [Logentries](https://logentries.com) endpoint for JSON, parses it and saves some values in a Postgres database. It's not a very complicated task, but I saw this as a good opportunity to try Rust in a production-ish role. For this series of articles I want to walk through writing the service and deploying it to production using Docker.
-
-- Part 1 - Fetching and parsing Logentries data
-- Part 2 - (coming soon) Saving data to the database
-- Part 3 - (coming soon) Deployment using Docker
+I'm fascinated by Rust for it's safety and speed, but also because it's simple to write low level code in what feels like a high level language. To that end, I've been working on a small Rust project at [TotallyMoney.com](http://www.totallymoney.com) (where I work) for the last week or so to see if it's viable for production use. It's a simple service that polls a [Logentries](https://logentries.com) endpoint for JSON, parses it and saves some values in a Postgres database. It's not a very complicated task, but I saw this as a good opportunity to try Rust in a production-ish role.
 
 > Note: I could very well have written this in NodeJS like the rest of the app it fits into, but I wanted to learn Rust a little better. The memory safety of Rust is somewhat lost on this task but it's interesting how the language handles errors and optional types. Read on for more.
 
@@ -289,5 +285,3 @@ The rest of the code is similar to the above examples in terms of how `match` is
 ## Conclusions and next steps
 
 Rust's strict type system caused me quite a bit of friction coming from a loosely-typed Node ecosystem, but once you get the hang of it the compile time checking and comprehensive, required error handling makes for very safe code. You'll notice above that only one variable is `mut`able. I'm not doing anything fancy with pointers so it doesn't add much for memory safety, but it allows the compiler to make sure I'm not doing anything stupid reassigning variables and such.
-
-In part 2 (coming soon) I'll go through taking our parsed data and writing it into a Postgres database periodically.
