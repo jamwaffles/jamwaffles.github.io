@@ -98,67 +98,67 @@ And here's the PyVCP XML to generate it:
 ```xml
 <?xml version='1.0' encoding='UTF-8'?>
 <pyvcp>
-    <labelframe text="Huanyang VFD">
-        <font>("Helvetica",12)</font>
-        <table>
-            <tablerow/>
-            <tablespan columns="2" />
-            <tablesticky sticky="nsew" />
-            <label>
-                <text>" "</text>
-                <font>("Helvetica",2)</font>
-            </label>
-            <tablerow/>
-            <tablesticky sticky="w" />
-            <label>
-                <text>"Modbus Communication:"</text>
-            </label>
-            <tablesticky sticky="e" />
-            <led>
-                <halpin>"hycomm-ok"</halpin>
-                <size>"10"</size>
-                <on_color>"green"</on_color>
-                <off_color>"red"</off_color>
-            </led>
-            <tablerow/>
-            <tablesticky sticky="w" />
-            <label>
-                <text>"Spindle at speed:"</text>
-            </label>
-            <tablesticky sticky="e" />
-            <led>
-                <halpin>"spindle-at-speed"</halpin>
-                <size>"10"</size>
-                <on_color>"green"</on_color>
-                <off_color>"red"</off_color>
-            </led>
-            <tablerow/>
-            <label>
-                <text>" "</text>
-            </label>
-        </table>
-        <table>
-            <tablesticky sticky="nsew" />
-            <tablerow/>
-            <tablesticky sticky="nsew" />
-            <label>
-                <text>"Spindle Speed (RPM)"</text>
-                <font>("Helvetica",10)</font>
-            </label>
-            <tablerow/>
-            <tablesticky sticky="nsew" />
-            <label>
-                <text>" "</text>
-                <font>("Helvetica",2)</font>
-            </label>
-            <tablerow/>
-            <tablesticky sticky="nsew" />
-            <bar>
-                <halpin>"spindle-speed"</halpin>
-                <max_>24000</max_>
-            </bar>
-        </table>
-    </labelframe>
+	<labelframe text="Huanyang VFD">
+		<font>("Helvetica",12)</font>
+		<table>
+			<tablerow/>
+			<tablespan columns="2" />
+			<tablesticky sticky="nsew" />
+			<label>
+				<text>" "</text>
+				<font>("Helvetica",2)</font>
+			</label>
+			<tablerow/>
+			<tablesticky sticky="w" />
+			<label>
+				<text>"Modbus Communication:"</text>
+			</label>
+			<tablesticky sticky="e" />
+			<led>
+				<halpin>"hycomm-ok"</halpin>
+				<size>"10"</size>
+				<on_color>"green"</on_color>
+				<off_color>"red"</off_color>
+			</led>
+			<tablerow/>
+			<tablesticky sticky="w" />
+			<label>
+				<text>"Spindle at speed:"</text>
+			</label>
+			<tablesticky sticky="e" />
+			<led>
+				<halpin>"spindle-at-speed"</halpin>
+				<size>"10"</size>
+				<on_color>"green"</on_color>
+				<off_color>"red"</off_color>
+			</led>
+			<tablerow/>
+			<label>
+				<text>" "</text>
+			</label>
+		</table>
+		<table>
+			<tablesticky sticky="nsew" />
+			<tablerow/>
+			<tablesticky sticky="nsew" />
+			<label>
+				<text>"Spindle Speed (RPM)"</text>
+				<font>("Helvetica",10)</font>
+			</label>
+			<tablerow/>
+			<tablesticky sticky="nsew" />
+			<label>
+				<text>" "</text>
+				<font>("Helvetica",2)</font>
+			</label>
+			<tablerow/>
+			<tablesticky sticky="nsew" />
+			<bar>
+				<halpin>"spindle-speed"</halpin>
+				<max_>24000</max_>
+			</bar>
+		</table>
+	</labelframe>
 </pyvcp>
 ```
 

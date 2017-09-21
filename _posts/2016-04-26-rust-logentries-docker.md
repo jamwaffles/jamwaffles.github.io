@@ -44,7 +44,7 @@ Crates will be installed/updated when you run `cargo build` or `cargo run` for t
 
 First, we need to fetch some stuff from Logentries to parse. Logentries provides a simple GET endpoint which returns lines of a particular log. Their [documentation](https://logentries.com/doc/api-download/) specifies the URL as something like this:
 
-    https://pull.logentries.com/YOUR_LOGENTRIES_ACCOUNT_KEY/hosts/YOUR_LOG_SET_NAME/YOUR_LOG_NAME/?start=-10000
+	https://pull.logentries.com/YOUR_LOGENTRIES_ACCOUNT_KEY/hosts/YOUR_LOG_SET_NAME/YOUR_LOG_NAME/?start=-10000
 
 For our purposes we only want the last 10 seconds of data (`?start=-10000`). The code will poll Logentries every 5 seconds, so requesting the last 10 seconds worth of data will provide a crude mechanism to deal with failures.
 
@@ -56,29 +56,29 @@ extern crate hyper;
 use hyper::{ Client };
 
 fn main() {
-    // Create new Hyper HTTP client
-    let client = Client::new();
+	// Create new Hyper HTTP client
+	let client = Client::new();
 
-    // We're going to request JSON from Logentries here:
-    let url = "https://pull.logentries.com/cafebabe-cafe-babe-cafe-babecafebabe/hosts/My.Log/logset/?start=-10000&filter=src:HddRestGateway";
+	// We're going to request JSON from Logentries here:
+	let url = "https://pull.logentries.com/cafebabe-cafe-babe-cafe-babecafebabe/hosts/My.Log/logset/?start=-10000&filter=src:HddRestGateway";
 
-    // Make the request. This will quit if there is some kind of failure
-    let response = match client.get(url).send() {
-        Ok(response) => response,
-        Err(e) => panic!("Could not fetch Logentries data: {}", e)
-    };
+	// Make the request. This will quit if there is some kind of failure
+	let response = match client.get(url).send() {
+		Ok(response) => response,
+		Err(e) => panic!("Could not fetch Logentries data: {}", e)
+	};
 
-    // Turn response into stream so we can parse it line by line
-    let reader = BufReader::new(response);
+	// Turn response into stream so we can parse it line by line
+	let reader = BufReader::new(response);
 
-    // Go through each line in the result and just print it for now
-    for reader_line in reader.lines() {
-        // Get string result from `Result<>` container
-        // (assumes line always has a value)
-        let line = reader_line.unwrap();
+	// Go through each line in the result and just print it for now
+	for reader_line in reader.lines() {
+		// Get string result from `Result<>` container
+		// (assumes line always has a value)
+		let line = reader_line.unwrap();
 
-        println!("{}", line);
-    }
+		println!("{}", line);
+	}
 }
 ```
 
@@ -118,92 +118,92 @@ use std::io::{ BufReader, BufRead };
 use hyper::{ Client };
 
 fn main() {
-    // Create new Hyper HTTP client
-    let client = Client::new();
+	// Create new Hyper HTTP client
+	let client = Client::new();
 
-    // We're going to request JSON from Logentries here:
-    let url = "https://pull.logentries.com/cafebabe-cafe-babe-cafe-babecafebabe/hosts/My.Log/logset/?start=-10000&filter=src:HddRestGateway";
+	// We're going to request JSON from Logentries here:
+	let url = "https://pull.logentries.com/cafebabe-cafe-babe-cafe-babecafebabe/hosts/My.Log/logset/?start=-10000&filter=src:HddRestGateway";
 
-    // Make the request. This will quit if there is some kind of failure
-    let response = match client.get(url).send() {
-        Ok(response) => response,
-        Err(e) => panic!("Could not fetch Logentries data: {}", e)
-    };
+	// Make the request. This will quit if there is some kind of failure
+	let response = match client.get(url).send() {
+		Ok(response) => response,
+		Err(e) => panic!("Could not fetch Logentries data: {}", e)
+	};
 
-    // Turn response into stream so we can parse it line by line
-    let reader = BufReader::new(response);
+	// Turn response into stream so we can parse it line by line
+	let reader = BufReader::new(response);
 
-    // Go through each line in the result and just print it for now
-    for reader_line in reader.lines() {
-        // Get string result from `Result<>` container
-        // (assumes line always has a value)
-        let line = reader_line.unwrap();
+	// Go through each line in the result and just print it for now
+	for reader_line in reader.lines() {
+		// Get string result from `Result<>` container
+		// (assumes line always has a value)
+		let line = reader_line.unwrap();
 
-        // Split the string into it's constituent parts
-        let parts: Vec<&str> = line.split(" | ").collect();
+		// Split the string into it's constituent parts
+		let parts: Vec<&str> = line.split(" | ").collect();
 
-        // First item is timestamp. Turn it into a Chrono::DateTime
-        let created = match parts.first() {
-            Some(created) => {
-                let mut padded = String::from(*created);
+		// First item is timestamp. Turn it into a Chrono::DateTime
+		let created = match parts.first() {
+			Some(created) => {
+				let mut padded = String::from(*created);
 
-                // Logentries prints the date in a stupid format (or at least one Chrono
-                // can't parse), so let's add some zeroes and a fake timezone
-                padded.push_str("0000+0000");
+				// Logentries prints the date in a stupid format (or at least one Chrono
+				// can't parse), so let's add some zeroes and a fake timezone
+				padded.push_str("0000+0000");
 
-                match DateTime::parse_from_str(padded.as_str(), "%Y-%m-%d %H:%M:%S.%f%z") {
-                    Ok(parsed) => parsed,
+				match DateTime::parse_from_str(padded.as_str(), "%Y-%m-%d %H:%M:%S.%f%z") {
+					Ok(parsed) => parsed,
 
-                    // If there's a parse error, don't do anything else with this line
-                    Err(_) => continue,
-                }
-            },
+					// If there's a parse error, don't do anything else with this line
+					Err(_) => continue,
+				}
+			},
 
-            // No timestamp, must be a bad record, skip remaining processing for this line
-            None => continue
-        };
+			// No timestamp, must be a bad record, skip remaining processing for this line
+			None => continue
+		};
 
-        // JSON is last part of log entry (`parts.last()`). Parse it into an object.
-        let payload = match parts.last() {
-            Some(payload) => match Json::from_str(&payload) {
-                Ok(parsed) => parsed,
+		// JSON is last part of log entry (`parts.last()`). Parse it into an object.
+		let payload = match parts.last() {
+			Some(payload) => match Json::from_str(&payload) {
+				Ok(parsed) => parsed,
 
-                // Skip this record if there was an error
-                Err(e) => {
-                    println!("JSON parse error: {}", Error::description(&e));
+				// Skip this record if there was an error
+				Err(e) => {
+					println!("JSON parse error: {}", Error::description(&e));
 
-                    continue;
-                },
-            },
+					continue;
+				},
+			},
 
-            // If for whatever reason we can't find the last part of the
-            // split line (it might be blank), skip it completely
-            None => {
-                println!("Malformed log message");
+			// If for whatever reason we can't find the last part of the
+			// split line (it might be blank), skip it completely
+			None => {
+				println!("Malformed log message");
 
-                continue;
-            }
-        };
+				continue;
+			}
+		};
 
-        // Look for response status in `message.status` key
-        let status = match payload.find_path(&[ "message", "status" ]) {
-            Some(status) => status.as_string().unwrap(),
-            None => "InvalidMessage"
-        };
+		// Look for response status in `message.status` key
+		let status = match payload.find_path(&[ "message", "status" ]) {
+			Some(status) => status.as_string().unwrap(),
+			None => "InvalidMessage"
+		};
 
-        // Look for elapsed time in `message.elapsed` key
-        let time = match payload.find_path(&[ "message", "elapsed" ]) {
-            Some(time) => time.as_u64().unwrap() as i32,
-            None => 0
-        };
+		// Look for elapsed time in `message.elapsed` key
+		let time = match payload.find_path(&[ "message", "elapsed" ]) {
+			Some(time) => time.as_u64().unwrap() as i32,
+			None => 0
+		};
 
-        // We only care about successful responses
-        if status == "Success" {
-            println!("------ Status: {}, elapsed time: {}ms at {}", status, time, created);
-        } else {
-            println!("Ignoring status {}", status)
-        }
-    }
+		// We only care about successful responses
+		if status == "Success" {
+			println!("------ Status: {}, elapsed time: {}ms at {}", status, time, created);
+		} else {
+			println!("Ignoring status {}", status)
+		}
+	}
 }
 ```
 
@@ -233,8 +233,8 @@ let client = Client::new();
 
 // Make the request. This will quit if there is some kind of failure
 let response = match client.get(url).send() {
-    Ok(response) => response,
-    Err(e) => panic!("Could not fetch Logentries data: {}", e)
+	Ok(response) => response,
+	Err(e) => panic!("Could not fetch Logentries data: {}", e)
 };
 ```
 
@@ -258,23 +258,23 @@ If someone can point out a better way of parsing a timestamp like `2016-04-26 15
 ```rust
 // First item is timestamp. Turn it into a Chrono::DateTime
 let created = match parts.first() {
-    Some(created) => {
-        let mut padded = String::from(*created);
+	Some(created) => {
+		let mut padded = String::from(*created);
 
-        // Logentries prints the date in a stupid format (or at least one Chrono
-        // can't parse), so let's add some zeroes and a fake timezone
-        padded.push_str("0000+0000");
+		// Logentries prints the date in a stupid format (or at least one Chrono
+		// can't parse), so let's add some zeroes and a fake timezone
+		padded.push_str("0000+0000");
 
-        match DateTime::parse_from_str(padded.as_str(), "%Y-%m-%d %H:%M:%S.%f%z") {
-            Ok(parsed) => parsed,
+		match DateTime::parse_from_str(padded.as_str(), "%Y-%m-%d %H:%M:%S.%f%z") {
+			Ok(parsed) => parsed,
 
-            // If there's a parse error, don't do anything else with this line
-            Err(_) => continue,
-        }
-    },
+			// If there's a parse error, don't do anything else with this line
+			Err(_) => continue,
+		}
+	},
 
-    // No timestamp, must be a bad record, skip remaining processing for this line
-    None => continue
+	// No timestamp, must be a bad record, skip remaining processing for this line
+	None => continue
 };
 ```
 
