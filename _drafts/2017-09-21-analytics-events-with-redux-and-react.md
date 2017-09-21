@@ -8,7 +8,7 @@ image: logging-header.jpg
 
 One of my main responsibilites at [TotallyMoney](https://www.totallymoney.com/) was to take care of the in-house analytics/event logging framework. Like lots of companies, understanding what users do and how they interact with a site is an important thing to get good insight on, so people reinvent the wheel with various [krimskrams](https://en.wiktionary.org/wiki/krimskrams) attached, me being no exception. What I want to show in this post is how to integrate an event logging framework into a React/Redux application in a way that's scaleable and reasonably unit testable. Unit tests are important for event logging when the rest of the business relies on both the events being sent, and with the correct data!
 
-I'm assuming you've got an existing React/Redux application, and want to integrate some kind of event logging library into it.
+In this article, I'm assuming you've got an existing React/Redux application, and want to integrate some kind of event logging library (third party or otherwise) into it.
 
 ## The logging library
 
@@ -34,6 +34,8 @@ class Logger {
 
 export default new Logger()
 ```
+
+This could be anything, even something like Google Analytics or Firebase. How you log events and to where doesn't really matter as the logging code will be contained inside an action creator.
 
 ## Redux – Action creator
 
