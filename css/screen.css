@@ -92,6 +92,15 @@ body.serif article>menu #btn_comment {
 body.serif article>menu #btn_comment span {
     padding-top: 5px
 }
+.highlight {
+    tab-size: 4;
+}
+@media (max-width: 480px) {
+    .highlight {
+        tab-size: 2;
+        letter-spacing: -0.5px;
+    }
+}
 .highlight .c {
     color: #8e908c
 }
