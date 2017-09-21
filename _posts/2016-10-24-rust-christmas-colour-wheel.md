@@ -10,7 +10,7 @@ Here's a quick one; I'm making a Christmas display out of a bunch of serially co
 
 ## First, some theory
 
-The code in the next section is based on the RGB linear colour wheel approximation from the [Adafruid NeoPixel library](https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino#L123). So that I can make modifications to the generated colours, it helps to first visualise the RGB brightnesses against time. For a rainbow RGB pattern, that looks a bit like this:
+The code in the next section is based on the RGB linear colour wheel approximation from the [Adafruit NeoPixel library](https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino#L123). So that I can make modifications to the generated colours, it helps to first visualise the RGB brightnesses against time. For a rainbow RGB pattern, that looks a bit like this:
 
 ![Linear RGB graph](/content/images/rgb-linear.png)
 
