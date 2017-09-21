@@ -24,7 +24,7 @@ I'm writing this project in Rust, however my code is modified from [the original
 
 Here's what the reference RGB function looks like in C:
 
-```rust
+```c
 uint32_t Wheel(byte WheelPos) {
 	WheelPos = 255 - WheelPos;
 	if(WheelPos < 85) {
