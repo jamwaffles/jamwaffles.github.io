@@ -6,11 +6,11 @@ categories: web
 image: logging-header.jpg
 ---
 
-One of my main responsibilites at [TotallyMoney](https://www.totallymoney.com/) was to take care of the in-house analytics/event logging framework. Like lots of companies, understanding what users do and how they interact with a site is an important thing to get good insight on, so people reinvent the wheel with various [krimskrams](https://en.wiktionary.org/wiki/krimskrams) attached, me being no exception. What I want to show in this post is how to integrate an event logging framework into a React/Redux application in a way that's scaleable and reasonably unit testable. Unit tests are important for event logging when the rest of the business relies on both the events being sent, and with the correct data!
+One of my main responsibilites at [TotallyMoney](https://www.totallymoney.com/) was to take care of the in-house analytics/event logging framework. Like lots of companies, understanding what users do and how they interact with a product is to get good insight on. In this regard, people reinvent the logging wheel with various [krimskrams](https://en.wiktionary.org/wiki/krimskrams) attached, me being no exception. What I want to show in this post is how to integrate an event logging framework into a React/Redux application in a way that's scaleable and testable. Unit testable logging is important when the rest of the business relies heavily on the events and the data in them like many companies do.
 
 tl;dr: pass your logger to React's `context` to make logging from deeply nested components much easier.
 
-In this article, I'm assuming you've got an existing React/Redux application, and want to integrate some kind of event logging library (third party or otherwise) into it.
+In this article, I'm assuming you've got an existing React/Redux application, and want to integrate some kind of event logging library into it.
 
 ## The logging library
 
@@ -69,9 +69,9 @@ We now have an action creator that, when called, will log an event over our pret
 
 ## Integration with React (the bad way)
 
-The first, simpler way is to pass down an event handler to the elment you want to log an event from, then handle that in your top level Redux-connected page component. It's good practice to not use Redux' `connect()` anywhere but in the top level component, so in the following code we pass down an event handler to log an event when the submit button is clicked on a pretend login form.
+The simplest and perhaps obvious way is to pass down an event handler to the elment you want to log an event from. React encourages this pattern for handling other events, so why not logs? When an event is fired, your code would handle that in the top level Redux-connected page component. We could pepper Redux' `connect()` through our component tree, but that makes testing _harder_, which is the opposite of what we want to do. It also tightly couples our app to Redux instead of dealing with plain old Javascript objects.
 
-This following example is for a login page where we want to log an event when the submit button is clicked. Here, logging that event isn't too bad because _we already have a click handler for the submit button_. But what if we had a different component with no other props? In this case, we'd have to write a `handleClick` function in your top level component, and pass an `onClick` prop all the way through your component tree. This is noisy, boilerplate-y and error prone. In the next section, I'll show a better way of doing this.
+This following example is for a login page where we want to log an event when the submit button is clicked. Here, logging that event isn't too bad because we already have a click handler for the submit button. But what if we had a different component with no other props? In this case, we'd have to write a `handleClick` function in the top level component, and pass an `onClick` prop all the way through the component tree. This is noisy, boilerplate-y and error prone. In the next section, I'll show a better way of doing this.
 
 ```javascript
 // pages/Login.jsx
@@ -171,7 +171,7 @@ Here we:
 
 ❶ Define `childContextTypes` to allow child components to ask for `logEvent` using their `contextTypes` property.
 
-❷ Make the definition of `logEvent`. In this case, it's a function that will be called like `context.logEvent('foo', { bar: 'true '})` which matches the Redux action signature written earlier earlier.
+❷ Make the definition of `logEvent`. In this case, it's a function that will be called like `context.logEvent('foo', { bar: 'true '})` which matches the Redux action signature written earlier.
 
 ❸ Don't need any state from the store, so we can just return an empty object.
 
@@ -220,7 +220,7 @@ export default SubmitButton
 
 ❷ React requires you to explicitly mark which pieces of the context you want using `Component.contextTypes`. In this case, just `logEvent` which is a function. If you don't add this, `logEvent` will be undefined!
 
-Now, assuming your app uses `LoggerProvider` somewhere near the top of its component tree, you should now be able to call `context.logEvent` which will dispatch a Redux action with the functionality provided by `LoggerProvider`. This should work wherever this component is in the component tree.
+Assuming your app uses `LoggerProvider` somewhere near the top of its component tree, you should now be able to call `context.logEvent` which will dispatch a Redux action with the functionality provided by `LoggerProvider`. This should work wherever this component is in the component tree.
 
 ## Testing with Mocha and Enzyme
 
@@ -264,9 +264,9 @@ describe("<SubmitButton />", () => {
 
 We've got two tests here:
 
-1. `Calls the onClick event when clicked` checks to make sure `onSubmit()` is called when the button is clicked. This isn't relevant to event log testing, it just shows another Enzyme test being used.
+1. `Calls the onClick event when clicked`. Checks to make sure `onSubmit()` is called when the button is clicked. This isn't relevant to event log testing, it just shows another Enzyme test being used.
 
-2. `Logs an event when clicked` checks that `logEvent` was called, and with the correct arguments. Here, `.calledWith('loginSubmit', { foo: 'bar', baz: 'quux' })` should be replaced with whatever shape of event you're logging. In this example, it's hardcoded to `('loginSubmit', { foo: 'bar', baz: 'quux' })`.
+2. `Logs an event when clicked`. Checks that `logEvent` was called, and with the correct arguments. `.calledWith('loginSubmit', { foo: 'bar', baz: 'quux' })` should be replaced with whatever shape of event you're logging. In this example, it's hardcoded to `('loginSubmit', { foo: 'bar', baz: 'quux' })`.
 
 If you've set everything up right, you should see something like this:
 
@@ -283,4 +283,4 @@ Hooray!
 
 ## Conclusion
 
-React's `context` can be pretty powerful when used sparingly. Here, I've presented an approach to event collection using it that makes logging from deeply nested React nodes easier, simpler and more testable. However, I think it's important to take multiple approaches to event logging depending on where the event needs to be fired from. If you can do it without using `context`, do that! You lose some ability to test using a spy in your tests, but it makes component testing simpler with less configuration by not requiring a fake context. If you can log an event inside another action creator, that's the best way to go if possible. If not, using a context provider leads to a more scalable approach for larger apps with deeply nested component trees.
+React's `context` can be pretty powerful when used sparingly. Here, I've presented an approach to event collection that makes logging from deeply nested React nodes easier, simpler and more testable. However, I think it's important to take multiple approaches to event logging depending on where the event needs to be fired from. If you can do it without using `context`, do that! You lose some ability to test using a spy in your tests, but it makes component testing simpler with less configuration by not requiring a fake context. If you can log an event inside another action creator, that's the best way to go if possible. If not, using a context provider leads to a more scalable approach for larger apps with deeply nested component trees.
