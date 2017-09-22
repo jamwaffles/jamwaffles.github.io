@@ -8,6 +8,8 @@ image: logging-header.jpg
 
 One of my main responsibilites at [TotallyMoney](https://www.totallymoney.com/) was to take care of the in-house analytics/event logging framework. Like lots of companies, understanding what users do and how they interact with a site is an important thing to get good insight on, so people reinvent the wheel with various [krimskrams](https://en.wiktionary.org/wiki/krimskrams) attached, me being no exception. What I want to show in this post is how to integrate an event logging framework into a React/Redux application in a way that's scaleable and reasonably unit testable. Unit tests are important for event logging when the rest of the business relies on both the events being sent, and with the correct data!
 
+tl;dr: pass your logger to React's `context` to make logging from deeply nested components much easier.
+
 In this article, I'm assuming you've got an existing React/Redux application, and want to integrate some kind of event logging library (third party or otherwise) into it.
 
 ## The logging library
@@ -281,20 +283,4 @@ Hooray!
 
 ## Conclusion
 
-React's `context` can be pretty powerful when used sparingly. Here, I've presented an approach to event collection using it that makes logging from deeply nested React nodes easier, simpler and more testable. However, I think it's important to take multiple approaches to event logging depending on where the event needs to be fired from. If you can do it without using `context`, do that! You lose some ability to test using a spy in your tests, but it makes component testing simpler with less configuration by not requiring a fake context. If you can log an event inside another action creator, that's the best way to go if possible. For example, the `loginSubmit` used in this article might be better off sent in the `login()` action creator, like this:
-
-
-```
-// actions/login.js
-
-export function login() {
-	return dispatch => {
-		dispatch(logEvent('loginSubmit'))
-
-		return apiCall(...)
-			.then(...)
-	}
-}
-```
-
-This requires the least code because you already have the `login()` function, and works with the pattern of composing action creators in Redux.
+React's `context` can be pretty powerful when used sparingly. Here, I've presented an approach to event collection using it that makes logging from deeply nested React nodes easier, simpler and more testable. However, I think it's important to take multiple approaches to event logging depending on where the event needs to be fired from. If you can do it without using `context`, do that! You lose some ability to test using a spy in your tests, but it makes component testing simpler with less configuration by not requiring a fake context. If you can log an event inside another action creator, that's the best way to go if possible. If not, using a context provider leads to a more scalable approach for larger apps with deeply nested component trees.
