@@ -2,7 +2,7 @@
 layout: post
 title:  "A white (and red and green) Christmas"
 date:   2016-10-24 09:55:05 PM
-categories: rust,electronics
+categories: rust
 image: rgw-header.jpg
 ---
 
