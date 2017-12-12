@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Elm: counting groups of items in a list"
-date:   2017-12-01 17:03:26
+date:   2017-12-12 14:03:18
 categories: elm
 image: elm-tag-header.jpg
 ---
