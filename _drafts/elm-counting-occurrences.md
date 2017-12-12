@@ -77,7 +77,7 @@ Great, we've got a working Elm program. Next, I'll go into a bit of data process
 
 ## Dicts
 
-As a first step towards grouping the data, we need to start using a `Dict`. Dicts contain unique keys with an associated value. They're the same as `Map()`s in JavaScript. To keep things (hipefully) understandable, as a first step we'll just render a list of unique tags.
+As a first step towards grouping the data, we need to start using a `Dict`. Dicts contain unique keys with an associated value. They're the same as `Map()`s in JavaScript. To keep things (hopefully) understandable, as a first step we'll just render a list of unique tags.
 
 First, the model type needs to change to use an Elm `Dict` for our list of tags:
 
@@ -122,13 +122,13 @@ The `|>` operator "fills in" the last argument of `List.foldr` function with `ta
 > foldr : (a -> b -> b) -> b -> List a -> b
 > ```
 >
-> This is frustratingly obtuse for a beginnger (or at least was for me), so let's rename the variables to make it a bit clearer:
+> This is frustratingly obtuse for a beginner (or at least was for me), so let's rename the variables to make it a bit clearer:
 >
 > ```haskell
 > foldr : (item -> carry -> carry result) -> initialValue -> inputList -> returnType
 > ```
 >
-The example in the docs is `foldr (+) 0 [1,2,3] == 6`. I found this pretty confusing, although it's wonderfully concise. Rewritten in longer form, it's a > bit more understandable for the purpose of more complex use:
+The example in the docs is `foldr (+) 0 [1,2,3] == 6`. I found this pretty confusing, although it's wonderfully concise. Rewritten in longer form, it's a bit more understandable:
 >
 > ```haskell
 > foldr (\item carry -> carry + item) 0 [1,2,3] == 6
@@ -184,3 +184,107 @@ Again, the `|>` could be written like this:
 You can see that using the [pipeline operator](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics) makes things much easier to read. The complete program now looks like this:
 
 <iframe src="https://ellie-app.com/embed/4HDDt9jpTa1/0" style="width:100%; height:400px; border:0; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
+
+# Counting keys
+
+This Dict isn't very useful without some actual data in its keys however. We need to update `groupTags` to actually count the number of occurrences instead of just setting each value to `0`. Here's what it looks like:
+
+```haskell
+groupTags : List String -> Dict String Int
+groupTags tags =
+    tags
+        |> List.foldr
+            (\tag carry ->
+                Dict.update
+                    tag
+                    (\existingCount ->
+                        case existingCount of
+                            Just existingCount ->
+                                Just (existingCount + 1)
+
+                            Nothing ->
+                                Just 1
+                    )
+                    carry
+            )
+            Dict.empty
+```
+
+Instead of overwriting existing keys with `Dict.insert` as before, we're now using `Dict.update`. This takes three arguments:
+
+- `tag` – they Dict key to search for
+- `updateFunc` – how to update the Dict
+- `dictToUpdate` – the starting `Dict` we want to update
+
+It's important to note that `Dict.update` will _upsert_ a key; if it doesn't exist, it'll get created. `Dict.update` returns a whole new `Dict`, with the updated/inserted key/value pair. This is where the second argument (`updateFunc`) comes into play. It is supplied with one argument, `existingCount`, which is a `Maybe` type. If there's no existing key, this will be `Nothing`, otherwise you'll get `Just <dict value type>`. In our case, this would be `Just Int`. The `case` statement will add one to an existing value, or insert a new key into the dict with a starting value of `1`.
+
+The last thing we need to do is update the view to render tag counts:
+
+```haskell
+import Tuple
+
+-- ...
+
+view : Model -> Html msg
+view model =
+    div []
+        [ section []
+            [ text "My tag list"
+            , ul []
+                (model.tagList
+                    |> Dict.toList
+                    |> List.map
+                        (\pair ->
+                            let
+                                tag =
+                                    Tuple.first pair
+
+                                count =
+                                    toString (Tuple.second pair)
+                            in
+                                li [] [ text (tag ++ ": " ++ count) ]
+                        )
+                )
+            ]
+        ]
+```
+
+Unfortunately this is a bit involved, because `Dict.map` takes a `Dict`, therefore must return a `Dict`. We want to return a `List` of `<li>` elements, so we can't directly use `Dict.map`. Argh.
+
+So first we turn the Dict into a list of tuples with [`Dict.tolist`](http://package.elm-lang.org/packages/elm-lang/core/latest/Dict#toList). The data now looks like this:
+
+```haskell
+[ ( "elm", 2 )
+, ( "javascript", 3 )
+, ( "rust", 2 )
+, ( "typescript", 1 )
+]
+```
+
+Cool, now it's in a list so we can turn that into a bunch of `<li>` elements with `List.map`:
+
+```haskell
+List.map
+    (\pair ->
+        let
+            tag =
+                Tuple.first pair
+
+            count =
+                toString (Tuple.second pair)
+        in
+            li [] [ text (tag ++ ": " ++ count) ]
+    )
+```
+
+Because this code is looping through a list of tuples, we need to use `Tuple.first` and `Tuple.second` to extract the tag and count respectively. The last bit is to call `toString` on the count to turn the `Int` into a `String`, ready for outputting in HTML.
+
+Now we've got something that looks like this:
+
+<iframe src="https://ellie-app.com/embed/shmTqNRBKa1/0" style="width:100%; height:400px; border:0; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
+
+And we're done! Well done if you made it down here.
+
+## Wrapping up
+
+Hopefully I've helped you understand a bit about how data processing (particularly with `Dict`s) works in Elm with some practical code. During my Elm learning experience, I found there was a gap between absolute beginner tutorials and more advanced stuff that requires a deeper knowledge of the language to work with. Perhaps that's my procedural background talking, or perhaps I just need to be smarter. Who knows, but either way, the aim of this article was to help bridge this gap. Let me know [on Twitter](https://twitter.com/jam_waffles) if there's something I can do to improve this article, and as always, thanks for read'n.
