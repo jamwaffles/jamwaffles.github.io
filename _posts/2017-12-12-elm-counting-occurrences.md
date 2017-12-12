@@ -6,7 +6,7 @@ categories: elm
 image: elm-tag-header.jpg
 ---
 
-So. Elm. It's been an interesting experience for me, coming from a procedural language (JS) background. The learning curve is steep, but the functional nature of Elm, along with its compile time type safety really pays off. The only problem I've found as a newcomer however, is that the documentation can be really frustrating sometimes. In this post, I hope to remedy that slightly by providing a newcomer's perspective on a little bit of data processing in Elm.
+So. Elm. It's been an interesting experience for me, coming from a procedural language (JS) background. The learning curve is steep, but the functional nature of Elm, along with its compile time type safety really pays off. One of the (few!) problems I've found as a newcomer however, is that the documentation can be really frustrating sometimes. In this post, I hope to remedy that slightly by providing a newcomer's perspective on a little bit of data processing in Elm.
 
 _Header photo by [@rawpixel](https://unsplash.com/photos/ndP5Oj0sSps)_
 
@@ -14,7 +14,7 @@ Let's say I've collected a list of tags from questions on StackOverflow. I want 
 
 ## Starting at the beginning (whoa)
 
-First, let's just render the whole tag list. The data in my Elm program looks like the following `List`:
+First, let's just render this `List` of tags:
 
 ```haskell
 tagList =
@@ -29,7 +29,7 @@ tagList =
     ]
 ```
 
-Cool. Let's put that list into a `Model` that an Elm program can use:
+Cool. We'll store that list in a `Model` to pass to some rendering layer:
 
 ```haskell
 import List
@@ -73,11 +73,11 @@ The entire program so far is shown below. It's a pretty standard Elm boilerplate
 
 <iframe src="https://ellie-app.com/embed/9vWnYkPqxa1/2" style="width:100%; height:400px; border:0; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
-Great, we've got a working Elm program. Next, I'll go into a bit of data processing to turn this flat list into a `Dict` of tags and counts.
+Great, we've got a working Elm program. Next, I'll go into a bit of data processing to turn this flat, boring list into a `Dict` of tags and counts.
 
 ## Dicts
 
-As a first step towards grouping the data, we need to start using a `Dict`. Dicts contain unique keys with an associated value. They're the same as `Map()`s in JavaScript. To keep things (hopefully) understandable, as a first step we'll just render a list of unique tags.
+As a first step towards grouping the data, we need to start using a `Dict`. Dicts contain unique keys with an associated value. They're the same as `Map()`s in JavaScript. As a first step we'll just render a list of unique tags to keep things understandable. The counts will come later.
 
 First, the model type needs to change to use an Elm `Dict` for our list of tags:
 
@@ -89,9 +89,9 @@ type alias Model =
     }
 ```
 
-Here, `tagList` is now of type `Dict String Int`, which is a map of `String` keys to `Int` values. This will hold our `tag -> count` mapping.
+`tagList` is now of type `Dict String Int`, which is a map of `String` keys to `Int` values. This will hold the `tag -> count` mapping.
 
-We need to write a function to transform the list of tags when the model is initalised, so let's write that:
+We need to write a function to transform the list of tags when the model is initialised, so let's write that:
 
 ```haskell
 import Dict exposing (..)
@@ -181,13 +181,13 @@ Again, the `|>` could be written like this:
 (List.map (\tag -> li [] [ text tag ] (Dict.keys model.tagList)))
 ```
 
-You can see that using the [pipeline operator](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics) makes things much easier to read. The complete program now looks like this:
+You can see that using the [pipeline operator](http://package.elm-lang.org/packages/elm-lang/core/latest/Basics) makes things much easier to read. Here's a demo:
 
 <iframe src="https://ellie-app.com/embed/4HDDt9jpTa1/0" style="width:100%; height:400px; border:0; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
 
 # Counting keys
 
-This Dict isn't very useful without some actual data in its keys however. We need to update `groupTags` to actually count the number of occurrences instead of just setting each value to `0`. Here's what it looks like:
+This Dict isn't very useful without some actual data in its keys. To fix that, we need to update `groupTags` to actually count the number of occurrences instead of just setting each value to `0`. Here's what it looks like:
 
 ```haskell
 groupTags : List String -> Dict String Int
@@ -210,7 +210,7 @@ groupTags tags =
             Dict.empty
 ```
 
-Instead of overwriting existing keys with `Dict.insert` as before, we're now using `Dict.update`. This takes three arguments:
+Instead of overwriting existing keys with `Dict.insert` as before, we're now using `Dict.update` which takes three arguments:
 
 - `tag` – they Dict key to search for
 - `updateFunc` – how to update the Dict
@@ -287,4 +287,4 @@ And we're done! Well done if you made it down here.
 
 ## Wrapping up
 
-Hopefully I've helped you understand a bit about how data processing (particularly with `Dict`s) works in Elm with some practical code. During my Elm learning experience, I found there was a gap between absolute beginner tutorials and more advanced stuff that requires a deeper knowledge of the language to work with. Perhaps that's my procedural background talking, or perhaps I just need to be smarter. Who knows, but either way, the aim of this article was to help bridge this gap. Let me know [on Twitter](https://twitter.com/jam_waffles) if there's something I can do to improve this article, and as always, thanks for read'n.
+Hopefully I've helped you understand a bit about how data processing (particularly with `Dict`s) works in Elm with some practical code. During my Elm learning experience, I found there was a gap between absolute beginner tutorials and more advanced stuff. Perhaps that's my procedural background talking, or perhaps I just need to be smarter. Who knows, but either way the aim of this article was to help bridge this gap. Let me know [on Twitter](https://twitter.com/jam_waffles) if there's something I can do to improve this article, and as always, thanks for read'n.
