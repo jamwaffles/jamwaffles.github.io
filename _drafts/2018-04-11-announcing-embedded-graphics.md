@@ -19,3 +19,18 @@ Rust has fantastic iterator support, a feature I lean on heavily for this crate 
 * Go through creating a new drawable "thing". Unsure what yet.
 * Composing iterators. Can I do this? Example: drawing a square button with text in it
 * Talk briefly about translations
+
+Other notes:
+
+- Link to https://github.com/rust-lang-nursery/embedded-wg/issues/39
+
+- Feature list
+- Feature: Easy to integrate into your own driver
+- Example: Implementing embedded_graphics for a display driver (probably SSD1306)
+- Feature: Extensible
+- Example: let's implement our own thing for it to draw
+
+- Walkthrough: let's make an animated DVD screensaver
+	- Start with drawing a square, circle and triangle overlapped designy thing
+	- Animate it
+	- Switch out for an image
