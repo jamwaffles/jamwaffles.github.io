@@ -31,7 +31,7 @@ Pretty standard. Calling it is ergonomic:
 const user = createUser(
   'Bobby Beans',
   'bobby@beans.com'
-)
+);
 ```
 
 Great, my ground-breaking code goes live yet again. Or would if I had any unit tests! Fine. Bloody review process.
