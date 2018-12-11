@@ -75,7 +75,7 @@ A better idea might be to use [io-ts](https://www.npmjs.com/package/io-ts) which
 Anyway, now that those types are defined, events can be created that match the correct type signature:
 
 ```typescript
-import { v4 } from 'uuid'; 
+import { v4 } from 'uuid';
 
 const emit_this: Event<BlogEvent> = {
   id: v4(),
@@ -124,8 +124,8 @@ Neat. Now the programmer doesn't have to care about the particular shape of the 
 
 ```typescript
 const emit_this = createEvent(
-  'some_namespace', 
-  'SomeEventType', 
+  'some_namespace',
+  'SomeEventType',
   {
     some_field: true,
     some_other_field: 100
@@ -139,8 +139,8 @@ Typescript doesn't type check this properly! At least it didn't at the time of w
 
 ```typescript
 const emit_this: Event<BlogEvent> = createEvent(
-  'potato', 
-  'SomeEventType', 
+  'potato',
+  'SomeEventType',
   {
     some_field: true,
     some_other_field: 100
@@ -148,7 +148,7 @@ const emit_this: Event<BlogEvent> = createEvent(
 );
 ```
 
-This is more ergonomic, **but is a step backward in the reliability of the system**. Mistyped fields and events with missing keys were encountered _in production_ when using the `createEvent` defined above. This is pretty terrible. We should be pushing the programmer into the [pit of success](https://blog.codinghorror.com/falling-into-the-pit-of-success/)! 
+This is more ergonomic, **but is a step backward in the reliability of the system**. Mistyped fields and events with missing keys were encountered _in production_ when using the `createEvent` defined above. This is pretty terrible. We should be pushing the programmer into the [pit of success](https://blog.codinghorror.com/falling-into-the-pit-of-success/)!
 
 ## Into the pit - safely
 
@@ -157,7 +157,7 @@ What `createEvent` needs is some actual, smart type checking. Issues arose when 
 ```typescript
 import { v4 } from 'uuid';
 
-type Omit<T, K extends keyof T> = 
+type Omit<T, K extends keyof T> =
   Pick<T, Exclude<keyof T, K>>;
 
 export function createEvent<D extends EventData>(
@@ -175,8 +175,8 @@ export function createEvent<D extends EventData>(
       event_type,
       event_namespace,
     } as D,
-    context: { 
-      time: (new Date()).toISOString() 
+    context: {
+      time: (new Date()).toISOString()
     },
   };
 }
@@ -186,8 +186,8 @@ Usage looks like this:
 
 ```typescript
 const emit_this = createEvent<BlogEvent>(
-  'some_namespace', 
-  'SomeEventType', 
+  'some_namespace',
+  'SomeEventType',
   {
     some_field: true,
     some_other_field: 100
@@ -195,13 +195,13 @@ const emit_this = createEvent<BlogEvent>(
 );
 ```
 
-Nearly identical to before, save for adding `<BlogEvent>` to the call signature. Our ergonomics are preserved, but now we get proper type checking! Now, any errors in any arguments will fail to compile. For example:
+Nearly identical to before, save for adding `<BlogEvent>` to the call signature. Our ergonomics are preserved, but now we get proper type checking! Any errors in any arguments will fail to compile. For example:
 
 ```typescript
 // Fails: typo in `SomeEventType`
 const emit_this = createEvent<BlogEvent>(
-  'some_namespace', 
-  'SomeEventTpr', 
+  'some_namespace',
+  'SomeEventTpr',
   {
     some_field: true,
     some_other_field: 100
@@ -210,15 +210,15 @@ const emit_this = createEvent<BlogEvent>(
 
 // Fails: missing `some_other_field`
 const emit_this = createEvent<BlogEvent>(
-  'some_namespace', 
-  'SomeEventTpr', 
+  'some_namespace',
+  'SomeEventTpr',
   {
     some_field: true
   }
 );
 ```
 
-This code couples the power of generics with Typescripts weird (but quite pleasant) string-literals-are-types feature to enforce that, given an event payload, the string arguments given to `createEvent` _must_ match whatever is defined for `BlogEvent`. The magic comes from using the square brace `T["field_here"]` syntax to match the string literals, and some gymnastics to implement an `Omit` type. This type states, in plainer words, every field in `D` **except** `type`, `event_namespace` and `event_type` must be present in the passed object.
+This code couples the power of generics with Typescripts weird (but quite pleasant) string-literals-are-types feature to enforce that, given an event payload, the string arguments given to `createEvent` _must_ match whatever is defined for `BlogEvent`. The magic comes from using the [**indexed access operator**](https://www.typescriptlang.org/docs/handbook/advanced-types.html) (you'll have to search through that page to find it) `T["field_here"]` syntax to match the string literals, and some gymnastics to implement an `Omit` type. This type states, in plainer words, every field in `D` **except** `type`, `event_namespace` and `event_type` must be present in the passed object. This is good for the programmer - if they pass in those fields in the data object, they get overwritten anyway, leading to unexpected behaviour. By denying them in the body, we enforce a more correct, safer way of creating events.
 
 The code isn't as elegant as just providing a type, but now it means that **our function properly type checks the resulting object**. This means **no more typoed event name fields** and **no more missing/mis-spelled data fields**! This inelegance can also be tucked away in some library code, leaving just the nice interface. The only caveat with the above implementation that I've found so far is that the programmer must explicitly provide the type, or typechecking won't be "enabled". There's a compiler option - `--noImplicitAny` - which might help with this but I haven't tried it yet.
 
