@@ -5,9 +5,9 @@ date:   2018-12-13T20:13:21+00:00
 categories: rust
 ---
 
-A quick note to self: Rust (and LLVM) are _really_ good at optimising things.
+Rust (and LLVM) are _really_ good at optimising things.
 
-I have a struct, `TrajectoryStep`, that I pass to some methods in my program as arguments because positional arguments and magic booleans are bad. It looks like this:
+I have a struct, `TrajectoryStep`, that I pass to some methods in my program. I don't want to use positional arguments as it's impossible to tell what `some_func(f32, f32, f32)` might actually require. It looks like this:
 
 ```rust
 pub struct TrajectoryStep {
@@ -27,7 +27,7 @@ impl TrajectoryStep {
 }
 ```
 
-Now, rather amazingly these two following invocations **appear to compile down to the same assembly:**
+For convenience, I added a `new()` method as `time` is almost always zero:
 
 ```rust
 // Convenient and ergonomic
@@ -37,7 +37,9 @@ let step = TrajectoryStep::new(10.0, 10.0);
 let step = TrajectoryStep { position: 10.0, velocity: 10.0, time: 0.0 };
 ```
 
-As can be seen [on Godbolt.org](https://godbolt.org/z/8-TxTR), the asm output by Rust 1.31.0 looks like this:
+Because Rust and LLVM are friggin spectacular bits of technology, these two invocations **compile down to the same machine code.**
+
+As can be seen [on Godbolt.org](https://godbolt.org/z/8-TxTR), the assembly output by rustc 1.31.0 looks like this:
 
 ```asm
 example::TrajectoryStep::new:
@@ -49,4 +51,6 @@ example::TrajectoryStep::new:
         ret
 ```
 
-Is this right? If it is, Rust amazes me more every day. We get the ergonomics of just being able to call `new()` without any performance penalty.
+Being able to have easily read code with zero performance penalty is yet another reason I like Rust so much.
+
+As you were!
