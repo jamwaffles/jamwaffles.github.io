@@ -25,7 +25,14 @@ There are a few system dependencies required to work with osxcross. I don't thin
 
 ```bash
 # Install build dependencies
-apt install clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
+apt install \
+    clang \
+    gcc \
+    g++ \
+    zlib1g-dev \
+    libmpc-dev \
+    libmpfr-dev \
+    libgmp-dev
 
 # Add macOS Rust target
 rustup target add x86_64-apple-darwin
@@ -67,7 +74,8 @@ Because I chose not to install osxcross at the system level, the `$PATH` variabl
 
 ```bash
 # Add --release to build in release mode
-PATH="$(pwd)/osxcross/target/bin:$PATH" cargo build --target x86_64-apple-darwin
+PATH="$(pwd)/osxcross/target/bin:$PATH" \
+cargo build --target x86_64-apple-darwin
 ```
 
 This adds `[pwd]/osxcross/target/bin` to `$PATH`, which means the linker binaries should get picked up. The path must be absolute to work properly, hence `$(pwd)`.
@@ -83,7 +91,10 @@ The project I'm cross compiling uses the [git2](crates.io/crates/git2) crate whi
 The solution to this is to set the `CC` and `CXX` environment variables in our build command:
 
 ```bash
-PATH="$(pwd)/osxcross/target/bin:$PATH" CC=o64-clang CXX=o64-clang++ cargo build --target x86_64-apple-darwin
+PATH="$(pwd)/osxcross/target/bin:$PATH" \
+CC=o64-clang \
+CXX=o64-clang++ \
+cargo build --target x86_64-apple-darwin
 ```
 
 This uses `o64-clang` and `o64-clang++` in `osxcross/target/bin`.
@@ -93,7 +104,11 @@ Now git2 compiles, but fails to link! This is due to the fact that libz-sys atte
 Luckily, libz-sys supports building its own statically linked version of zlib. According to [libz-sys' `build.rs`](https://github.com/rust-lang/libz-sys/blob/master/build.rs#L25), if `LIBZ_SYS_STATIC=1` is set in the environment a bundled version of zlib will be built. Because we set `CC` and `CXX`, this statically linked code will be compiled for a macOS target. The full build command ends up looking like this:
 
 ```bash
-PATH="$(pwd)/osxcross/target/bin:$PATH" CC=o64-clang CXX=o64-clang++ LIBZ_SYS_STATIC=1 cargo build --target x86_64-apple-darwin
+PATH="$(pwd)/osxcross/target/bin:$PATH" \
+CC=o64-clang \
+CXX=o64-clang++ \
+LIBZ_SYS_STATIC=1 \
+cargo build --target x86_64-apple-darwin
 ```
 
 ## CI
