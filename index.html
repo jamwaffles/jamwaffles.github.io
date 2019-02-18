@@ -6,9 +6,9 @@ body_class: "home-template user"
 
 <div class="page-content">
   <div class="wrapper">
-    <div class="home">
+    <div class="list">
       {% for post in site.posts %}
-      <article class="{%comment%}post_class{%endcomment%}">
+      <article class="list__post">
 
           {% if post.image %}
               <div class="image-holder show">
@@ -18,17 +18,15 @@ body_class: "home-template user"
             </div>
           {% endif %}
 
-          <div class="meta">
+          <header>
+            <h1><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h1>
+
             <time datetime="{{ post.date | date: '%Y-%m-%d' }}">
               <a href="{{ post.url | prepend: site.baseurl }}">{{ post.date | date: "%B %-d, %Y" }}</a>
             </time>
-          </div>
-
-          <header>
-              <h1><a href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h1>
           </header>
 
-          <div class="text">
+          <div class="list__post__excerpt">
               <p>{{ post.excerpt }}</p>
               <a href="{{ post.url | prepend: site.baseurl }}" class="readmore">Continue Reading</a>
           </div>

@@ -1,0 +1,31 @@
+.list {
+    &__post {
+        + article {
+            margin-top: @spacing;
+            .divider;
+        }
+
+        .image-holder {
+            margin-top: @spacing;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: @spacing;
+
+            h1 {
+                margin: 0;
+            }
+        }
+    }
+
+    &__post {
+        &__excerpt {
+            h1, h2, h3, h4, h5, h5 {
+                display: none;
+            }
+        }
+    }
+}

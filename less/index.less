@@ -1,3 +1,64 @@
+@import './variables.less';
+@import './header.less';
+@import './list.less';
+@import './highlight.less';
+
+body, html {
+    font-size: 12pt;
+    font-family: "Open Sans", "Helvetica Neue", "Helvetica-Neue", helvetica, sans-serif;
+    color: @font-color;
+    background-color: @bg-color;
+}
+
 body {
-    background: blue;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Oswald;
+    padding: 0;
+    margin: @spacing 0;
+}
+
+h1, h1 > a {
+    color: @red;
+}
+
+h2, h2 > a {
+    color: @blue-dark;
+}
+
+h3, h4, h5, h6 {
+    color: @blue-light;
+
+    & > a {
+        color: @blue-light;
+    }
+}
+
+a {
+    text-decoration: none;
+    color: @red;
+
+    &:hover {
+        color: lighten(@red, 10%);
+    }
+
+    &:visited {
+        color: @red;
+    }
+}
+
+hr {
+    .divider;
+}
+
+img {
+    max-width: 100%;
+}
+
+.page-content {
+    max-width: 800px;
 }
