@@ -2,6 +2,8 @@
 
 set -e
 
-yarn less
+if ! git diff --quiet --cached less/; then
+    yarn less
 
-git add css/
+    git update-index --add css/
+fi
