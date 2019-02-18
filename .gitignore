@@ -3,3 +3,4 @@ _site/
 .DS_Store
 elm-stuff
 _drafts/**/elm-package.json
+node_modules
