@@ -30,7 +30,6 @@ Change the following registers to make the VFD listen on the RS-485 bus for cont
 - **PD164** `3` (baud rate - 38400 baud)
 - **PD165** `3` (communication data method to 8N1 RTU)
 
-<<<<<<< HEAD
 Check your VFD manual for other values for these registers. I've included a PDF of the manual [here]({{ site.files }}/hy-vfd-manual.pdf) if you've lost the one included with your VFD.
 
 <!-- - My spindle would go no lower than 3000 RPM. Change the [whichever the lowest freq register is] value to [new value]. I can get as low as 600 RPM now, not bothered about going lower. TODO: Add this note to the register configs in the VFD config block -->
