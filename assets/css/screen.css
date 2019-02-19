@@ -304,6 +304,7 @@ pre code {
   }
 }
 .post__feature-image {
+  max-height: 50vh;
   background-size: cover;
   background-position: center center;
 }
