@@ -175,7 +175,7 @@ Here we:
 
 ❸ Don't need any state from the store, so we can just return an empty object.
 
-This component won't work without a Redux store. We can add that by wrapping it in a `Provider` component from [`react-redux`](npmjs.com/package/react-redux). An example application might look like this:
+This component won't work without a Redux store. We can add that by wrapping it in a `Provider` component from [`react-redux`](https://npmjs.com/package/react-redux). An example application might look like this:
 
 ```javascript
 // index.jsx

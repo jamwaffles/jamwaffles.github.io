@@ -86,7 +86,7 @@ Now you should have a binary in `target/x86_64-apple-darwin/[debug|release]` whi
 
 You can stop here if none of your crates require any C bindings to function. Quite a few of them do, so read on if you run into compilation or linking errors.
 
-The project I'm cross compiling uses the [git2](crates.io/crates/git2) crate which has [libz-sys](https://github.com/rust-lang/libz-sys/) in its dependency tree. Unfortunately this means digging out a C compiler. The build uses the _host_ system compiler by default, so the architectures for the final binary (target arch) and these linked libraries (host arch) don't match up.
+The project I'm cross compiling uses the [git2](https://crates.io/crates/git2) crate which has [libz-sys](https://github.com/rust-lang/libz-sys/) in its dependency tree. Unfortunately this means digging out a C compiler. The build uses the _host_ system compiler by default, so the architectures for the final binary (target arch) and these linked libraries (host arch) don't match up.
 
 The solution to this is to set the `CC` and `CXX` environment variables in our build command:
 
