@@ -17,6 +17,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    @media screen and (max-width: @site-width) {
+        display: block;
+    }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -73,4 +77,5 @@ pre, code {
 
 .page-content {
     max-width: @site-width;
+    padding: 0 @padding;
 }
