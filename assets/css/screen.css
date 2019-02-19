@@ -11,6 +11,9 @@
   border: none;
   border-top: 1px solid #ddd;
 }
+.header {
+  padding: 0 10px;
+}
 .header__logo {
   display: flex;
   align-items: center;
@@ -38,6 +41,15 @@
 .list__post header h1 {
   margin: 0;
 }
+@media screen and (max-width: 800px) {
+  .list__post header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .list__post header time {
+    margin-top: 20px;
+  }
+}
 .list__post__excerpt h1,
 .list__post__excerpt h2,
 .list__post__excerpt h3,
@@ -52,17 +64,19 @@ p code {
   padding: 2px 4px;
   border-radius: 3px;
 }
-div.highlight {
+pre {
   margin: 20px 0;
-  padding: 10px;
   background-color: #ddd;
   border-radius: 4px;
-  overflow: auto;
-}
-pre.highlight {
+  overflow-x: auto;
   tab-size: 4;
   margin: 0;
+  max-width: 100%;
   line-height: 1.3em;
+}
+pre code {
+  display: inline-block;
+  padding: 10px;
 }
 @media (max-width: 480px) {
   .highlight {
@@ -265,18 +279,36 @@ pre.highlight {
 .post {
   max-width: 800px;
 }
+.post > header {
+  margin-top: 20px;
+}
+@media screen and (max-width: 800px) {
+  .post > header {
+    padding: 0 15px;
+  }
+}
 .post__title {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+@media screen and (max-width: 800px) {
+  .post__title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media screen and (max-width: 800px) {
+  .post__text {
+    padding: 0 15px;
+  }
+}
 .post__feature-image {
-  min-height: 50vh;
-  max-height: 500px;
-  width: 100%;
   background-size: cover;
   background-position: center center;
-  margin-bottom: 20px;
+}
+.post__feature-image img {
+  visibility: hidden;
 }
 body,
 html {
@@ -291,6 +323,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+@media screen and (max-width: 800px) {
+  body {
+    display: block;
+  }
 }
 h1,
 h2,
@@ -349,4 +386,5 @@ code {
 }
 .page-content {
   max-width: 800px;
+  padding: 0 15px;
 }

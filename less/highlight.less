@@ -20,13 +20,18 @@ p {
 
 pre {
     margin: @spacing 0;
-    padding: @padding;
     background-color: @grey-light;
     border-radius: @border-radius-small;
-    overflow: auto;
+    overflow-x: auto;
     tab-size: 4;
     margin: 0;
+    max-width: 100%;
     line-height: 1.3em;
+
+    code {
+        display: inline-block;
+        padding: @padding;
+    }
 }
 
 @media (max-width: 480px) {
