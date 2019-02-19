@@ -3,7 +3,9 @@ layout: default
 body_class: post-template
 ---
 {% if page.image %}
-<div class="post__feature-image" style="background-image: url('{{ site.images }}/{{ page.image }}')"></div>
+<div class="post__feature-image" style="background-image: url('{{ site.images }}/{{ page.image }}')">
+  <img src='{{ site.images }}/{{ page.image }}' />
+</div>
 {% endif %}
 
 <article role="main" class="post {% if page.image %}image{% endif %}">

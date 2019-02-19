@@ -1,22 +1,37 @@
 .post {
     max-width: @site-width;
 
+    > header {
+        margin-top: @spacing;
+
+        @media screen and (max-width: @site-width) {
+            padding: 0 @screen-padding;
+        }
+    }
+
     &__title {
         display: flex;
         align-items: center;
         justify-content: space-between;
+
+        @media screen and (max-width: @site-width) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
     }
 
     &__text {
-
+        @media screen and (max-width: @site-width) {
+            padding: 0 @screen-padding;
+        }
     }
 
     &__feature-image {
-        min-height: 50vh;
-        max-height: 500px;
-        width: 100%;
         background-size: cover;
         background-position: center center;
-        margin-bottom: @spacing;
+
+        img {
+            visibility: hidden;
+        }
     }
 }
