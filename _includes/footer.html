@@ -1,29 +1,28 @@
-<footer role="contentinfo" class='post-footer'>
+<footer role="contentinfo" class='footer'>
     <div class="inner">
-        <div class="vcard">
-          <a href="{{ site.baseurl }}/feed.xml" id="btn_feed" class="btn" title="Feed" target="_blank">
-                <span aria-hidden="true" data-icon=")"></span>
-                <strong>Feed</strong>
-            </a>
-
+        <div class="footer__bio">
             {% if site.logo %}
-            <a href="{{ site.baseurl }}" class="photo circle">
-              <span style="background-image: url('{{ site.images }}/{{ site.logo }}');">
-                <img src="{{ site.images }}/{{ site.logo }}" alt="{{ site.title }}"/>
-              </span>
-            </a>
+            <div class="footer__logo">
+                <a href="{{ site.url }}" >
+                    <img src="{{ site.images }}/{{ site.logo }}" alt="{{ site.title }}" />
+                </a>
+            </div>
             {% endif %}
 
-            <div class="details">
-                <h4><a href="{{ site.url }}" class="url n">{{ site.title }}</a></h4>
-                <a href="{{ site.baseurl | prepend: site.url }}" class="js-remove-domain-schema">{{ site.url }}{{ site.baseurl }}</a><br>
-                <span>Published with <a href="https://jekyllrb.com">Jekyll</a></span>
-            </div>
-        </div>
-        <div id="user_bio">
-            <div class="inner">
+            <div class="footer__bio__text">
                 {{ site.description }}
             </div>
+        </div>
+
+        <div class="footer__links">
+            <a href="{{ site.url }}">{{ site.title }}</a>
+
+            <a href="{{ site.baseurl }}/feed.xml" id="btn_feed" class="btn" title="Feed" target="_blank">
+                <span aria-hidden="true" data-icon=")"></span>
+                <strong>RSS Feed</strong>
+            </a>
+
+            <span>Published with <a href="https://jekyllrb.com">Jekyll</a></span>
         </div>
     </div>
 </footer>
