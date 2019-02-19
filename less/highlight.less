@@ -30,12 +30,24 @@ pre {
     max-width: 100%;
     line-height: 1.3em;
 
+    @media screen and (max-width: @site-width) {
+        tab-size: 2;
+        -moz-tab-size: 2;
+        -o-tab-size: 2;
+    }
+
     code {
         display: inline-block;
         padding: @padding;
         tab-size: 4;
         -moz-tab-size: 4;
         -o-tab-size: 4;
+
+        @media screen and (max-width: @site-width) {
+            tab-size: 2;
+            -moz-tab-size: 2;
+            -o-tab-size: 2;
+        }
     }
 }
 
