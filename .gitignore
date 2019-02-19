@@ -3,4 +3,7 @@ _site/
 .DS_Store
 elm-stuff
 _drafts/**/elm-package.json
+_site
+.sass-cache
+.jekyll-metadata
 node_modules

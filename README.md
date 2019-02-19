@@ -1,2 +1,3 @@
-# jamwaffles.github.io
+# [wapl.es](https://wapl.es)
+
 Bloog
