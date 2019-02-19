@@ -70,6 +70,8 @@ pre {
   border-radius: 4px;
   overflow-x: auto;
   tab-size: 4;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
   margin: 0;
   max-width: 100%;
   line-height: 1.3em;
@@ -77,6 +79,9 @@ pre {
 pre code {
   display: inline-block;
   padding: 10px;
+  tab-size: 4;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
 }
 @media (max-width: 480px) {
   .highlight {
