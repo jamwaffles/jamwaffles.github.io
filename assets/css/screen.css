@@ -76,12 +76,26 @@ pre {
   max-width: 100%;
   line-height: 1.3em;
 }
+@media screen and (max-width: 800px) {
+  pre {
+    tab-size: 2;
+    -moz-tab-size: 2;
+    -o-tab-size: 2;
+  }
+}
 pre code {
   display: inline-block;
   padding: 10px;
   tab-size: 4;
   -moz-tab-size: 4;
   -o-tab-size: 4;
+}
+@media screen and (max-width: 800px) {
+  pre code {
+    tab-size: 2;
+    -moz-tab-size: 2;
+    -o-tab-size: 2;
+  }
 }
 @media (max-width: 480px) {
   .highlight {
