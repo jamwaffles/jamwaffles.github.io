@@ -327,6 +327,7 @@ pre code {
   flex-direction: row;
   align-items: center;
   margin-top: 20px;
+  justify-content: center;
 }
 .footer__links > * {
   padding: 5px;
@@ -349,6 +350,7 @@ pre code {
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: center;
 }
 @media screen and (max-width: 800px) {
   .footer__bio {
