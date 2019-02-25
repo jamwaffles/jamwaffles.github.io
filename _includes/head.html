@@ -1,9 +1,10 @@
 <head>
-  {% comment %} Document Settings {% endcomment %}
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-  {% comment %} Page Meta {% endcomment %}
+  <link href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald" rel="stylesheet">
+  <link rel="stylesheet" href="{{ site.assets }}/css/screen.css">
+
   <title>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
   <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
 
@@ -27,12 +28,6 @@
   <meta name="msapplication-TileImage" content="{{ site.assets }}/favicon/ms-icon-144x144.png">
   <meta name="theme-color" content="#eeeeee">
 
-
-  {% comment %} Styles n Scripts {% endcomment %}
-  <link href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald" rel="stylesheet">
-  <link rel="stylesheet" href="{{ site.assets }}/css/screen.css">
-
-  {% comment %} Additional header setup from Jekyll {% endcomment %}
   <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
   <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ "/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
 
