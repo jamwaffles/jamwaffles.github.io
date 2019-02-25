@@ -8,10 +8,12 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "less": "lessc less/index.less assets/css/screen.css"
+    "less": "lessc less/index.less assets/css/screen.css",
+    "less:prod": "lessc less/index.less --clean-css='--s1 --advanced' assets/css/screen.css"
   },
   "devDependencies": {
     "git-hooks": "^1.1.10",
-    "less": "^3.9.0"
+    "less": "^3.9.0",
+    "less-plugin-clean-css": "^1.5.1"
   }
 }
