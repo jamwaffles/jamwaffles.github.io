@@ -13,7 +13,11 @@ body_class: "home-template user"
           {% if post.image %}
               <div class="image-holder show">
                 <a href="{{ post.url | prepend: site.baseurl }}" class="inner">
-                  <img srcset="{{ site.header-images }}/{{ post.image | replace: '.jpg', '-800.jpg' }}, {{ site.header-images }}/{{ post.image | replace: '.jpg', '-1600.jpg' }} 2x" alt="{{ post.title }} header image.">
+                  <picture>
+                    <source media="(min-width: 800px)" srcset="{{ site.header-images }}/{{ post.image | replace: '.jpg', '-800.jpg' }}, {{ site.header-images }}/{{ post.image | replace: '.jpg', '-1600.jpg' }} 2x">
+                    <source media="(max-width: 640px)" srcset="{{ site.header-images }}/{{ post.image | replace: '.jpg', '-640.jpg' }}, {{ site.header-images }}/{{ post.image | replace: '.jpg', '-1280.jpg' }} 2x">
+                    <img class="post__feature-image__inner" src="{{ site.header-images }}/{{ post.image }}" alt="Blog post header image decoration.">
+                  </picture>
               </a>
             </div>
           {% endif %}
