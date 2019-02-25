@@ -16,7 +16,7 @@ categories: linux
 1. You may need to use an _App Password_ in Office 365 if required by your domain admin. If so, open up your account settings at <https://portal.office.com/account/#security> and navigate to **Security & Privacy** and click **Create and manage app passwords**. Click **Create**, give the password a descriptive name. Once created, copy the generated password to your clipboard.
 1. Add your details like the following:
 
-	![Office365 login details](/content/images/mint-o365-details.png)
+	![Office365 login details](/assets/images/mint-o365-details.png)
 
 	Enter your email address and password as usual. Under **Custom**, make sure **Username** is your email address, and **Server** is `outlook.office365.com`.
 1. Hit `Connect`.

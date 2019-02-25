@@ -10,7 +10,7 @@ Quick tip: if you're looking for higher maximum speeds with your bipolar stepper
 
 _Header photo by [Yung Chang](https://unsplash.com/@yungnoma)_
 
-![Parallel wiring diagram](/content/images/bipolar-parallel.jpg)
+![Parallel wiring diagram](/assets/images/bipolar-parallel.jpg)
 
 <sup>*Credit: [National Instruments](http://digital.ni.com/public.nsf/allkb/B1CC4C64ABBC7D3C86257BC70017B9E2)*</sup>
 

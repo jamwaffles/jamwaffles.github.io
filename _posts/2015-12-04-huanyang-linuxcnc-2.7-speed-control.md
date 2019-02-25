@@ -91,7 +91,7 @@ This panel is a stripped down version of the default supplied in the original hy
 
 All I need from the panel is the spindle RPM, a spindle-at-speed indicator and a Modbus comm OK light. It currently looks like this (panel on the right):
 
-![LinuxCNC with custom Huanyang panel screenshot](/content/images/linuxcnc-spindle.png)
+![LinuxCNC with custom Huanyang panel screenshot](/assets/images/linuxcnc-spindle.png)
 
 And here's the PyVCP XML to generate it:
 
