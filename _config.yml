@@ -24,6 +24,7 @@ github_username:  jamwaffles
 
 assets: /assets
 images: /assets/images
+header-images: /assets/images/headers-resized
 files: /assets/files
 
 # Build settings
