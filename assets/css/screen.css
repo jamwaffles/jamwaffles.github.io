@@ -24,6 +24,20 @@
   margin-right: 20px;
   display: inline-block;
 }
+.header__links {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+.header__links__link {
+  display: block;
+}
+.header__links__link > svg {
+  display: inline-block;
+  vertical-align: baseline;
+  max-width: 1em;
+  max-height: 1em;
+}
 .list__post + article {
   margin-top: 20px;
   border: none;

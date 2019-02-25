@@ -12,4 +12,21 @@
             display: inline-block;
         }
     }
+
+    &__links {
+        margin-top: @spacing;
+        display: flex;
+        justify-content: center;
+
+        &__link {
+            display: block;
+
+            > svg {
+                display: inline-block;
+                vertical-align: baseline;
+                max-width: 1em;
+                max-height: 1em;
+            }
+        }
+    }
 }
