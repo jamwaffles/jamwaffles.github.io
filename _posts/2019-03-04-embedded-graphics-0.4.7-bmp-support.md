@@ -6,7 +6,7 @@ categories: rust
 image: tinybmp-header.jpg
 ---
 
-[Embedded graphics](https://crates.io/crates/embedded-graphics) 0.4.7 has been released, along with a new sister crate, [tinybmp](https://crates.io/tinybmp)! TinyBMP aims to parse BMP-format image data using no dynamic allocations. It targets embedded environments but can be used in any place a small BMP parser is required. Thanks to TinyBMP, Embedded Graphics now supports loading this simple image format. The header photo was made using Embedded Graphics and the [SSD1331 driver](https://crates.io/crates/ssd1331) in pure Rust. In this post, I'll talk through how the BMP file is parsed in no_std environments with [nom](https://crates.io/crates/nom) and how to get BMP images working with embedded_graphics.
+[Embedded graphics](https://crates.io/crates/embedded-graphics) 0.4.7 has been released, along with a new sister crate, [tinybmp](https://crates.io/crates/tinybmp)! TinyBMP aims to parse BMP-format image data using no dynamic allocations. It targets embedded environments but can be used in any place a small BMP parser is required. Thanks to TinyBMP, Embedded Graphics now supports loading this simple image format. The header photo was made using Embedded Graphics and the [SSD1331 driver](https://crates.io/crates/ssd1331) in pure Rust. In this post, I'll talk through how the BMP file is parsed in no_std environments with [nom](https://crates.io/crates/nom) and how to get BMP images working with embedded_graphics.
 
 ## BMP format
 
