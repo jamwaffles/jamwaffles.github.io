@@ -44,14 +44,14 @@ Typescript spews error `TS2339` when it encounters the lowercase `<url>`, `<urls
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      url: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>;
-      loc: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>;
-      lastmod: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>;
-      priority: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>;
-      urlset: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>;
+      url: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      loc: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      lastmod: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      priority: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      urlset: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     }
   }
 }
 ```
 
-Naturally you'll have to add any other tags you use to the list above. This fixes the Typescript errors, so now I can continue on my merry Typescripty way.
+This works for Typescript 3.3.3. As far as I know, this doesn't blow away React's normal DOM element type checking. Naturally you'll have to add any other tags you use to the list above. This fixes the Typescript errors, so now I can continue on my merry Typescripty way.
