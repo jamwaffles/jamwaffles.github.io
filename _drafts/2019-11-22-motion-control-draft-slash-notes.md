@@ -34,3 +34,55 @@ An off-line trajectory planner that converts a path into something that can be q
 1. Usage in jog mode
 1. Add circular blends(?)
 1. Add support for arcs in the input
+
+# Blog post notes
+
+- Target web assembly and use it to draw animated demos on `<canvas>`
+
+# Part 1
+
+## About the series
+
+- From [this paper](TODO)
+- Talk about series in general - start simple, end up with jerk limited complete traj
+- Targetting step/dir motion control of 3+ axis CNC milling machines or 3D printer
+- Realtime so we can control things like max velocity and feed rate override
+- Quick aside on Nalgebra and multiple dimensions - paper describes one at a time, we'll use 3 dimensions for a basic cartesian "robot" (CNC) but should be expandable up to 9 or whatever Nalgebra allows
+- Targetting WASM and no-std - examples in this series will use the code we write
+
+## None-jerk Algorithm and calculations
+
+- Talk through equations in the one-dimensional case and what we need to compute
+  - Copypasta first equation from paper `x(t) = ...` gonna need [Mathjax](https://www.mathjax.org/) with Mathml input.
+  - Break this down into the three `t` sections, copypasta those equations out too
+  - Paste section `A.` (one dimensional case) and talk through calculating the `delta(t)` variables and shit. Trajectory can also be "wedge-shaped" if time is too short. Can mostly gloss over `d` - this is just gonna be `-1.0` or `1.0`
+- Multi-dimensional case
+  - We now need to work in multiple dimensions
+  - Mention but skip bits of paper that talks about simple scaling
+  - Follow through rest of paper until section (jerk)
+- I'll talk about the jerk limited bit later
+
+# Part 1a
+
+- Segue into logging/plotting values - try and recreate profile graph from paper with logging/gnuplot
+
+# Part 2
+
+## Starting out
+
+- This first part will only talk about an acceleration-limited profile (no jerk yet)
+- Single straight line only, end velocity and acceleration are zero. We'll change this later to join linear segments together
+
+## Implementation
+
+- Struct with methods on it (will convert into trait later to cater for different segment profiles). Unlike above which mirrors paper order, this should mirror sensible implementation order
+
+  - `from_waypoints(start, end)` - we'll calculate the segment times here
+  - `position(&self, max_acc, max_vel, time)` - we'll fill in the body later
+  - `velicity(max_acc, max_vel, time)` - I'll need to figure this out as the derivative of position. Talk about position being useless to send to an external drive
+
+- Cleanup: use a struct instead of `(max_acc, max_vel, time)`
+
+# Part _N_
+
+- Expand part 1 to work with multiple straight line segments - create a `Trajectory`
