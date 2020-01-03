@@ -37,7 +37,7 @@ An off-line trajectory planner that converts a path into something that can be q
 
 # Blog post notes
 
-- Target web assembly and use it to draw animated demos on `<canvas>`
+- Target web assembly and use it to draw animated demos on `<canvas>` - I can still use std here
 
 # Part 1
 
@@ -62,16 +62,21 @@ An off-line trajectory planner that converts a path into something that can be q
   - Follow through rest of paper until section (jerk)
 - I'll talk about the jerk limited bit later
 
-# Part 1a
-
-- Segue into logging/plotting values - try and recreate profile graph from paper with logging/gnuplot
-
 # Part 2
 
 ## Starting out
 
+- Using `f64` because JS uses 64 bit floats under the hood, and because WASM
 - This first part will only talk about an acceleration-limited profile (no jerk yet)
 - Single straight line only, end velocity and acceleration are zero. We'll change this later to join linear segments together
+
+# Part 2a
+
+Put in same page as part 2 if it's not too long
+
+## Visual aids
+
+- Segue into logging/plotting values - try and recreate profile graph from paper with logging/gnuplot
 
 ## Implementation
 
@@ -86,3 +91,17 @@ An off-line trajectory planner that converts a path into something that can be q
 # Part _N_
 
 - Expand part 1 to work with multiple straight line segments - create a `Trajectory`
+
+# Part _N + 1_
+
+- Get freaky deaky (generics) - change from `f64` to Nalgebra's weird generics thing so we can use `f32` and put `f64` behind a feature flag `double-precision` or something. This could also be enabled by the `wasm` flag, same as `no_std` or something?
+
+# Part _last_
+
+- Port to `no_std` because I'm a massochist
+
+# Conclusion
+
+Probably before **Part _N_**
+
+- Talk about no_std/WASM limitations
