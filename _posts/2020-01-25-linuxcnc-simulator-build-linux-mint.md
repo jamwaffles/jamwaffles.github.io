@@ -27,7 +27,9 @@ apt install \
     tclx \
     python-tk \
     libboost-python-dev \
-    libxmu-dev
+    libxmu-dev \
+    libudev-dev \
+    libusb-1.0-0-dev
 ```
 
 ## Build
