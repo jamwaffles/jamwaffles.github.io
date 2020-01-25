@@ -37,6 +37,7 @@ The following steps are a condensed version of the [official build docs](http://
 ```bash
 git clone https://github.com/LinuxCNC/linuxcnc.git
 cd linuxcnc/src
+./autogen.sh
 ./configure --with-realtime=uspace --enable-non-distributable=yes
 make -j12
 cd ..
