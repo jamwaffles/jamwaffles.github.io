@@ -17,19 +17,25 @@ A quick guide on how to set up a LinuxCNC simulator on Linux Mint. The LinuxCNC 
 
 ```bash
 apt install \
-    libmodbus-dev \
-    libgtk2.0-dev \
-    yapps2 \
-    intltool \
-    tk-dev \
     bwidget \
-    libtk-img \
-    tclx \
-    python-tk \
+    intltool \
+    kmod \
     libboost-python-dev \
-    libxmu-dev \
+    libglu-dev \
+    libgtk2.0-dev \
+    libmodbus-dev \
+    libtk-img \
     libudev-dev \
-    libusb-1.0-0-dev
+    libusb-1.0-0-dev \
+    libx11-dev \
+    libxinerama-dev \
+    libxmu-dev \
+    mesa-common-dev \
+    python \
+    python-tk \
+    tclx \
+    tk-dev \
+    yapps2
 ```
 
 ## Build
@@ -40,7 +46,11 @@ The following steps are a condensed version of the [official build docs](http://
 git clone https://github.com/LinuxCNC/linuxcnc.git
 cd linuxcnc/src
 ./autogen.sh
-./configure --with-realtime=uspace --enable-non-distributable=yes
+./configure \
+  --with-realtime=uspace \
+  --enable-non-distributable=yes \
+  --disable-userspace-pci \
+  --disable-check-runtime-deps
 make -j12
 cd ..
 ./scripts/linuxcnc
