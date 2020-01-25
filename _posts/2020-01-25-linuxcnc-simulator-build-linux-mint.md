@@ -38,6 +38,13 @@ apt install \
     yapps2
 ```
 
+There might be an issue finding `yapps` where it's installed as `yapps2`. In this case, remove the `yapps2` line from above, and run this as well:
+
+```bash
+apt install python-pip
+pip install yapps
+```
+
 ## Build
 
 The following steps are a condensed version of the [official build docs](http://linuxcnc.org/docs/devel/html/code/building-linuxcnc.html#_non_realtime).
