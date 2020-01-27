@@ -5,84 +5,117 @@
 @import './post.less';
 @import './footer.less';
 
-body, html {
-    font-size: 12pt;
-    font-family: "Open Sans", "Helvetica Neue", "Helvetica-Neue", helvetica, sans-serif;
-    color: @font-color;
-    background-color: @bg-color;
-    padding: 0;
-    margin: 0;
+body,
+html {
+  font-size: 12pt;
+  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica-Neue', helvetica,
+    sans-serif;
+  color: @font-color;
+  background-color: @bg-color;
+  padding: 0;
+  margin: 0;
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    @media screen and (max-width: @site-width) {
-        display: block;
-    }
+  @media screen and (max-width: @site-width) {
+    display: block;
+  }
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: Oswald;
-    padding: 0;
-    margin: @spacing 0;
-    font-weight: normal;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Oswald;
+  padding: 0;
+  margin: @spacing 0;
+  font-weight: normal;
 
-    > img {
-        font-size: 12px !important;
-        font-family: sans-serif;
-    }
+  > img {
+    font-size: 12px !important;
+    font-family: sans-serif;
+  }
 }
 
-h1, h1 > a {
-    color: @red;
+h1,
+h1 > a {
+  color: @red;
 }
 
-h2, h2 > a {
-    color: @blue-dark;
+h2,
+h2 > a {
+  color: @blue-dark;
 }
 
-h3, h4, h5, h6 {
+h3,
+h4,
+h5,
+h6 {
+  color: @blue-light;
+
+  & > a {
     color: @blue-light;
-
-    & > a {
-        color: @blue-light;
-    }
+  }
 }
 
 a {
-    text-decoration: none;
+  text-decoration: none;
+  color: @red;
+
+  code {
     color: @red;
+  }
 
-    code {
-        color: @red;
-    }
+  &:hover {
+    color: lighten(@red, 10%);
+    text-decoration: underline;
+  }
 
-    &:hover {
-        color: lighten(@red, 10%);
-        text-decoration: underline;
-    }
-
-    &:visited {
-        color: @red;
-    }
+  &:visited {
+    color: @red;
+  }
 }
 
 hr {
-    .divider;
+  .divider;
 }
 
 img {
-    max-width: 100%;
+  max-width: 100%;
 }
 
-pre, code {
-    .font-mono;
+pre,
+code {
+  .font-mono;
+}
+
+blockquote {
+  border-left: 3px solid @blue-light;
+  margin: 0;
+  padding: 0;
+  padding-left: 15px;
+  position: relative;
+
+  @media screen and (min-width: @site-width + 1) {
+    margin-left: 30px;
+
+    &:before {
+      content: '🤔';
+      position: absolute;
+      left: -30px;
+      top: 0;
+      font-size: 18px;
+    }
+  }
 }
 
 .page-content {
-    max-width: @site-width;
-    padding: 0 @screen-padding;
+  max-width: @site-width;
+  padding: 0 @screen-padding;
 }
