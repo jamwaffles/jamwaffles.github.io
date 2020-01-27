@@ -106,8 +106,6 @@ At this point in C comp land, you'd have to remember to call `hal_exit`. Not too
 If the above is difficult to follow, here's the complete final `src/main.rs`:
 
 ```rust
-//! Create a component that adds some pin types
-
 use linuxcnc_hal::{hal_pin::HalPinF64, HalComponentBuilder};
 use std::{
     error::Error,
