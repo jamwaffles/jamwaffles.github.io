@@ -20,7 +20,7 @@
 
     &__link {
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
       align-items: center;
 
       @media screen and (min-width: 480px) {
@@ -29,8 +29,9 @@
       }
 
       &__text {
-        font-size: 14px;
+        font-size: 12px;
         text-transform: uppercase;
+        text-align: center;
 
         @media screen and (min-width: 480px) {
           font-size: inherit;
@@ -41,12 +42,21 @@
       > svg {
         display: inline-block;
         vertical-align: middle;
-        max-width: 1em;
-        max-height: 1em;
+        max-width: 1.5em;
+        max-height: 1.5em;
+
+        @media screen and (min-width: 480px) {
+          max-width: 1em;
+          max-height: 1em;
+        }
       }
 
       + .header__links__link {
         margin-left: 10px;
+
+        @media screen and (min-width: 480px + 1) {
+          margin-left: 20px;
+        }
       }
     }
   }

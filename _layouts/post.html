@@ -3,6 +3,9 @@ layout: default
 body_class: post-template
 ---
 
+<div class="post__header {% if page.image %}post__header--image{% endif %}">
+  {% include header.html %}
+</div>
 {% if page.image %}
 <div class="post__feature-image">
   <picture>
@@ -45,7 +48,7 @@ body_class: post-template
 
 <article role="main" class="post {% if page.image %}image{% endif %}">
   <header>
-    <a href="{{ site.baseurl }}/" id="home_link">« Home</a>
+    <a href="{{ site.baseurl }}/" id="home_link">« Posts list</a>
     <div class="post__title">
       <h1>{{ page.title }}</h1>
 

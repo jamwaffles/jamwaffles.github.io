@@ -1,6 +1,15 @@
 .post {
   max-width: @site-width;
 
+  &__header {
+    &--image {
+      hr {
+        // Hide line between header and image
+        border-color: transparent;
+      }
+    }
+  }
+
   > header {
     margin-top: @spacing;
 
