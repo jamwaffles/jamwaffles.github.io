@@ -16,7 +16,11 @@
   &__links {
     margin-top: @spacing;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+
+    @media screen and (min-width: 480px) {
+      justify-content: center;
+    }
 
     &__link {
       display: flex;
@@ -24,8 +28,9 @@
       align-items: center;
 
       @media screen and (min-width: 480px) {
+        // flex-direction: row;
         display: block;
-        flex-direction: row;
+        white-space: nowrap;
       }
 
       &__text {
@@ -40,7 +45,7 @@
       }
 
       > svg {
-        display: inline-block;
+        // display: block;
         vertical-align: middle;
         max-width: 1.5em;
         max-height: 1.5em;
