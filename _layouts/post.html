@@ -2,40 +2,74 @@
 layout: default
 body_class: post-template
 ---
+
 {% if page.image %}
 <div class="post__feature-image">
   <picture>
-    <source media="(min-width: 2560px)" srcset="{{ site.header-images }}/{{ page.image }}">
-    <source media="(min-width: 1920px)" srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-1920.jpg' }}, {{ site.header-images }}/{{ page.image }} 2x">
-    <source media="(min-width: 1600px)" srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-1600.jpg' }}, {{ site.header-images }}/{{ page.image }} 2x">
-    <source media="(min-width: 1280px)" srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-1280.jpg' }}, {{ site.header-images }}/{{ page.image }} 2x">
-    <source media="(min-width: 960px)" srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-960.jpg' }}, {{ site.header-images }}/{{ page.image | replace: '.jpg', '-1920.jpg' }} 2x">
-    <source media="(min-width: 800px)" srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-800.jpg' }}, {{ site.header-images }}/{{ page.image | replace: '.jpg', '-1600.jpg' }} 2x">
-    <source media="(max-width: 640px)" srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-640.jpg' }}, {{ site.header-images }}/{{ page.image | replace: '.jpg', '-1280.jpg' }} 2x">
-    <img class="post__feature-image__inner" src="{{ site.header-images }}/{{ page.image }}" alt="Blog post header image decoration.">
+    <source
+      media="(min-width: 2560px)"
+      srcset="{{ site.header-images }}/{{ page.image }}"
+    />
+    <source
+      media="(min-width: 1920px)"
+      srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-1920.jpg' }}, {{ site.header-images }}/{{ page.image }} 2x"
+    />
+    <source
+      media="(min-width: 1600px)"
+      srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-1600.jpg' }}, {{ site.header-images }}/{{ page.image }} 2x"
+    />
+    <source
+      media="(min-width: 1280px)"
+      srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-1280.jpg' }}, {{ site.header-images }}/{{ page.image }} 2x"
+    />
+    <source
+      media="(min-width: 960px)"
+      srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-960.jpg' }}, {{ site.header-images }}/{{ page.image | replace: '.jpg', '-1920.jpg' }} 2x"
+    />
+    <source
+      media="(min-width: 800px)"
+      srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-800.jpg' }}, {{ site.header-images }}/{{ page.image | replace: '.jpg', '-1600.jpg' }} 2x"
+    />
+    <source
+      media="(max-width: 640px)"
+      srcset="{{ site.header-images }}/{{ page.image | replace: '.jpg', '-640.jpg' }}, {{ site.header-images }}/{{ page.image | replace: '.jpg', '-1280.jpg' }} 2x"
+    />
+    <img
+      class="post__feature-image__inner"
+      src="{{ site.header-images }}/{{ page.image }}"
+      alt="Blog post header image decoration."
+    />
   </picture>
 </div>
 {% endif %}
 
 <article role="main" class="post {% if page.image %}image{% endif %}">
-    <header>
-      <a href="{{ site.baseurl }}/" id="home_link">« Home</a>
-      <div class="post__title">
-        <h1>{{ page.title }}</h1>
+  <header>
+    <a href="{{ site.baseurl }}/" id="home_link">« Home</a>
+    <div class="post__title">
+      <h1>{{ page.title }}</h1>
 
-        <time datetime="{{ page.date | date:'%Y-%m-%d' }}"><a href="{{ page.url }}">{{ page.date | date: "%B %d, %Y" }}</a></time>
-      </div>
-    </header>
-
-    <div class="post__text" id="js-post-content">
-        {{ content }}
-
-        <p>
-          <a href="http://twitter.com/share?text={{ page.title | xml_encode }}&url={{ page.url | prepend: site.baseurl }}" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;" id="btn_comment" class="btn" target="_blank">
-            <span aria-hidden="true" data-icon="C"></span> Comment on The Twittuhs ↗
-          </a>
-        </p>
+      <time datetime="{{ page.date | date:'%Y-%m-%d' }}"
+        ><a href="{{ page.url }}">{{ page.date | date: "%B %d, %Y" }}</a></time
+      >
     </div>
+  </header>
 
-    {% include footer.html %}
+  <div class="post__text" id="js-post-content">
+    {{ content }}
+
+    <p>
+      <a
+        href="http://twitter.com/share?text={{ page.title | xml_encode }}&url={{ page.url | prepend: site.baseurl }}"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;"
+        id="btn_comment"
+        class="btn"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon="C"></span> Comment on The Twittuhs ↗
+      </a>
+    </p>
+  </div>
+
+  {% include footer.html %}
 </article>
