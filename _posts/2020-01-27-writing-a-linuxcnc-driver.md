@@ -73,7 +73,7 @@ Once the pins are registered, the builder can be consumed into a complete HAL co
 let comp = builder.ready()?;
 ```
 
-Pins can't be registered after `ready()` is called, and we take care of that with Rust's type system. The `builder.ready()` call above consumes the builder into a `HalComponent` which doesn't have any way to register pins on it. In a C HAL comp, an error is logged if you _do_ register a pin after the `ready()` call, but it's obviously a lot safer to capture that error at compile time! Yay Rust!
+Pins can't be registered after `ready()` is called, and we take care of that with Rust's type system and the [type state pattern](http://cliffle.com/blog/rust-typestate/). The `builder.ready()` call above consumes the builder into a `HalComponent` which doesn't have any way to register pins on it, preventing invalid operation order. In a C HAL comp, an error is logged if you _do_ register a pin after the `ready()` call, but it's obviously a lot safer to capture that error at compile time! Yay Rust!
 
 Anyway, now we've got the comp let's start the main control loop of the component. We'll check `comp.should_exit()` every iteration to see if a Unix signal has been received from LinuxCNC asking the component to quit.
 
