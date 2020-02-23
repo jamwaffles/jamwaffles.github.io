@@ -1,4 +1,3 @@
 User-Agent: *
 Disallow: /files/*
-Disallow: /assets/*
 Disallow: /feed.xml
