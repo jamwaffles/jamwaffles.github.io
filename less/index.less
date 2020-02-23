@@ -138,3 +138,25 @@ blockquote {
   max-width: @site-width;
   padding: 0 @screen-padding;
 }
+
+.box-float {
+  &--left {
+    @media screen and (min-width: @site-width + 1) {
+      clear: right;
+      float: left;
+      margin-right: 20px;
+    }
+  }
+
+  &--right {
+    @media screen and (min-width: @site-width + 1) {
+      clear: left;
+      float: right;
+      margin-left: 20px;
+    }
+  }
+
+  &-break {
+    clear: both;
+  }
+}
