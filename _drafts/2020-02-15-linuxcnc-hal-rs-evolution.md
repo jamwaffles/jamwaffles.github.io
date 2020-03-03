@@ -5,6 +5,21 @@ date: 2020-02-15T09:08:17+00:00
 categories: [cnc, rust]
 ---
 
+Evolution:
+
+1. Start with raw API bindings. Let's just get this thing working, but not safely
+1. First iteration was to get individual variables out of internal assignments
+   - Good because we hide the unsafety from the user
+   - Bad because pin and component lifetimes are kinda decoupled - see the log below for out of order freeing
+   - Calls ready()
+     - Good because type states don't let us register pins after call to `hal_ready()`
+1. Now we impl a trait that gets a reference to the component to register pins on
+   - Good because registration logic and stuff is still hidden inside component
+   - Good because component is scoped only to the registration method
+   - Good because component owns pins now, only returns a readonly reference to them, disallowing modification
+   - No more type states (aw they were cool) but now we can't forget to call `ready()` - that's handled inside Component::new(), as is all the registration.
+   - Good because pins are freed before component - see low below
+
 - Before, pins were freed after component. Not great TODO: Get a print log of this
   - We'll use the `Option` container trick from [here](https://aochagavia.github.io/blog/enforcing-drop-order-in-rust/) to let us drop the resources before the component.
 - Using RAII principle, HalComponent::new now does _everything_
