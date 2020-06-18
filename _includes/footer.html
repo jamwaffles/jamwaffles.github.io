@@ -1,28 +1,37 @@
-<footer role="contentinfo" class='footer'>
-    <div class="inner">
-        <div class="footer__bio">
-            {% if site.logo %}
-            <div class="footer__logo">
-                <a href="{{ site.url }}" >
-                    <img src="{{ site.images }}/logo-220-circle.png" alt="{{ site.title }}" />
-                </a>
-            </div>
-            {% endif %}
+<footer role="contentinfo" class="footer">
+  <div class="inner">
+    <div class="footer__bio">
+      {% if site.logo %}
+      <div class="footer__logo">
+        <a href="{{ site.url }}">
+          <img
+            src="{{ site.images }}/logo-220-circle.png"
+            alt="{{ site.title }}"
+          />
+        </a>
+      </div>
+      {% endif %}
 
-            <div class="footer__bio__text">
-                {{ site.description }}
-            </div>
-        </div>
-
-        <div class="footer__links">
-            <a href="{{ site.url }}">{{ site.title }}</a>
-
-            <a href="{{ site.baseurl }}/feed.xml" id="btn_feed" class="btn" title="Feed" target="_blank">
-                <span aria-hidden="true" data-icon=")"></span>
-                <strong>RSS Feed</strong>
-            </a>
-
-            <span>Published with <a href="https://jekyllrb.com">Jekyll</a></span>
-        </div>
+      <div class="footer__bio__text">
+        {{ site.description }}
+      </div>
     </div>
+
+    <div class="footer__links">
+      <a href="{{ site.url }}">{{ site.title }}</a>
+
+      <a
+        href="{{ site.baseurl }}/feed.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        <strong>RSS Feed</strong>
+      </a>
+
+      <span>Published with <a href="https://jekyllrb.com">Jekyll</a></span>
+    </div>
+  </div>
 </footer>
