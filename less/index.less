@@ -1,9 +1,9 @@
-@import './variables.less';
-@import './header.less';
-@import './list.less';
-@import './highlight.less';
-@import './post.less';
-@import './footer.less';
+@import "./variables.less";
+@import "./header.less";
+@import "./list.less";
+@import "./highlight.less";
+@import "./post.less";
+@import "./footer.less";
 
 // https://stackoverflow.com/questions/3226001/some-font-sizes-rendered-larger-on-safari-iphone
 @media screen and (max-device-width: 480px) {
@@ -15,7 +15,7 @@
 body,
 html {
   font-size: 12pt;
-  font-family: 'Open Sans', 'Helvetica Neue', 'Helvetica-Neue', helvetica,
+  font-family: "Open Sans", "Helvetica Neue", "Helvetica-Neue", helvetica,
     sans-serif;
   color: @font-color;
   background-color: @bg-color;
@@ -103,6 +103,13 @@ p {
   }
 }
 
+div.highlight {
+  @media screen and (min-width: @site-width + 1) {
+    margin-left: calc(-100px);
+    width: calc(100% + 200px);
+  }
+}
+
 pre,
 code {
   .font-mono;
@@ -125,7 +132,7 @@ blockquote {
     margin-left: 30px;
 
     &:before {
-      content: '🤔';
+      content: "🤔";
       position: absolute;
       left: -30px;
       top: 0;
