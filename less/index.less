@@ -103,12 +103,13 @@ p {
   }
 }
 
-div.highlight {
-  @media screen and (min-width: @site-width + 1) {
-    margin-left: calc(-100px);
-    width: calc(100% + 200px);
-  }
-}
+// Kick code blocks out either side to make them wider
+// div.highlight {
+//   @media screen and (min-width: @site-width + 1) {
+//     margin-left: calc(-100px);
+//     width: calc(100% + 200px);
+//   }
+// }
 
 pre,
 code {
@@ -117,7 +118,7 @@ code {
   font-size: 14px;
 
   @media screen and (min-width: @site-width + 1) {
-    font-size: 0.9rem;
+    font-size: 15px;
   }
 }
 
