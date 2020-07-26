@@ -10,6 +10,8 @@ Welcome to another pointless tangent into the exciting world of line joints in [
 based no-std graphics library for environments with low resource availability. This time, we'll be
 looking at some not-so-great optimisations made to a point sorting function.
 
+**Update: A kind Twitter user pointed out a more optimised solution for triangles which you can find [here](/rust/2020/07/26/perf-addendum.html).**
+
 ## Some context
 
 I've already covered [integer-only line intersections](), a building block for computing the corners
