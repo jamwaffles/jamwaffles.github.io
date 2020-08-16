@@ -3,7 +3,7 @@
 set -e
 
 if ! git diff --quiet --cached less/; then
-    yarn less:prod
+    yarn less
 
     git update-index --add css/
     # git commit --amend -C HEAD
