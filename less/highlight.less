@@ -1,27 +1,57 @@
-@hl-grey-light: #8e908c;
-@hl-red: #c82829;
-@hl-purple: #b168cd;
-@hl-pink: #d35c5c;
-@hl-black: #21272d;
-@hl-cyan: #31A0B0;
-@hl-grey-dark: #4d4d4c;
-@hl-green: #46ad55;
-@hl-yellow: #C87028;
-@hl-blue: #256fb9;
+// @hl-grey-light: #8e908c;
+// @hl-red: #c82829;
+// @hl-purple: #b168cd;
+// @hl-pink: #d35c5c;
+// @hl-text: #21272d;
+// @hl-cyan: #31A0B0;
+// @hl-grey-dark: #4d4d4c;
+// @hl-green: #46ad55;
+// @hl-yellow: #C87028;
+// @hl-blue: #256fb9;
+
+.highlight {
+    @media (prefers-color-scheme: dark) {
+        --hl-grey-light: #858884;
+        --hl-grey-dark: var(--font-color);
+        --hl-text: var(--font-color);
+
+        // Snazzy, normal variant
+        --hl-black: #282a36;
+        --hl-red: #ff5c57;
+        --hl-green: #5af78e;
+        --hl-yellow: #f3f99d;
+        --hl-blue: #57c7ff;
+        --hl-purple: #ff6ac1;
+        --hl-cyan: #9aedfe;
+    }
+
+    @media (prefers-color-scheme: light) {
+        --hl-grey-light: #8e908c;
+        --hl-red: #c82829;
+        --hl-purple: #b168cd;
+        --hl-pink: #d35c5c;
+        --hl-text: #21272d;
+        --hl-cyan: #31a0b0;
+        --hl-grey-dark: #4d4d4c;
+        --hl-green: #46ad55;
+        --hl-yellow: #c87028;
+        --hl-blue: #256fb9;
+    }
+}
 
 p {
     code {
-        background-color: @grey-dark;
-        color: @blue-dark;
+        background-color: var(--inline-code-background);
+        color: var(--blue-dark);
         padding: 2px 4px;
         border-radius: 3px;
     }
 }
 
 pre {
-    margin: @spacing 0;
-    background-color: @grey-light;
-    border-radius: @border-radius-small;
+    margin: var(--spacing) 0;
+    background-color: var(--code-background);
+    border-radius: var(--border-radius-small);
     overflow-x: auto;
     tab-size: 4;
     -moz-tab-size: 4;
@@ -30,7 +60,7 @@ pre {
     max-width: 100%;
     line-height: 1.3em;
 
-    @media screen and (max-width: @site-width) {
+    @media screen and (max-width: var(--site-width)) {
         tab-size: 2;
         -moz-tab-size: 2;
         -o-tab-size: 2;
@@ -38,12 +68,12 @@ pre {
 
     code {
         display: inline-block;
-        padding: @padding;
+        padding: var(--padding);
         tab-size: 4;
         -moz-tab-size: 4;
         -o-tab-size: 4;
 
-        @media screen and (max-width: @site-width) {
+        @media screen and (max-width: var(--site-width)) {
             tab-size: 2;
             -moz-tab-size: 2;
             -o-tab-size: 2;
@@ -57,195 +87,198 @@ pre {
         letter-spacing: -0.5px;
     }
 }
+// Comment
 .highlight .c {
-    color: @hl-grey-light;
+    color: var(--hl-grey-light);
 }
 .highlight .err {
-    color: @hl-red;
+    color: var(--hl-red);
 }
+// Keyword
 .highlight .k {
-    color: @hl-purple;
+    color: var(--hl-purple);
 }
 .highlight .l {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .n {
-    color: @hl-black;
+    color: var(--hl-text);
 }
 .highlight .o {
-    color: @hl-cyan
+    color: var(--hl-cyan);
 }
+// Punctuation
 .highlight .p {
-    color: @hl-grey-dark;
+    color: var(--hl-grey-dark);
 }
 .highlight .cm {
-    color: @hl-grey-light;
+    color: var(--hl-grey-light);
 }
 .highlight .cp {
-    color: @hl-grey-light;
+    color: var(--hl-grey-light);
 }
 .highlight .c1 {
-    color: @hl-grey-light;
+    color: var(--hl-grey-light);
 }
 .highlight .cs {
-    color: @hl-grey-light;
+    color: var(--hl-grey-light);
 }
 .highlight .gd {
-    color: @hl-red;
+    color: var(--hl-red);
 }
 .highlight .ge {
-    font-style: italic
+    font-style: italic;
 }
 .highlight .gh {
-    color: @hl-grey-dark;
-    font-weight: bold
+    color: var(--hl-grey-dark);
+    font-weight: bold;
 }
 .highlight .gi {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .gp {
-    color: @hl-grey-light;;
-    font-weight: bold
+    color: var(--hl-grey-light);
+    font-weight: bold;
 }
 .highlight .gs {
-    font-weight: bold
+    font-weight: bold;
 }
 .highlight .gu {
-    color: @hl-cyan;
-    font-weight: bold
+    color: var(--hl-cyan);
+    font-weight: bold;
 }
 .highlight .kc {
-    color: @hl-purple;
+    color: var(--hl-purple);
 }
 .highlight .kd {
-    color: @hl-purple;
+    color: var(--hl-purple);
 }
 .highlight .kn {
-    color: @hl-cyan
+    color: var(--hl-cyan);
 }
 .highlight .kp {
-    color: @hl-purple;
+    color: var(--hl-purple);
 }
 .highlight .kr {
-    color: @hl-purple;
+    color: var(--hl-purple);
 }
 .highlight .kt {
-    color: @hl-yellow;
+    color: var(--hl-yellow);
 }
 .highlight .ld {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .m {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .s {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .na {
-    color: @hl-blue
+    color: var(--hl-blue);
 }
 .highlight .nb {
-    color: @hl-grey-dark;
+    color: var(--hl-grey-dark);
 }
 .highlight .nc {
-    color: @hl-yellow;
+    color: var(--hl-yellow);
 }
 .highlight .no {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .nd {
-    color: @hl-cyan
+    color: var(--hl-cyan);
 }
 .highlight .ni {
-    color: @hl-grey-dark;
+    color: var(--hl-grey-dark);
 }
 .highlight .ne {
-    color: @hl-red;
+    color: var(--hl-red);
 }
 .highlight .nf {
-    color: @hl-blue
+    color: var(--hl-blue);
 }
 .highlight .nl {
-    color: @hl-grey-dark;
+    color: var(--hl-grey-dark);
 }
 .highlight .nn {
-    color: @hl-yellow;
+    color: var(--hl-yellow);
 }
 .highlight .nx {
-    color: @hl-blue
+    color: var(--hl-blue);
 }
 .highlight .py {
-    color: @hl-grey-dark;
+    color: var(--hl-grey-dark);
 }
 .highlight .nt {
-    color: @hl-cyan
+    color: var(--hl-cyan);
 }
 .highlight .nv {
-    color: @hl-red;
+    color: var(--hl-red);
 }
 .highlight .ow {
-    color: @hl-cyan
+    color: var(--hl-cyan);
 }
 .highlight .w {
-    color: @hl-grey-dark;
+    color: var(--hl-grey-dark);
 }
 .highlight .mf {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .mh {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .mi {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .mo {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .sb {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .sc {
-    color: @hl-grey-dark;
+    color: var(--hl-grey-dark);
 }
 .highlight .sd {
-    color: @hl-grey-light;
+    color: var(--hl-grey-light);
 }
 .highlight .s2 {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .se {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .sh {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .si {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }
 .highlight .sx {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .sr {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .s1 {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .ss {
-    color: @hl-green;
+    color: var(--hl-green);
 }
 .highlight .bp {
-    color: @hl-grey-dark;
+    color: var(--hl-grey-dark);
 }
 .highlight .vc {
-    color: @hl-red;
+    color: var(--hl-red);
 }
 .highlight .vg {
-    color: @hl-red;
+    color: var(--hl-red);
 }
 .highlight .vi {
-    color: @hl-red;
+    color: var(--hl-red);
 }
 .highlight .il {
-    color: @hl-pink;
+    color: var(--hl-pink);
 }

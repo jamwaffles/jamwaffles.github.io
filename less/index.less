@@ -17,8 +17,8 @@ html {
   font-size: 12pt;
   font-family: "Open Sans", "Helvetica Neue", "Helvetica-Neue", helvetica,
     sans-serif;
-  color: @font-color;
-  background-color: @bg-color;
+  color: var(--font-color);
+  background-color: var(--bg-color);
   padding: 0;
   margin: 0;
 }
@@ -28,7 +28,7 @@ body {
   flex-direction: column;
   align-items: center;
 
-  @media screen and (max-width: @site-width) {
+  @media screen and (max-width: var(--site-width)) {
     display: block;
   }
 }
@@ -41,7 +41,7 @@ h5,
 h6 {
   font-family: Oswald;
   padding: 0;
-  margin: @spacing 0;
+  margin: var(--spacing) 0;
   font-weight: normal;
 
   > img {
@@ -52,40 +52,40 @@ h6 {
 
 h1,
 h1 > a {
-  color: @red;
+  color: var(--red);
 }
 
 h2,
 h2 > a {
-  color: @blue-dark;
+  color: var(--blue-dark);
 }
 
 h3,
 h4,
 h5,
 h6 {
-  color: @blue-light;
+  color: var(--blue-light);
 
   & > a {
-    color: @blue-light;
+    color: var(--blue-light);
   }
 }
 
 a {
   text-decoration: none;
-  color: @red;
+  color: var(--red);
 
   code {
-    color: @red;
+    color: var(--red);
   }
 
   &:hover {
-    color: lighten(@red, 10%);
+    color: var(--red-hover);
     text-decoration: underline;
   }
 
   &:visited {
-    color: @red;
+    color: var(--red);
   }
 }
 
@@ -105,7 +105,7 @@ p {
 
 // Kick code blocks out either side to make them wider
 // div.highlight {
-//   @media screen and (min-width: @site-width + 1) {
+//   @media screen and (min-width: var(--site-width)) {
 //     margin-left: calc(-100px);
 //     width: calc(100% + 200px);
 //   }
@@ -117,19 +117,19 @@ code {
 
   font-size: 14px;
 
-  @media screen and (min-width: @site-width + 1) {
+  @media screen and (min-width: var(--site-width)) {
     font-size: 15px;
   }
 }
 
 blockquote {
-  border-left: 3px solid @blue-light;
+  border-left: 3px solid var(--blue-light);
   margin: 0;
   padding: 0;
   padding-left: 15px;
   position: relative;
 
-  @media screen and (min-width: @site-width + 1) {
+  @media screen and (min-width: var(--site-width)) {
     margin-left: 30px;
 
     &:before {
@@ -143,13 +143,13 @@ blockquote {
 }
 
 .page-content {
-  max-width: @site-width;
-  padding: 0 @screen-padding;
+  max-width: var(--site-width);
+  padding: 0 var(--screen-padding);
 }
 
 .box-float {
   &--left {
-    @media screen and (min-width: @site-width + 1) {
+    @media screen and (min-width: var(--site-width)) {
       clear: right;
       float: left;
       margin-right: 20px;
@@ -157,7 +157,7 @@ blockquote {
   }
 
   &--right {
-    @media screen and (min-width: @site-width + 1) {
+    @media screen and (min-width: var(--site-width)) {
       clear: left;
       float: right;
       margin-left: 20px;
@@ -175,7 +175,7 @@ table {
   th,
   td {
     text-align: left;
-    border-top: 1px solid @grey-light;
+    border-top: 1px solid var(--grey-light);
     padding: 2px 6px;
   }
 
