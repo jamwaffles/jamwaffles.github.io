@@ -12,6 +12,10 @@
   }
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body,
 html {
   font-size: 12pt;
@@ -27,9 +31,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 10px;
 
   @media screen and (max-width: var(--site-width)) {
     display: block;
+    padding: 0;
   }
 }
 
@@ -97,30 +103,13 @@ img {
   max-width: 100%;
 }
 
-p {
-  code {
-    word-wrap: break-word;
-  }
-}
-
 // Kick code blocks out either side to make them wider
 // div.highlight {
-//   @media screen and (min-width: var(--site-width)) {
+//   @media screen and (min-width: var(--site-width-desktop)) {
 //     margin-left: calc(-100px);
 //     width: calc(100% + 200px);
 //   }
 // }
-
-pre,
-code {
-  .font-mono;
-
-  font-size: 14px;
-
-  @media screen and (min-width: var(--site-width)) {
-    font-size: 15px;
-  }
-}
 
 blockquote {
   border-left: 3px solid var(--blue-light);
@@ -129,7 +118,7 @@ blockquote {
   padding-left: 15px;
   position: relative;
 
-  @media screen and (min-width: var(--site-width)) {
+  @media screen and (min-width: var(--site-width-desktop)) {
     margin-left: 30px;
 
     &:before {
@@ -149,7 +138,7 @@ blockquote {
 
 .box-float {
   &--left {
-    @media screen and (min-width: var(--site-width)) {
+    @media screen and (min-width: var(--site-width-desktop)) {
       clear: right;
       float: left;
       margin-right: 20px;
@@ -157,7 +146,7 @@ blockquote {
   }
 
   &--right {
-    @media screen and (min-width: var(--site-width)) {
+    @media screen and (min-width: var(--site-width-desktop)) {
       clear: left;
       float: right;
       margin-left: 20px;

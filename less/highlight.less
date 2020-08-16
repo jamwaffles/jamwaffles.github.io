@@ -45,6 +45,18 @@ p {
         color: var(--blue-dark);
         padding: 2px 4px;
         border-radius: 3px;
+        word-wrap: break-word;
+    }
+}
+
+pre,
+code {
+    .font-mono;
+
+    font-size: 14px;
+
+    @media screen and (min-width: var(--site-width-desktop)) {
+        font-size: 15px;
     }
 }
 
@@ -59,6 +71,7 @@ pre {
     margin: 0;
     max-width: 100%;
     line-height: 1.3em;
+    white-space: pre-wrap;
 
     @media screen and (max-width: var(--site-width)) {
         tab-size: 2;
