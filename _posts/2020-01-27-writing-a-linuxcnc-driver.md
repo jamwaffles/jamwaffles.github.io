@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Announcing linuxcnc-hal: write LinuxCNC HAL components in Rust'
+title: "Announcing linuxcnc-hal: write LinuxCNC HAL components in Rust"
 date: 2020-01-27T23:26:43+00:00
 categories: [cnc, rust]
 ---
@@ -54,28 +54,28 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 ```
 
-Now let's populate `main()`. First, a `HalComponentBuilder` needs to be created. This is the first thing that should happen in the component as it registers the comp with LinuxCNC's HAL and gets an ID assigned to it. In this example, we'll register a component called `hello-comp`. This is equivalent to a call to `hal_init()` in C comp land.
+Now let's populate `main()`. First, a `HalComponentBuilder` needs to be created. This is the first thing that should happen as it registers the component with LinuxCNC's HAL and gets an ID assigned to it. In this example, we'll register a component called `hello-comp`. This is equivalent to a call to `hal_init()` in C land.
 
 ```rust
 let mut builder = HalComponentBuilder::new("hello-comp")?;
 ```
 
-Next, we need some pins. We'll create one input and one output called `input-1` and `output_1` respectively. These are the HAL pin names you'll see in LinuxCNC.
+Next, we need some pins. We'll create one input and one output called `input-1` and `output-1` respectively. These are the HAL pin names you'll see in LinuxCNC.
 
 ```rust
 let input_1 = builder.register_input_pin::<HalPinF64>("input-1")?;
 let output_1 = builder.register_output_pin::<HalPinF64>("output-1")?;
 ```
 
-Once the pins are registered, the builder can be consumed into a complete HAL component. This signals to LinuxCNC that the component has registered all pins and is ready to use. LinuxCNC will hang if `ready()` isn't called in the component. In C comp land, you'd call `hal_ready()` at this point.
+Once the pins are registered, the builder can be consumed into a complete HAL component. This step signals to LinuxCNC that the component has registered all pins and is ready to use. It's important to note that **LinuxCNC will hang if `ready()` isn't called**. In C land, you'd call `hal_ready()` at this point.
 
 ```rust
 let comp = builder.ready()?;
 ```
 
-Pins can't be registered after `ready()` is called, and we take care of that with Rust's type system and the [type state pattern](http://cliffle.com/blog/rust-typestate/). The `builder.ready()` call above consumes the builder into a `HalComponent` which doesn't have any way to register pins on it, preventing invalid operation order. In a C HAL comp, an error is logged if you _do_ register a pin after the `ready()` call, but it's obviously a lot safer to capture that error at compile time! Yay Rust!
+HAL pins can't be registered after `ready()` is called in a component, and we take care of that with Rust's type system and the [type state pattern](http://cliffle.com/blog/rust-typestate/). The `builder.ready()` call above consumes the builder into a `HalComponent` which doesn't have any way to register pins on it, preventing invalid operation order. In a C HAL component, an error is logged if you _do_ register a pin after the `ready()` call and probably lands you in an invalid state. It's obviously a lot safer to capture that error at compile time, so we'll let Rust's rich type system help out here. Yay Rust!
 
-Anyway, now we've got the comp let's start the main control loop of the component. We'll check `comp.should_exit()` every iteration to see if a Unix signal has been received from LinuxCNC asking the component to quit.
+Anyway, now we're initialised, let's start the main control loop of the component. We'll check `comp.should_exit()` every iteration to see if a Unix signal has been received from LinuxCNC asking the component to quit.
 
 ```rust
 let start = Instant::now();
@@ -101,9 +101,9 @@ The above loop will cycle forever until a `SIGTERM`, `SIGINT` or `SIGKILL` signa
 Ok(())
 ```
 
-At this point in C comp land, you'd have to remember to call `hal_exit`. Not too hard, but it's possible to forget. With `linuxcnc-hal` there's a custom `Drop` impl for `HalComponent`. It automatically calls `hal_exit` for you when it goes out of scope at the end of the program. Rust lets us be lazy _and_ safe. Noice.
+At this point in C, you'd have to remember to call `hal_exit`. Not too hard, but it's possible to forget. With `linuxcnc-hal` there's a custom `Drop` impl for `HalComponent`. It automatically calls `hal_exit` for you when it goes out of scope at the end of the program. Rust lets us be lazy _and_ safe. Noice.
 
-If the above is difficult to follow, here's the complete final `src/main.rs`:
+If the above is difficult to follow, here's the complete and final `src/main.rs`:
 
 ```rust
 use linuxcnc_hal::{hal_pin::HalPinF64, HalComponentBuilder};
@@ -174,3 +174,5 @@ Rust's type safety and ownership rules mean we get a safe, easy to use interface
 There's still a lot more left to do on `linuxcnc-hal`. There isn't a way to register signals yet, and a lot of the [autogenerated methods](https://docs.rs/linuxcnc-hal-sys/0.1.5/linuxcnc_hal_sys/#functions) don't have a safe wrapper yet. That said, hopefully the pins-only interface is useful to see where the pain points/bugs are in `linuxcnc-hal`.
 
 Thanks for reading, and happy machining!
+
+If you found this article or `linuxcnc-hal` itself useful, please consider [becoming a Github sponsor](https://github.com/sponsors/jamwaffles/). Every little helps!
