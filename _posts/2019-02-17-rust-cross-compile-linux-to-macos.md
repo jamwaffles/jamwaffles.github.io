@@ -115,7 +115,7 @@ cargo build --target x86_64-apple-darwin
 
 I got the above process working in CircleCI, but it should be pretty easy to get any Debian-based CI service to work.
 
-It should be possible to cache the `osxcross` folder so it doesn't have to be built for every job. The cache should be invalidated when your build script(s) change. For example, I use the cache checksum `project-v1-{{ checksum "osxcross_setup.sh" }}` to ensure the `osxcross` folder is regenerated correctly.
+It should be possible to cache the `osxcross` folder so it doesn't have to be built for every job. The cache should be invalidated when your build script(s) change. For example, I use the cache checksum `project-v1-{{ "{{" }} checksum "osxcross_setup.sh" }}` to ensure the `osxcross` folder is regenerated correctly.
 
 ## Wrapping up
 
