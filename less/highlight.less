@@ -10,6 +10,8 @@
 // @hl-blue: #256fb9;
 
 .highlight {
+    max-width: calc(100vw - var(--padding) * 2);
+
     @media (prefers-color-scheme: dark) {
         --hl-grey-light: #858884;
         --hl-grey-dark: var(--font-color);
@@ -80,7 +82,8 @@ pre {
     }
 
     code {
-        display: inline-block;
+        display: block;
+        white-space: pre;
         padding: var(--padding);
         tab-size: 4;
         -moz-tab-size: 4;
