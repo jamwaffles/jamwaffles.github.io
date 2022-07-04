@@ -162,23 +162,42 @@ This works, but I admit it does replicate the magic values issue we had with the
 defaults are more likely to be contained within the crate or module, so they're not exposed to the
 user to make mistakes with - only you, great author, can mess your crate up ;).
 
+That said, we can guard against this a little bit better by giving some names to the default values:
+
+```rust
+const DEFAULT_N: usize = 16;
+const DEFAULT_D: usize = 16;
+const DEFAULT_TIMEOUT: u64 = 30_000;
+
+impl ConstBuilder<DEFAULT_N, DEFAULT_D, DEFAULT_TIMEOUT> {
+    const fn new() -> Self {
+        Self
+    }
+}
+```
+
+This doesn't prevent reordering defaults of the same type, but perhaps it goes a little way to
+making the code less error prone.
+
 ## The whole lot
 
 Overall, I'm pretty happy with this builder pattern. I doubt I'm the first to discover it, but it
 was a bit of a eureka moment for me and I thought it interesting enough to share. The full code is
 below, or you can
-[visit the Rust playground to run it yourself](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=7851ab87313fd2e8e98f8535c933c47e).
+[visit the Rust playground to run it yourself](https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&gist=91799c2dba1211543fc196504fee6617).
 
 ```rust
-#![allow(unused)]
-
-use core::time::Duration;
 use core::future;
+use core::time::Duration;
 use tokio::time::error::Elapsed;
+
+const DEFAULT_N: usize = 16;
+const DEFAULT_D: usize = 16;
+const DEFAULT_TIMEOUT: u64 = 30_000;
 
 struct ConstBuilder<const N: usize, const D: usize, const TIMEOUT: u64>;
 
-impl ConstBuilder<16, 16, 30_000> {
+impl ConstBuilder<DEFAULT_N, DEFAULT_D, DEFAULT_TIMEOUT> {
     const fn new() -> Self {
         Self
     }
@@ -214,7 +233,7 @@ impl<const N: usize, const D: usize, const TIMEOUT: u64> ConstBuilder<N, D, TIME
 struct Client<const N: usize, const D: usize, const TIMEOUT: u64> {
     foo: [u8; N],
     bar: [u8; D],
-    idx: u8
+    idx: u8,
 }
 
 impl<const N: usize, const D: usize, const TIMEOUT: u64> Client<N, D, TIMEOUT> {
@@ -240,4 +259,5 @@ async fn main() {
 
     thing.do_a_thing().await;
 }
+
 ```
