@@ -1,27 +1,35 @@
 ---
 layout: cv
+body_class: cv
+title: James Waples CV
 ---
 
 <div style="float: right">
   <ul>
     <li><a href="mailto:james@wapl.es">james@wapl.es</a></li>
     <li>+44 7714 774 508</li>
-    <li><a href="https://github.com/jamwaffles">https://github.com/jamwaffles</a></li>
-    <li><a href="https://wapl.es">https://wapl.es</a></li>
+    <li>
+      <a target="_blank" href="https://github.com/jamwaffles">https://github.com/jamwaffles</a>
+    </li>
+    <li><a target="_blank" href="https://wapl.es">https://wapl.es</a></li>
+    <li>English: Native speaker</li>
+    <li>German: Basic</li>
   </ul>
 </div>
 
-<h1>James Waples</h1>
-<h2>Experienced Rust developer</h2>
-<h2>Edinburgh, Scotland</h2>
+<div class="cv__name">
+  <h1>James Waples</h1>
+  <h2>Experienced Rust developer</h2>
+  <h2>Edinburgh, Scotland</h2>
+</div>
 
 <p>
-  Hi, I'm James, a Rust, electronics and CNC enthusiast. I've been programming since I was around 10
-  years old, first starting with 8 bit assembler, Visual Basic and C. I started my career at 18 with
-  a PHP web development role and slowly moved towards the JavaScript/Typescript ecosystem as it grew
-  around the popularity of libraries like React. My work now revolves around the wonderful Rust
-  programming language, gladly using it both professionally and in open source to write high quality
-  code in embedded environments.
+  Hi, I'm James, a Rust, electronics and CNC enthusiast. I've been programming for about 20 years,
+  since I was around 10 years old, first starting with 8 bit assembler, Visual Basic and C. I
+  started my professional career at 18 with a PHP web development role and slowly moved towards the
+  JavaScript/Typescript ecosystem as it grew around the popularity of libraries like React. My work
+  now revolves around the wonderful Rust programming language, gladly using it both professionally
+  and in open source to write high quality code in embedded environments.
 </p>
 
 <p>
@@ -43,11 +51,13 @@ layout: cv
 
 <h1>Open source projects</h1>
 
-<ul>
+<ul class="cv__oss">
   <li>
-    <a href="https://github.com/ethercrab-rs/ethercrab"
-      >https://github.com/ethercrab-rs/ethercrab</a
-    >
+    <h3>
+      <a target="_blank" href="https://github.com/ethercrab-rs/ethercrab"
+        >https://github.com/ethercrab-rs/ethercrab</a
+      >
+    </h3>
 
     <p>
       EtherCrab is a pure-Rust EtherCAT master runtime born of the frustrations of working with
@@ -58,9 +68,11 @@ layout: cv
   </li>
 
   <li>
-    <a href="https://github.com/jamwaffles/linuxcnc-hal-rs"
-      >https://github.com/jamwaffles/linuxcnc-hal-rs</a
-    >
+    <h3>
+      <a target="_blank" href="https://github.com/jamwaffles/linuxcnc-hal-rs"
+        >https://github.com/jamwaffles/linuxcnc-hal-rs</a
+      >
+    </h3>
 
     <p>
       Rust bindings and a high level API to allow writing Rust modules for the popular open source
@@ -69,9 +81,11 @@ layout: cv
   </li>
 
   <li>
-    <a href="https://github.com/embedded-graphics/embedded-graphics"
-      >https://github.com/embedded-graphics/embedded-graphics</a
-    >
+    <h3>
+      <a target="_blank" href="https://github.com/embedded-graphics/embedded-graphics"
+        >https://github.com/embedded-graphics/embedded-graphics</a
+      >
+    </h3>
 
     <p>
       A graphics library for embedded applications using no dynamic allocation, with primitives,
@@ -83,11 +97,11 @@ layout: cv
 
 <h1>Work history</h1>
 
-<ul>
+<ul class="cv__work-history">
   <li>
     <h3>Senior Developer at Moixa Technology / Lunar Energy</h3>
 
-    <h4>August 2021 - Present</h4>
+    <h4>August 2021 - Present, fully remote</h4>
 
     <p><em>rust, embedded linux, bitbake, aws</em></p>
 
@@ -113,7 +127,7 @@ layout: cv
   <li>
     <h3>Full stack developer at Fluidic Analytics</h3>
 
-    <h4>March 2020 - July 2021</h4>
+    <h4>March 2020 - July 2021, fully remote</h4>
 
     <p><em>rust, postgresql, event sourcing, typescript, react, circleci</em></p>
 
