@@ -60,18 +60,6 @@ body_class: post-template
 
   <div class="post__text" id="js-post-content">
     {{ content }}
-
-    <p>
-      <a
-        href="http://twitter.com/share?text={{ page.title | xml_encode }}&url={{ page.url | prepend: site.baseurl }}"
-        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;"
-        id="btn_comment"
-        class="btn"
-        target="_blank"
-      >
-        <span aria-hidden="true" data-icon="C"></span> Comment on The Twittuhs ↗
-      </a>
-    </p>
   </div>
 
   {% include footer.html %}
