@@ -16,10 +16,10 @@
 title: James Waples' Internet Hole
 email: james@wapl.es
 description: >- # this means to ignore newlines until "baseurl:"
-  Personal blog of web developer and hobby machinist James Waples. He resides in The United Britain and just loves all the rain.
+  Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://wapl.es" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jam_waffles
+mastodon_username: jamwaffles
 github_username:  jamwaffles
 
 assets: /assets
