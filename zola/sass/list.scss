@@ -1,8 +1,8 @@
 .list {
   &__post {
     + article {
+      @extend .divider;
       margin-top: var(--spacing);
-      .divider;
     }
 
     .image-holder {

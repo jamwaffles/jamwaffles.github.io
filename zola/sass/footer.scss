@@ -1,9 +1,9 @@
 .footer {
+    @extend .divider;
     margin: var(--spacing) 0;
     max-width: var(--site-width);
     padding: 0 var(--screen-padding);
     padding-top: var(--spacing);
-    .divider;
 
     &__logo {
         width: 110px;

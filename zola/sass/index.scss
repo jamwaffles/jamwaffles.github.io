@@ -1,10 +1,10 @@
-@import "./variables.less";
-@import "./header.less";
-@import "./list.less";
-@import "./highlight.less";
-@import "./post.less";
-@import "./footer.less";
-@import "./cv.less";
+@import "./variables.scss";
+@import "./header.scss";
+@import "./list.scss";
+@import "./highlight.scss";
+@import "./post.scss";
+@import "./footer.scss";
+@import "./cv.scss";
 
 // https://stackoverflow.com/questions/3226001/some-font-sizes-rendered-larger-on-safari-iphone
 @media screen and (max-device-width: 480px) {
@@ -97,7 +97,7 @@ a {
 }
 
 hr {
-  .divider;
+  @extend .divider;
 }
 
 img {
