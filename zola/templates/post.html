@@ -1,0 +1,62 @@
+{% extends "default.html" %}
+
+{% block content %}
+<div class="post__header {% if page.image %}post__header--image{% endif %}">
+  {% include "include/header.html" %}
+</div>
+{% if page.image %}
+<div class="post__feature-image">
+  <picture>
+    <source media="(min-width: 2560px)" srcset="{{ page.image }}" />
+    {#
+    <source
+      media="(min-width: 1920px)"
+      srcset="{{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-1920.jpg' }}, {{ config.extra.header-images }}/{{ page.image }} 2x"
+    />
+    <source
+      media="(min-width: 1600px)"
+      srcset="{{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-1600.jpg' }}, {{ config.extra.header-images }}/{{ page.image }} 2x"
+    />
+    <source
+      media="(min-width: 1280px)"
+      srcset="{{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-1280.jpg' }}, {{ config.extra.header-images }}/{{ page.image }} 2x"
+    />
+    <source
+      media="(min-width: 960px)"
+      srcset="{{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-960.jpg' }}, {{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-1920.jpg' }} 2x"
+    />
+    <source
+      media="(min-width: 800px)"
+      srcset="{{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-800.jpg' }}, {{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-1600.jpg' }} 2x"
+    />
+    <source
+      media="(max-width: 640px)"
+      srcset="{{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-640.jpg' }}, {{ config.extra.header-images }}/{{ page.image | replace: '.jpg', '-1280.jpg' }} 2x"
+    />
+    #}
+    <img
+      class="post__feature-image__inner"
+      src="{{ page.image }}"
+      alt="Blog post header image decoration."
+    />
+  </picture>
+</div>
+{% endif %}
+
+<article role="main" class="post {% if page.image %}image{% endif %}">
+  <header>
+    <a href="{{ config.base_url }}" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>{{ page.title }}</h1>
+
+      <time datetime="{{ page.date | date(format = '%Y-%m-%d') }}"
+        ><a href="{{ page.permalink }}">{{ page.date | date(format = "%B %d, %Y") }}</a></time
+      >
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content">{{ page.content }}</div>
+
+  {% include "include/footer.html" %}
+</article>
+{% endblock content %}

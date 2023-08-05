@@ -1,0 +1,34 @@
+<footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      {% if config.extra.logo %}
+      <div class="footer__logo">
+        <a href="{{ config.base_url }}">
+          <img src="{{ get_url(path = "images/logo-220-circle.png") }} alt="{{ config.extra.title }}" />
+        </a>
+      </div>
+      {% endif %}
+
+      <div class="footer__bio__text">{{ config.extra.description }}</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="{{ config.base_url }}">{{ config.extra.title }}</a>
+
+      <a
+        href="{{ config.base_url }}/feed.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        <strong>RSS Feed</strong>
+      </a>
+
+      <span>Published with <a href="https://jekyllrb.com">Jekyll</a></span>
+    </div>
+  </div>
+</footer>

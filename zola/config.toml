@@ -14,3 +14,5 @@ highlight_code = true
 
 [extra]
 # Put all your custom variables here
+title = "James Waples' Internet Hole"
+description = "Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"

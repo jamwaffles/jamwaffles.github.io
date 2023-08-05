@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  {% include "include/head.html" %}
+
+  <body class="{% if page.extra.body_class %} {{ page.extra.body_class }} {% endif %}">
+    {% block content %} {% endblock %}
+
+    {% if config.extra.logo %}
+    <a href="{{ config.baseurl }}" id="blog_badge">
+      <span style="background-image: url('{{ get_url(path = "images//{{ config.extra.logo }}');") }}
+        >{{ config.extra.name }}</span
+      >
+    </a>
+    {% endif %}
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>
