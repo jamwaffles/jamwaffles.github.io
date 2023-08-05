@@ -1,11 +1,14 @@
----
++++
 layout: post
 title:  "Persistent state with Tower Web"
 date:   2019-06-03 13:34:00
 categories: rust
----
++++
 
-We're building a new product at [work](https://repositive.io/), for which we've decided to use Rust and [tower-web](https://crates.io/crates/tower-web) for the backend. There don't seem to be any Tower examples using state in request handlers, so this is a quick copypasta showing how to add Diesel so request handlers can do database operations.
+We're building a new product at [work](https://repositive.io/), for which we've decided to use Rust
+and [tower-web](https://crates.io/crates/tower-web) for the backend. There don't seem to be any
+Tower examples using state in request handlers, so this is a quick copypasta showing how to add
+Diesel so request handlers can do database operations.
 
 First, establish a connection. I'm using an `r2d2::Pool` wrapping a Diesel Postgres connection:
 
@@ -23,7 +26,9 @@ pub fn establish_connection() -> Result<Pool<ConnectionManager<PgConnection>>, B
 }
 ```
 
-Next, implement the handler. The example below returns every item for the `categories` table. I'm assuming you've got your Diesel schemas and stuff set up here. If not, following [the getting started guide](http://diesel.rs/guides/getting-started/).
+Next, implement the handler. The example below returns every item for the `categories` table. I'm
+assuming you've got your Diesel schemas and stuff set up here. If not, following
+[the getting started guide](http://diesel.rs/guides/getting-started/).
 
 ```rust
 use crate::models::Category;
@@ -65,7 +70,9 @@ impl_web! {
 
 ```
 
-Most tower-web examples use a unit struct with no fields like `struct Categories;`. In this case, I'm adding a `conn` field to store a connection. I also add a `new()` method to create a new `Categories` handler without making `conn` public.
+Most tower-web examples use a unit struct with no fields like `struct Categories;`. In this case,
+I'm adding a `conn` field to store a connection. I also add a `new()` method to create a new
+`Categories` handler without making `conn` public.
 
 You can use this in your Tower setup code like this:
 
@@ -100,4 +107,6 @@ Note the categories handler line and its use of `Categories::new()`.
 
 Done!
 
-This might be blatantly obvious to most Tower Web users, but this short tutorial is here in case it's not. I'm not sure how non-pooled connections will work, as the `impl_web!` macro hides a lot of the lifetimes and trait bounds, so YMMV.
+This might be blatantly obvious to most Tower Web users, but this short tutorial is here in case
+it's not. I'm not sure how non-pooled connections will work, as the `impl_web!` macro hides a lot of
+the lifetimes and trait bounds, so YMMV.

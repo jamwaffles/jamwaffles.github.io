@@ -1,15 +1,22 @@
----
++++
 layout: post
 title: 'Setting up an MPG Jog Pendant in LinuxCNC'
 date: 2020-02-23T12:06:37+00:00
 categories: [cnc]
----
++++
 
-CNC jog pendants are super useful devices for quick setup and configuration of CNC machines. A quick search for [CNC jog pendant](https://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20200223040744&SearchText=cnc+jog+wheel) on AliExpress turns up a bunch of results. For this post, I'll cover connecting a wired jog pendant with ESTOP to a Mesa 5i25 FPGA card to control a 3 axis CNC mill.
+CNC jog pendants are super useful devices for quick setup and configuration of CNC machines. A quick
+search for
+[CNC jog pendant](https://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20200223040744&SearchText=cnc+jog+wheel)
+on AliExpress turns up a bunch of results. For this post, I'll cover connecting a wired jog pendant
+with ESTOP to a Mesa 5i25 FPGA card to control a 3 axis CNC mill.
 
-The config below works for me. The plethora of hardware configs out there mean this article likely won't work for you verbatim, but it's my hope that it provides a good starting point for other configs.
+The config below works for me. The plethora of hardware configs out there mean this article likely
+won't work for you verbatim, but it's my hope that it provides a good starting point for other
+configs.
 
-**Please note that I got this config working on LinuxCNC 2.9.0-pre0. It should also work on 2.8.\*, but will not work on anything before the joints/axes split.**
+**Please note that I got this config working on LinuxCNC 2.9.0-pre0. It should also work on 2.8.\*,
+but will not work on anything before the joints/axes split.**
 
 # Hardware
 
@@ -19,7 +26,9 @@ The config below works for me. The plethora of hardware configs out there mean t
 
 This is the jog pendant I'll be using.
 
-It provides estop, axis select, multiplier and encoder outputs on a bunch of bare wires as seen in the image. I'm going to connect it to the internal `P2` connector of a Mesa 5i25 FPGA card, so I'll trim the bare wires and solder them to a DB25 cable-end connector in a bit.
+It provides estop, axis select, multiplier and encoder outputs on a bunch of bare wires as seen in
+the image. I'm going to connect it to the internal `P2` connector of a Mesa 5i25 FPGA card, so I'll
+trim the bare wires and solder them to a DB25 cable-end connector in a bit.
 
 <div class="box-float-break"></div>
 
@@ -27,9 +36,13 @@ It provides estop, axis select, multiplier and encoder outputs on a bunch of bar
     <img style="max-width: 300px;" src="/assets/images/mesa-5i25-annotated.png" alt="Mesa 5i25 FPGA card product image" />
 </div>
 
-I'm using a [Mesa 5i25](/assets/images/mesa-5i25.png) FPGA card through a DB25 breakout cable (like [this one](https://www.ebay.co.uk/itm//380662654989)) connected to `P2`. Other Mesa cards with parallel port breakout options like the 6i25 should also work, but are untested.
+I'm using a [Mesa 5i25](/assets/images/mesa-5i25.png) FPGA card through a DB25 breakout cable (like
+[this one](https://www.ebay.co.uk/itm//380662654989)) connected to `P2`. Other Mesa cards with
+parallel port breakout options like the 6i25 should also work, but are untested.
 
-The Mesa card can optionally provide +5V to external circuitry on the last 4 pins of the parallel port connector. **This must be enabled for the jog pendant to work.** From the manual, ensure that jumper `W1` is in the `UP` position.
+The Mesa card can optionally provide +5V to external circuitry on the last 4 pins of the parallel
+port connector. **This must be enabled for the jog pendant to work.** From the manual, ensure that
+jumper `W1` is in the `UP` position.
 
 For reference, here's an image of the breakout cable:
 
@@ -39,7 +52,9 @@ For reference, here's an image of the breakout cable:
 
 # Soldering up the jog wheel connector
 
-We now need to solder a DB25 connnector to the jog pendant cable so it can be plugged into the Mesa card. The exact pinout doesn't matter _too_ much as connections can be remapped in software, but in my setup the jog wheel encoder is bound to pins 11 and 12.
+We now need to solder a DB25 connnector to the jog pendant cable so it can be plugged into the Mesa
+card. The exact pinout doesn't matter _too_ much as connections can be remapped in software, but in
+my setup the jog wheel encoder is bound to pins 11 and 12.
 
 This is the full pinout:
 
@@ -64,17 +79,23 @@ This is the full pinout:
 | LED+          | -                  | -                                    | Green/black  |
 | LED-          | -                  | -                                    | White/black  |
 
-`Encoder +5V`, `Encoder gnd` and `Common` are connected to ground and +5V, with the 5V supplied by the last 4 pins by enabling the auxiliary power on the Mesa card by setting jumper `W1` to the `UP` position.
+`Encoder +5V`, `Encoder gnd` and `Common` are connected to ground and +5V, with the 5V supplied by
+the last 4 pins by enabling the auxiliary power on the Mesa card by setting jumper `W1` to the `UP`
+position.
 
-I'm leaving the inverted signals of the encoder disconnected for simplicity. If you need the noise suppression features of differential wiring, you'll need to add some external circuitry to deal with that - the Mesa encoder inputs are single-sided.
+I'm leaving the inverted signals of the encoder disconnected for simplicity. If you need the noise
+suppression features of differential wiring, you'll need to add some external circuitry to deal with
+that - the Mesa encoder inputs are single-sided.
 
 I'm also leaving the enable LED disconnected because I can't be bothered to hook it up.
 
 # Mesa card configuration
 
-I'm using the `5i25_prob_rfx2` bitfile for the Mesa 5i25. It seems to be a pretty general purpose config for these cards. Other configs might work, but the pinout could be different so YMMV.
+I'm using the `5i25_prob_rfx2` bitfile for the Mesa 5i25. It seems to be a pretty general purpose
+config for these cards. Other configs might work, but the pinout could be different so YMMV.
 
-The pendant is mostly simple GPIO, but you'll need to add an extra encoder to your Mesa config when loaded. In your `<machine name>.hal` file, find the `loadrt` line and change it:
+The pendant is mostly simple GPIO, but you'll need to add an extra encoder to your Mesa config when
+loaded. In your `<machine name>.hal` file, find the `loadrt` line and change it:
 
 ```diff
 - loadrt hm2_pci config="firmware=hm2/5i25/5i25_prob_rfx2 num_encoders=1 num_pwmgens=0 num_stepgens=3"
@@ -83,7 +104,11 @@ The pendant is mostly simple GPIO, but you'll need to add an extra encoder to yo
 
 This will add an extra encoder called `encoder.01` for the HAL config to use later.
 
-The above `hm2` config is for a 3 axis mill with a spingle encoder. Because I'm already using one encoder for the spindle, I'm upping the encoder count to `2`. This puts the second encoder signals on pins 11 and 12 of the DB25 connector on `P2` which we'll use for the jog pendant. If you've got a different number of encoders, you might have to change the connector pinout in the table above or use a completely different Mesa card/tutorial. Sorry.
+The above `hm2` config is for a 3 axis mill with a spingle encoder. Because I'm already using one
+encoder for the spindle, I'm upping the encoder count to `2`. This puts the second encoder signals
+on pins 11 and 12 of the DB25 connector on `P2` which we'll use for the jog pendant. If you've got a
+different number of encoders, you might have to change the connector pinout in the table above or
+use a completely different Mesa card/tutorial. Sorry.
 
 # Jog pendant HAL configuration
 
@@ -179,12 +204,18 @@ net selected-jog-incr    <=  jogincr.out-f
 
 Some observations:
 
-- I'm using the `in_not` inverted pin values. The 5i25 has weak pullups, so pins are active low and default to high (`TRUE`).
+- I'm using the `in_not` inverted pin values. The 5i25 has weak pullups, so pins are active low and
+  default to high (`TRUE`).
 - I'm using `mux16` instead of `mux4` because I'm lazy.
-- Because the jog wheel is a quadrature encoder, there are 4 counts per "click". The jog scales of `0.00025`, `0.0025`, etc are the `1x`, `10x` and `100x` markings on the pendant panel divided by 4.
-- The `selected-jog-incr`, `joint-select-*` and `joint-selected-count` signals are wired to **both** the `joint` and `axis` signals. This is required to make the axes move after homing, and is a result of the joints/axes split that happened around LinuxCNC 2.8/2.9.
+- Because the jog wheel is a quadrature encoder, there are 4 counts per "click". The jog scales of
+  `0.00025`, `0.0025`, etc are the `1x`, `10x` and `100x` markings on the pendant panel divided
+  by 4.
+- The `selected-jog-incr`, `joint-select-*` and `joint-selected-count` signals are wired to **both**
+  the `joint` and `axis` signals. This is required to make the axes move after homing, and is a
+  result of the joints/axes split that happened around LinuxCNC 2.8/2.9.
 
-Finally, to load this extra HAL config into the machine, add a line to the `[HAL]` section in `<config name>.ini`:
+Finally, to load this extra HAL config into the machine, add a line to the `[HAL]` section in
+`<config name>.ini`:
 
 ```diff
   [HAL]
@@ -195,4 +226,5 @@ Finally, to load this extra HAL config into the machine, add a line to the `[HAL
   SHUTDOWN = shutdown.hal
 ```
 
-Now you should be good. If something's not working check the HAL Meter for GPIO states and `encoder.01` values.
+Now you should be good. If something's not working check the HAL Meter for GPIO states and
+`encoder.01` values.

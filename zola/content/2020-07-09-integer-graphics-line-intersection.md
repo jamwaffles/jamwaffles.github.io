@@ -1,15 +1,24 @@
----
++++
 layout: post
 title: "Integer Graphics: Line Intersection"
 date: 2020-07-09 17:11:00
 categories: [rust, embedded-graphics]
----
++++
 
-Graphics can be a tricky topic, particularly when attempting to find anything on the internet these days that provides solution in terms of integer-only maths. [embedded-graphics](https://crates.io/crates/embedded-graphics) is a (mostly) integer-only library, so in pursuing a solution to good line joints for the `Polyline` and `Polygon` shape implementations, a bit of interweb detective work was required.
+Graphics can be a tricky topic, particularly when attempting to find anything on the internet these
+days that provides solution in terms of integer-only maths.
+[embedded-graphics](https://crates.io/crates/embedded-graphics) is a (mostly) integer-only library,
+so in pursuing a solution to good line joints for the `Polyline` and `Polygon` shape
+implementations, a bit of interweb detective work was required.
 
-I eventually stumbled upon [this StackOverflow question](https://stackoverflow.com/questions/21224361/calculate-intersection-of-two-lines-using-integers-only/62819649#62819649), the answers to which mostly seem to do what I'm looking for. I'm not a good mathematician by any means so the below code might not be stable in all situations, but it seems to work in a quick demo I whipped up.
+I eventually stumbled upon
+[this StackOverflow question](https://stackoverflow.com/questions/21224361/calculate-intersection-of-two-lines-using-integers-only/62819649#62819649),
+the answers to which mostly seem to do what I'm looking for. I'm not a good mathematician by any
+means so the below code might not be stable in all situations, but it seems to work in a quick demo
+I whipped up.
 
-I also posted the solution [here on StackOverflow](https://stackoverflow.com/a/62819649/383609) for posterity.
+I also posted the solution [here on StackOverflow](https://stackoverflow.com/a/62819649/383609) for
+posterity.
 
 ```rust
 /// 2D integer point
@@ -102,12 +111,16 @@ fn intersection(l1: &Line, l2: &Line) -> Option<(Point, bool)> {
 }
 ```
 
-In the demo, two line segments (red and green) are drawn. If they intersect and the point of intersection is on both line segments, a magenta dot is drawn at that point:
+In the demo, two line segments (red and green) are drawn. If they intersect and the point of
+intersection is on both line segments, a magenta dot is drawn at that point:
 
 ![Two line segments with intersection on both line segments, denoted by magenta dot](/assets/images/intersect.png)
 
-If the lines intersect, but the intersection does not lie on both line _segments_ (i.e. the `is_on_segments` flag is `false`) , a cyan dot is drawn at the intersection:
+If the lines intersect, but the intersection does not lie on both line _segments_ (i.e. the
+`is_on_segments` flag is `false`) , a cyan dot is drawn at the intersection:
 
 ![Two line segments with intersection off both lines](/assets/images/intersect-off-line.png).
 
-Now that this is out of the way, I should be able to focus on getting thick line support for polylines, polygons and triangles working, as the above intersection logic is required to get "miter" style joints working correctly.
+Now that this is out of the way, I should be able to focus on getting thick line support for
+polylines, polygons and triangles working, as the above intersection logic is required to get
+"miter" style joints working correctly.

@@ -1,32 +1,34 @@
----
++++
 layout: post
 title: "Optimising Rust: Clockwise Triangles"
 date: 2020-07-25 16:00:00
 categories: rust
 image: triangle-sort.png
----
++++
 
-Welcome to another pointless tangent into the exciting world of line joints in [embedded-graphics](https://crates.io/crates/embedded-graphics)! `embedded-graphics` is an integer only, iterator
-based no-std graphics library for environments with low resource availability. This time, we'll be
-looking at some not-so-great optimisations made to a point sorting function.
+Welcome to another pointless tangent into the exciting world of line joints in
+[embedded-graphics](https://crates.io/crates/embedded-graphics)! `embedded-graphics` is an integer
+only, iterator based no-std graphics library for environments with low resource availability. This
+time, we'll be looking at some not-so-great optimisations made to a point sorting function.
 
-**Update: A kind Twitter user pointed out a more optimised solution for triangles which you can find [here](/rust/2020/07/26/perf-addendum.html).**
+**Update: A kind Twitter user pointed out a more optimised solution for triangles which you can find
+[here](/rust/2020/07/26/perf-addendum.html).**
 
 ## Some context
 
 I've already covered [integer-only line intersections](), a building block for computing the corners
 of both mitered and bevelled line joints. Between then and now, I've written some test code to
 triangulate between these computed corners and form a set of thick lines. Below is an example of a
-triangle. You can see (if you squint hard enough) the wireframe component triangles on the left,
-and the final filled triangle on the right. Looks alright!
+triangle. You can see (if you squint hard enough) the wireframe component triangles on the left, and
+the final filled triangle on the right. Looks alright!
 
 ![Wireframe triangle with thick stroke](/assets/images/tri-wireframe.png)
 ![Filled triangle with thick stroke](/assets/images/tri-filled.png)
 
 Now the issue is stroke offsets. Embedded-graphics allows three stroke positions relative to the
 theoretical "skeleton" lines of a shape: centered, inside and outside. To ensure the offset remains
-on the same side of each edge of the triangle (or polygon), we need to ensure that all points in
-the shape are sorted in clockwise order. This allows us to derive the outside lines highlighted in
+on the same side of each edge of the triangle (or polygon), we need to ensure that all points in the
+shape are sorted in clockwise order. This allows us to derive the outside lines highlighted in
 magenta in the image below:
 
 ![Triangle outer edge highlighted](/assets/images/tri-outside.png)
@@ -35,16 +37,19 @@ If the points aren't sorted correctly, some lines will flip sides over their len
 
 ## The approach
 
-I'll focus on triangles for this article, but the approach described here should work for any number of points.
+I'll focus on triangles for this article, but the approach described here should work for any number
+of points.
 
 Because embedded-graphics aims to be as fast as possible, it tries to avoid floating point maths
 when possible. Conventional triangle sorting algorithms use the dot product of two vectors to
 determine order, which typically requires a `tan()` call (I think? What do I look like, a
 mathsologist?) so we'll have to find a different solution.
 
-Luckily, there's an integer-only method as described in [this Stackoverflow answer](https://stackoverflow.com/a/6989383/383609) to sort two points by angle.
+Luckily, there's an integer-only method as described in
+[this Stackoverflow answer](https://stackoverflow.com/a/6989383/383609) to sort two points by angle.
 
-We can use this sorting function as a predicate to the builtin `sort_unstable_by` method in Rust, but we need to make a few changes first.
+We can use this sorting function as a predicate to the builtin `sort_unstable_by` method in Rust,
+but we need to make a few changes first.
 
 This is the original C(++?) from <https://stackoverflow.com/a/6989383/383609>:
 
@@ -219,7 +224,8 @@ fn sort_clockwise_use_ordering(a: Point, b: Point, center: Point) -> Ordering {
 }
 ```
 
-That's better! In terms of style, I'm happy with where this is at so I won't change it any futher. Performance-wise, though, surely we can tune it some more?
+That's better! In terms of style, I'm happy with where this is at so I won't change it any futher.
+Performance-wise, though, surely we can tune it some more?
 
 ## Performance tuning
 
@@ -429,7 +435,8 @@ criterion_main!(sort);
 
 ### Polygons
 
-What's the performance like for shapes with more than three points (i.e. polygons)? That's easy enough to test with a benchmark with more points in it:
+What's the performance like for shapes with more than three points (i.e. polygons)? That's easy
+enough to test with a benchmark with more points in it:
 
 ```rust
 b.iter(|| {
@@ -470,23 +477,34 @@ The only point that is moved between the two screenshots is `P2` in the first (b
 # Conclusion
 
 So, which version is best? Considering they all have about the same performance, I went with
-`sort_clockwise_use_ordering`. I think it offers a good balance between readability and
-performance (by being basically the same as the naive `bool` C port). If the other methods improved
-performance a large amount, I might've gone with the Pro Rust™ nested `match` with guards, but it's
-certainly not easily read.
+`sort_clockwise_use_ordering`. I think it offers a good balance between readability and performance
+(by being basically the same as the naive `bool` C port). If the other methods improved performance
+a large amount, I might've gone with the Pro Rust™ nested `match` with guards, but it's certainly
+not easily read.
 
 ![You never stopped to think whether you should dot jpeg](/assets/images/should-could.jpeg)
 
-Performance stuff is always worth checking if you're not sure! It's also pretty simple with `criterion` doing most of the heavy lifting.
+Performance stuff is always worth checking if you're not sure! It's also pretty simple with
+`criterion` doing most of the heavy lifting.
 
-That said, always take microbenchmarks with a grain of salt. In this case, that is even more relevant as architecture differences between the target ARMv7 CPUs embedded-graphics is designed for and the beefy x64 the benchmarks are running on may have vastly different performance profiles. Ideally, benchmark on your target hardware if you can.
+That said, always take microbenchmarks with a grain of salt. In this case, that is even more
+relevant as architecture differences between the target ARMv7 CPUs embedded-graphics is designed for
+and the beefy x64 the benchmarks are running on may have vastly different performance profiles.
+Ideally, benchmark on your target hardware if you can.
 
-The final benchmark iteration time is about 10ns on my desktop. This post only discusses part of the final algorithm, so it does add up, but for now there are bigger fish to fry...
+The final benchmark iteration time is about 10ns on my desktop. This post only discusses part of the
+final algorithm, so it does add up, but for now there are bigger fish to fry...
 
-Another thing to do would be to look at the generated assembly. This might be important for optimising on ARM targets without being able to run benches on the target hardware, but I'll uhh leave that as an exercise for the reader because I can barely read assembly as it is, let alone grok the performance of individual instructions.
+Another thing to do would be to look at the generated assembly. This might be important for
+optimising on ARM targets without being able to run benches on the target hardware, but I'll uhh
+leave that as an exercise for the reader because I can barely read assembly as it is, let alone grok
+the performance of individual instructions.
 
 > If you got this far, thanks for reading! If you need a fast, featureful, flexible, easy to use
-> graphics library for your no-std environment, consider using [`embedded-graphics`](https://crates.io/crates/embedded-graphics) for your next project. It even comes with a
-> [simulator!](https://crates.io/crates/embedded-graphics-simulator).
+> graphics library for your no-std environment, consider using
+> [`embedded-graphics`](https://crates.io/crates/embedded-graphics) for your next project. It even
+> comes with a [simulator!](https://crates.io/crates/embedded-graphics-simulator).
 >
-> If you found this article or `embedded-graphics` itself useful, please consider supporting my work on [Github sponsors](https://github.com/sponsors/jamwaffles) or [Liberapay](https://liberapay.com/jamwaffles/).
+> If you found this article or `embedded-graphics` itself useful, please consider supporting my work
+> on [Github sponsors](https://github.com/sponsors/jamwaffles) or
+> [Liberapay](https://liberapay.com/jamwaffles/).

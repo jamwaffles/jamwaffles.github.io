@@ -1,13 +1,15 @@
----
++++
 layout: post
 title:  "Optimising out calls to `new()`"
 date:   2018-12-13T20:13:21+00:00
 categories: rust
----
++++
 
 Rust (and LLVM) are _really_ good at optimising things.
 
-I have a struct, `TrajectoryStep`, that I pass to some methods in my program. I don't want to use positional arguments as it's impossible to tell what `some_func(f32, f32, f32)` might actually require. It looks like this:
+I have a struct, `TrajectoryStep`, that I pass to some methods in my program. I don't want to use
+positional arguments as it's impossible to tell what `some_func(f32, f32, f32)` might actually
+require. It looks like this:
 
 ```rust
 pub struct TrajectoryStep {
@@ -37,9 +39,11 @@ let step = TrajectoryStep::new(10.0, 10.0);
 let step = TrajectoryStep { position: 10.0, velocity: 10.0, time: 0.0 };
 ```
 
-Because Rust and LLVM are friggin spectacular bits of technology, these two invocations **compile down to the same machine code.**
+Because Rust and LLVM are friggin spectacular bits of technology, these two invocations **compile
+down to the same machine code.**
 
-As can be seen [on Godbolt.org](https://godbolt.org/z/8-TxTR), the assembly output by rustc 1.31.0 looks like this:
+As can be seen [on Godbolt.org](https://godbolt.org/z/8-TxTR), the assembly output by rustc 1.31.0
+looks like this:
 
 ```asm
 example::TrajectoryStep::new:
@@ -51,6 +55,7 @@ example::TrajectoryStep::new:
         ret
 ```
 
-Being able to have easily read code with zero performance penalty is yet another reason I like Rust so much.
+Being able to have easily read code with zero performance penalty is yet another reason I like Rust
+so much.
 
 As you were!

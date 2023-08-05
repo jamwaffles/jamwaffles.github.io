@@ -1,16 +1,21 @@
----
++++
 layout: post
 title:  "A white (and red and green) Christmas"
 date:   2016-10-24 09:55:05 PM
 categories: rust
 image: rgw-header.jpg
----
++++
 
-Here's a quick one; I'm making a Christmas display out of a bunch of serially controllable APA106 RGB LEDs, but how do I turn a value of `0 – 255` into a glorious RGW (Red Green White) struct with the correct colour, and the correct wrapping rules?
+Here's a quick one; I'm making a Christmas display out of a bunch of serially controllable APA106
+RGB LEDs, but how do I turn a value of `0 – 255` into a glorious RGW (Red Green White) struct with
+the correct colour, and the correct wrapping rules?
 
 ## First, some theory
 
-The code in the next section is based on the RGB linear colour wheel approximation from the [Adafruit NeoPixel library](https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino#L123). So that I can make modifications to the generated colours, it helps to first visualise the RGB brightnesses against time. For a rainbow RGB pattern, that looks a bit like this:
+The code in the next section is based on the RGB linear colour wheel approximation from the
+[Adafruit NeoPixel library](https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino#L123).
+So that I can make modifications to the generated colours, it helps to first visualise the RGB
+brightnesses against time. For a rainbow RGB pattern, that looks a bit like this:
 
 ![Linear RGB graph](/assets/images/rgb-linear.png)
 
@@ -18,7 +23,8 @@ We'll get onto the RGW stuff in a sec.
 
 ## Code
 
-I'm writing this project in Rust, however my code is modified from [the original RGB wheel C code from Adafruit](https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino#L123).
+I'm writing this project in Rust, however my code is modified from
+[the original RGB wheel C code from Adafruit](https://github.com/adafruit/Adafruit_NeoPixel/blob/master/examples/strandtest/strandtest.ino#L123).
 
 ### RGB
 
@@ -39,7 +45,9 @@ uint32_t Wheel(byte WheelPos) {
 }
 ```
 
-Easy stuff. It's not perfect because it's linear instead of sinusoidal as we saw in the graph above, but it makes a good enough approximation for fading some LEDs over the rainbow. And it uses simple integer maths which is nice and fast.
+Easy stuff. It's not perfect because it's linear instead of sinusoidal as we saw in the graph above,
+but it makes a good enough approximation for fading some LEDs over the rainbow. And it uses simple
+integer maths which is nice and fast.
 
 This is what the same thing (still RGB) looks like in Rust:
 
@@ -72,11 +80,14 @@ Note that I'm using a struct to return the values because Rust is cool, and stru
 
 ### Chrismus – RGW
 
-Apparently the colours of Christmas are red, green and white. To this end, we need to make a slight modification to our wheel function to fade through white instead of blue:
+Apparently the colours of Christmas are red, green and white. To this end, we need to make a slight
+modification to our wheel function to fade through white instead of blue:
 
 ![Linear RGW graph](/assets/images/rgw-linear.png)
 
-There's one caveat to this algorithm: between white and red, there's this wishy washy pink colour that shows up. It's not that bad, but on my LED display it looks odd due to the other colours being reasonably well saturated.
+There's one caveat to this algorithm: between white and red, there's this wishy washy pink colour
+that shows up. It's not that bad, but on my LED display it looks odd due to the other colours being
+reasonably well saturated.
 
 The code to do this looks like the following:
 
@@ -100,7 +111,8 @@ pub fn christmas_wheel(wheelpos: u8) -> Apa106Led {
 }
 ```
 
-Proper wrapping was a bit hard to figure out because red is the only colour that wraps. Drawing diagrams really helps with this kind of stuff.
+Proper wrapping was a bit hard to figure out because red is the only colour that wraps. Drawing
+diagrams really helps with this kind of stuff.
 
 Sw33t!
 
