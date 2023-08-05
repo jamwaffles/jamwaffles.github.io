@@ -3,6 +3,8 @@ layout = "post"
 title = "Logging analytics events in a testable way with React and Redux"
 date = "2017-09-21 09:36:15"
 categories = "web"
+
+[extra]
 image = "logging-header.jpg"
 +++
 

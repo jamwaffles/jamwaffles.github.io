@@ -3,6 +3,8 @@ layout = "post"
 title = "Spindle speed control using LinuxCNC 2.7 with a Huanyang inverter"
 date = "2015-12-04 20:14:47"
 categories = "cnc"
+
+[extra]
 image = "huanyang-header-2.jpg"
 +++
 
@@ -12,6 +14,8 @@ to use control panel on the front. It is, however, possible to control the VFD f
 using the [`M3` and `M5` commands](http://linuxcnc.org/docs/html/gcode/m-code.html#mcode:m3-m4-m5)
 (I haven't been able to get `M4`, reverse rotation, working yet). What's also neat is we can get the
 machine to wait for the spindle to come up to speed before moving to the next line of GCode.
+
+<!-- more -->
 
 The first thing I tried was [PDM](https://en.wikipedia.org/wiki/Pulse-density_modulation) using
 signals from the parallel port. This doesn't set the speed accurately _at all_ and the PDM/speed

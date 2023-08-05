@@ -3,6 +3,8 @@ layout = "post"
 title = "Embedded Graphics 0.4.7 and TinyBMP 0.1.0"
 date = "2019-03-04 19:04:00"
 categories = "rust"
+
+[extra]
 image = "tinybmp-header.jpg"
 +++
 

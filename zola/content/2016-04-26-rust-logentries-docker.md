@@ -3,6 +3,8 @@ layout = "post"
 title = "Parsing Logentries output safely using Rust"
 date = "2016-04-26 10:14:03"
 categories = "rust"
+
+[extra]
 image = "logentries-header.jpg"
 +++
 

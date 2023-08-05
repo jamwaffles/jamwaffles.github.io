@@ -3,6 +3,8 @@ layout = "post"
 title = "A white (and red and green) Christmas"
 date = "2016-10-24 22:55:05"
 categories = "rust"
+
+[extra]
 image = "rgw-header.jpg"
 +++
 

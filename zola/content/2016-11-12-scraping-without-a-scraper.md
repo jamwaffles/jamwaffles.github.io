@@ -3,6 +3,8 @@ layout = "post"
 title = "Scraping without a scraper"
 date = "2016-11-12 22:04:14"
 categories = "workshop"
+
+[extra]
 image = "scraping-header.jpg"
 +++
 

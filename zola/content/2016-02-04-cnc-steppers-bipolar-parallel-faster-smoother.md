@@ -3,6 +3,8 @@ layout = "post"
 title = "Faster, smoother, better, stronger (at high speeds): bipolar parallel stepper wiring"
 date = "2016-02-04 22:03:30"
 categories = "cnc"
+
+[extra]
 image = "stepper-header.jpg"
 +++
 

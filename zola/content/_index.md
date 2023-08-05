@@ -1,6 +1,7 @@
 +++
 title = "James Waples"
 sort_by = "date"
-template = "default.tera"
-page_template = "post.tera"
+template = "index.html"
+page_template = "post.html"
+generate_feed = true
 +++
