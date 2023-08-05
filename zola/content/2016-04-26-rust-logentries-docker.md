@@ -5,7 +5,7 @@ date = "2016-04-26 10:14:03"
 categories = "rust"
 
 [extra]
-image = "logentries-header.jpg"
+image = "images/logentries-header.jpg"
 +++
 
 I'm fascinated by Rust for it's safety and speed, but also because it's simple to write low level

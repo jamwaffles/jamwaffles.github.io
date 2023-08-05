@@ -5,7 +5,7 @@ date = "2015-12-04 20:14:47"
 categories = "cnc"
 
 [extra]
-image = "huanyang-header-2.jpg"
+image = "images/huanyang-header-2.jpg"
 +++
 
 Huanyang branded VFD drives are ubiquitous on eBay and other sites like AliExpress. I bought one

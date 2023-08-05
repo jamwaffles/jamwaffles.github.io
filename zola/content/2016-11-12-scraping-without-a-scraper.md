@@ -5,7 +5,7 @@ date = "2016-11-12 22:04:14"
 categories = "workshop"
 
 [extra]
-image = "scraping-header.jpg"
+image = "images/scraping-header.jpg"
 +++
 
 In between watching the rain and emptying all the shmoo out of my air compressor (long overdue), I

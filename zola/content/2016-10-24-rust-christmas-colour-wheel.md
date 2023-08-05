@@ -5,7 +5,7 @@ date = "2016-10-24 22:55:05"
 categories = "rust"
 
 [extra]
-image = "rgw-header.jpg"
+image = "images/rgw-header.jpg"
 +++
 
 Here's a quick one; I'm making a Christmas display out of a bunch of serially controllable APA106

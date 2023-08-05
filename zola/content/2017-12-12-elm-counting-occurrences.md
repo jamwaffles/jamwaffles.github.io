@@ -5,7 +5,7 @@ date = "2017-12-12 14:03:18"
 categories = "elm"
 
 [extra]
-image = "elm-tag-header.jpg"
+image = "images/elm-tag-header.jpg"
 +++
 
 So. Elm. It's been an interesting experience for me, coming from a procedural language (JS)

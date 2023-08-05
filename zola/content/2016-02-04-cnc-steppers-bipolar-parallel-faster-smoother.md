@@ -5,7 +5,7 @@ date = "2016-02-04 22:03:30"
 categories = "cnc"
 
 [extra]
-image = "stepper-header.jpg"
+image = "images/stepper-header.jpg"
 +++
 
 Quick tip: if you're looking for higher maximum speeds with your bipolar stepper motors, try wiring

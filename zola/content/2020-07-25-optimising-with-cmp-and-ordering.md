@@ -5,7 +5,7 @@ date = "2020-07-25 16:00:00"
 categories = "rust"
 
 [extra]
-image = "triangle-sort.png"
+image = "images/triangle-sort.png"
 +++
 
 Welcome to another pointless tangent into the exciting world of line joints in

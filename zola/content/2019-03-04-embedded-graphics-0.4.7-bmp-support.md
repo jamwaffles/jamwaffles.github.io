@@ -5,7 +5,7 @@ date = "2019-03-04 19:04:00"
 categories = "rust"
 
 [extra]
-image = "tinybmp-header.jpg"
+image = "images/tinybmp-header.jpg"
 +++
 
 [Embedded graphics](https://crates.io/crates/embedded-graphics) 0.4.7 has been released, along with

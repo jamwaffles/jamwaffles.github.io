@@ -5,7 +5,7 @@ date = "2017-10-06 04:42:52"
 categories = "rust"
 
 [extra]
-image = "private-repo-clone-header.jpg"
+image = "images/private-repo-clone-header.jpg"
 +++
 
 Cloning a private Github repo using SSH auth in Rust has proved to be a pretty gnarly problem (for
