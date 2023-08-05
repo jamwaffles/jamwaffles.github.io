@@ -3,6 +3,7 @@ layout = "post"
 title = "A white (and red and green) Christmas"
 date = "2016-10-24 22:55:05"
 categories = "rust"
+path = "rust/2016/10/24/rust-christmas-colour-wheel.html"
 
 [extra]
 image = "images/rgw-header.jpg"

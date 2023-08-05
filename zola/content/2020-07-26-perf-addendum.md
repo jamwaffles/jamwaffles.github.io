@@ -3,6 +3,7 @@ layout = "post"
 title = "Clockwise Triangles Performance: Addendum"
 date = "2020-07-26 09:30:00"
 categories = "rust"
+path = "rust/2020/07/26/perf-addendum.html"
 +++
 
 A quick update on my [previous article](/rust/2020/07/25/optimising-with-cmp-and-ordering.html).

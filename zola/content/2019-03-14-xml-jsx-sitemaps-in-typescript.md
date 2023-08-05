@@ -3,6 +3,7 @@ layout = "post"
 title = "XML sitemaps in React with Typescript"
 date = "2019-03-14 09:25:00"
 categories = "typescript"
+path = "typescript/2019/03/14/xml-jsx-sitemaps-in-typescript.html"
 +++
 
 I maintain the [Repositive website](https://repositive.io) which uses React for the frontend and a

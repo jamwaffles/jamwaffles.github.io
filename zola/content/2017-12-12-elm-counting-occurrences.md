@@ -3,6 +3,7 @@ layout = "post"
 title = "Elm: counting groups of items in a list"
 date = "2017-12-12 14:03:18"
 categories = "elm"
+path = "elm/2017/12/12/elm-counting-occurrences.html"
 
 [extra]
 image = "images/elm-tag-header.jpg"

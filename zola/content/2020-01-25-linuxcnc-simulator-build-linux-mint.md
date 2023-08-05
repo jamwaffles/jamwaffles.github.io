@@ -1,8 +1,9 @@
 +++
 layout = "post"
-title = "'Building a LinuxCNC 2.8 simulator on Linux Mint'"
+title = "Building a LinuxCNC 2.8 simulator on Linux Mint"
 date = "2020-01-25T12:21:06+00:00"
 categories = "cnc"
+path = "cnc/2020/01/25/linuxcnc-simulator-build-linux-mint.html"
 +++
 
 A quick guide on how to set up a LinuxCNC simulator on Linux Mint. The LinuxCNC simulator is useful

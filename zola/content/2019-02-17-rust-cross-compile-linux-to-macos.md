@@ -3,6 +3,7 @@ layout = "post"
 title = "Cross compiling Rust from Linux to macOS"
 date = "2019-02-17 13:40:00"
 categories = "rust"
+path = "rust/2019/02/17/rust-cross-compile-linux-to-macos.html"
 +++
 
 I've recently been working on a Rust project at [work](https://repositive.io/) which requires

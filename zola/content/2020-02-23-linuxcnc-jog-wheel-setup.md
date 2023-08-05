@@ -1,8 +1,9 @@
 +++
 layout = "post"
-title = "'Setting up an MPG Jog Pendant in LinuxCNC'"
+title = "Setting up an MPG Jog Pendant in LinuxCNC"
 date = "2020-02-23T12:06:37+00:00"
 categories = "[cnc]"
+path = "cnc/2020/02/23/linuxcnc-jog-wheel-setup.html"
 +++
 
 CNC jog pendants are super useful devices for quick setup and configuration of CNC machines. A quick

@@ -3,6 +3,7 @@ layout = "post"
 title = "Scraping without a scraper"
 date = "2016-11-12 22:04:14"
 categories = "workshop"
+path = "workshop/2016/11/12/scraping-without-a-scraper.html"
 
 [extra]
 image = "images/scraping-header.jpg"

@@ -3,6 +3,7 @@ layout = "post"
 title = "Cloning private Github repos in Rust"
 date = "2017-10-06 04:42:52"
 categories = "rust"
+path = "rust/2017/10/06/git2-rs-cloning-private-github-repos.html"
 
 [extra]
 image = "images/private-repo-clone-header.jpg"

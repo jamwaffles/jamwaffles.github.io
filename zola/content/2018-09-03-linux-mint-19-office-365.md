@@ -3,6 +3,7 @@ layout = "post"
 title = "Office 365 in Linux Mint 19: Calendar, Email, Notifications"
 date = "2018-09-03 11:42:00"
 categories = "linux"
+path = "linux/2018/09/03/linux-mint-19-office-365.html"
 +++
 
 # Office 365 mail, calendar and notifications in Linux Mint 19

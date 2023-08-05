@@ -3,6 +3,7 @@ layout = "post"
 title = "Announcing linuxcnc-hal: write LinuxCNC HAL components in Rust"
 date = "2020-01-27T23:26:43+00:00"
 categories = "[cnc, rust]"
+path = "cnc/rust/2020/01/27/writing-a-linuxcnc-driver.html"
 +++
 
 I'd like to announce two crates I've been working to integrate Rust components into LinuxCNC. You

@@ -3,6 +3,7 @@ layout = "post"
 title = "Persistent state with Tower Web"
 date = "2019-06-03 13:34:00"
 categories = "rust"
+path = "rust/2019/06/03/diesel-and-tower-web.html"
 +++
 
 We're building a new product at [work](https://repositive.io/), for which we've decided to use Rust

@@ -3,6 +3,7 @@ layout = "post"
 title = "Default arguments for cooler testing"
 date = "2018-12-10 22:02:59"
 categories = "typescript"
+path = "typescript/2018/12/10/default-arguments-for-cooler-testing.html"
 +++
 
 In my [other post](/typescript/2018/12/10/typechecking-helper-functions-in-typescript.html) about

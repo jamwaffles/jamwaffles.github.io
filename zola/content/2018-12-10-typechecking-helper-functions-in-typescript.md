@@ -3,6 +3,7 @@ layout = "post"
 title = "Typechecking builder functions in Typescript"
 date = "2018-12-10 21:30:36"
 categories = "typescript"
+path = "typescript/2018/12/10/typechecking-helper-functions-in-typescript.html"
 +++
 
 I've been working on toasting a lot of our tech debt [at Repositive](https://repositive.io)

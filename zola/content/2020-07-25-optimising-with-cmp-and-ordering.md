@@ -3,6 +3,7 @@ layout = "post"
 title = "Optimising Rust: Clockwise Triangles"
 date = "2020-07-25 16:00:00"
 categories = "rust"
+path = "rust/2020/07/25/optimising-with-cmp-and-ordering.html"
 
 [extra]
 image = "images/triangle-sort.png"

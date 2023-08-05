@@ -3,6 +3,7 @@ layout = "post"
 title = "A const builder pattern in Rust"
 date = "2022-07-03 14:43:59"
 categories = "rust"
+path = "rust/2022/07/03/const-builder-pattern.html"
 +++
 
 During the creation of [EtherCrab](https://github.com/ethercrab-rs/ethercrab), a pure-Rust EtherCAT
