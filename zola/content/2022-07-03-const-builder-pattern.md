@@ -1,8 +1,8 @@
 +++
-layout: post
-title: "A const builder pattern in Rust"
-date: 2022-07-03 14:43:59
-categories: rust
+layout = "post"
+title = "A const builder pattern in Rust"
+date = "2022-07-03 14:43:59"
+categories = "rust"
 +++
 
 During the creation of [EtherCrab](https://github.com/ethercrab-rs/ethercrab), a pure-Rust EtherCAT

@@ -1,8 +1,8 @@
 +++
-layout: post
-title: "Weird high frequency behaviour on your STM32 pins? Change the mode!"
-date: 2021-07-24 20:35:38
-categories: rust
+layout = "post"
+title = "Weird high frequency behaviour on your STM32 pins? Change the mode!"
+date = "2021-07-24 20:35:38"
+categories = "rust"
 +++
 
 A quick PSA in case you're at a loss as to why you're seeing strange behaviour from your STM32 MCU

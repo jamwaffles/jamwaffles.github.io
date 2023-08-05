@@ -1,8 +1,8 @@
 +++
-layout: post
-title: "Clockwise Triangles Performance: Addendum"
-date: 2020-07-26 09:30:00
-categories: rust
+layout = "post"
+title = "Clockwise Triangles Performance: Addendum"
+date = "2020-07-26 09:30:00"
+categories = "rust"
 +++
 
 A quick update on my [previous article](/rust/2020/07/25/optimising-with-cmp-and-ordering.html).

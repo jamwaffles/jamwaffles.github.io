@@ -1,8 +1,8 @@
 +++
-layout: post
-title:  "Setting the GDB safe-path cross platform"
-date:   2018-02-19 20:52:00
-categories: rust
+layout = "post"
+title = "Setting the GDB safe-path cross platform"
+date = "2018-02-19 20:52:00"
+categories = "rust"
 +++
 
 I've been developing an embedded Rust app (yay!) on Windows (blegh) recently. The Rust team have put

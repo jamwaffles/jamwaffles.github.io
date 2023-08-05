@@ -1,9 +1,9 @@
 +++
-layout: post
-title:  "A white (and red and green) Christmas"
-date:   2016-10-24 09:55:05 PM
-categories: rust
-image: rgw-header.jpg
+layout = "post"
+title = "A white (and red and green) Christmas"
+date = "2016-10-24 22:55:05"
+categories = "rust"
+image = "rgw-header.jpg"
 +++
 
 Here's a quick one; I'm making a Christmas display out of a bunch of serially controllable APA106

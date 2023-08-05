@@ -1,9 +1,9 @@
 +++
-layout: post
-title: "Optimising Rust: Clockwise Triangles"
-date: 2020-07-25 16:00:00
-categories: rust
-image: triangle-sort.png
+layout = "post"
+title = "Optimising Rust: Clockwise Triangles"
+date = "2020-07-25 16:00:00"
+categories = "rust"
+image = "triangle-sort.png"
 +++
 
 Welcome to another pointless tangent into the exciting world of line joints in
@@ -16,11 +16,12 @@ time, we'll be looking at some not-so-great optimisations made to a point sortin
 
 ## Some context
 
-I've already covered [integer-only line intersections](), a building block for computing the corners
-of both mitered and bevelled line joints. Between then and now, I've written some test code to
-triangulate between these computed corners and form a set of thick lines. Below is an example of a
-triangle. You can see (if you squint hard enough) the wireframe component triangles on the left, and
-the final filled triangle on the right. Looks alright!
+I've already covered
+[integer-only line intersections](@/2020-07-09-integer-graphics-line-intersection.md), a building
+block for computing the corners of both mitered and bevelled line joints. Between then and now, I've
+written some test code to triangulate between these computed corners and form a set of thick lines.
+Below is an example of a triangle. You can see (if you squint hard enough) the wireframe component
+triangles on the left, and the final filled triangle on the right. Looks alright!
 
 ![Wireframe triangle with thick stroke](/assets/images/tri-wireframe.png)
 ![Filled triangle with thick stroke](/assets/images/tri-filled.png)

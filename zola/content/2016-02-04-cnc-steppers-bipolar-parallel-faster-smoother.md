@@ -1,9 +1,9 @@
 +++
-layout: post
-title:  "Faster, smoother, better, stronger (at high speeds): bipolar parallel stepper wiring"
-date:   2016-02-04 22:03:30
-categories: cnc
-image: stepper-header.jpg
+layout = "post"
+title = "Faster, smoother, better, stronger (at high speeds): bipolar parallel stepper wiring"
+date = "2016-02-04 22:03:30"
+categories = "cnc"
+image = "stepper-header.jpg"
 +++
 
 Quick tip: if you're looking for higher maximum speeds with your bipolar stepper motors, try wiring

@@ -1,9 +1,9 @@
 +++
-layout: post
-title:  "Scraping without a scraper"
-date:   2016-11-12 09:04:14 PM
-categories: workshop
-image: scraping-header.jpg
+layout = "post"
+title = "Scraping without a scraper"
+date = "2016-11-12 22:04:14"
+categories = "workshop"
+image = "scraping-header.jpg"
 +++
 
 In between watching the rain and emptying all the shmoo out of my air compressor (long overdue), I

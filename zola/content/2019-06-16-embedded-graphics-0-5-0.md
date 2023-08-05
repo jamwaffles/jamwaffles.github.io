@@ -1,8 +1,8 @@
 +++
-layout: post
-title:  "Embedded graphics 0.5.0"
-date:   2019-06-16 16:00:00
-categories: rust
+layout = "post"
+title = "Embedded graphics 0.5.0"
+date = "2019-06-16 16:00:00"
+categories = "rust"
 +++
 
 Version 0.5.0 is released! This is a pretty big one, focussed around ergonomics. There are new

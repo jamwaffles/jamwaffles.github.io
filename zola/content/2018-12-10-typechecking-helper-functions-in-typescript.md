@@ -1,8 +1,8 @@
 +++
-layout: post
-title:  "Typechecking builder functions in Typescript"
-date:   2018-12-10 21:30:36
-categories: typescript
+layout = "post"
+title = "Typechecking builder functions in Typescript"
+date = "2018-12-10 21:30:36"
+categories = "typescript"
 +++
 
 I've been working on toasting a lot of our tech debt [at Repositive](https://repositive.io)

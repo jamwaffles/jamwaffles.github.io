@@ -1,9 +1,9 @@
 +++
-layout: post
-title:  "Spindle speed control using LinuxCNC 2.7 with a Huanyang inverter"
-date:   2015-12-04 20:14:47
-categories: cnc
-image: huanyang-header-2.jpg
+layout = "post"
+title = "Spindle speed control using LinuxCNC 2.7 with a Huanyang inverter"
+date = "2015-12-04 20:14:47"
+categories = "cnc"
+image = "huanyang-header-2.jpg"
 +++
 
 Huanyang branded VFD drives are ubiquitous on eBay and other sites like AliExpress. I bought one

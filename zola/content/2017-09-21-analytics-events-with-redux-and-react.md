@@ -1,9 +1,9 @@
 +++
-layout: post
-title:  "Logging analytics events in a testable way with React and Redux"
-date:   2017-09-21 09:36:15
-categories: web
-image: logging-header.jpg
+layout = "post"
+title = "Logging analytics events in a testable way with React and Redux"
+date = "2017-09-21 09:36:15"
+categories = "web"
+image = "logging-header.jpg"
 +++
 
 One of my main responsibilites at [TotallyMoney](https://www.totallymoney.com/) was to take care of

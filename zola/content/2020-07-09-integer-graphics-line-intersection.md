@@ -1,8 +1,8 @@
 +++
-layout: post
-title: "Integer Graphics: Line Intersection"
-date: 2020-07-09 17:11:00
-categories: [rust, embedded-graphics]
+layout = "post"
+title = "Integer Graphics: Line Intersection"
+date = "2020-07-09 17:11:00"
+categories = "[rust, embedded-graphics]"
 +++
 
 Graphics can be a tricky topic, particularly when attempting to find anything on the internet these

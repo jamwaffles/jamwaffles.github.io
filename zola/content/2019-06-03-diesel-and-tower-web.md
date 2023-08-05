@@ -1,8 +1,8 @@
 +++
-layout: post
-title:  "Persistent state with Tower Web"
-date:   2019-06-03 13:34:00
-categories: rust
+layout = "post"
+title = "Persistent state with Tower Web"
+date = "2019-06-03 13:34:00"
+categories = "rust"
 +++
 
 We're building a new product at [work](https://repositive.io/), for which we've decided to use Rust

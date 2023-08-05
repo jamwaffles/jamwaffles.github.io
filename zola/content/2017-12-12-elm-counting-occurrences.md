@@ -1,9 +1,9 @@
 +++
-layout: post
-title:  "Elm: counting groups of items in a list"
-date:   2017-12-12 14:03:18
-categories: elm
-image: elm-tag-header.jpg
+layout = "post"
+title = "Elm: counting groups of items in a list"
+date = "2017-12-12 14:03:18"
+categories = "elm"
+image = "elm-tag-header.jpg"
 +++
 
 So. Elm. It's been an interesting experience for me, coming from a procedural language (JS)

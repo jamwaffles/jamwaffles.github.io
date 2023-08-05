@@ -1,9 +1,9 @@
 +++
-layout: post
-title:  "Embedded Graphics 0.4.7 and TinyBMP 0.1.0"
-date:   2019-03-04 19:04:00
-categories: rust
-image: tinybmp-header.jpg
+layout = "post"
+title = "Embedded Graphics 0.4.7 and TinyBMP 0.1.0"
+date = "2019-03-04 19:04:00"
+categories = "rust"
+image = "tinybmp-header.jpg"
 +++
 
 [Embedded graphics](https://crates.io/crates/embedded-graphics) 0.4.7 has been released, along with

@@ -1,9 +1,9 @@
 +++
-layout: post
-title:  "Cloning private Github repos in Rust"
-date:   2017-10-06 04:42:52
-categories: rust
-image: private-repo-clone-header.jpg
+layout = "post"
+title = "Cloning private Github repos in Rust"
+date = "2017-10-06 04:42:52"
+categories = "rust"
+image = "private-repo-clone-header.jpg"
 +++
 
 Cloning a private Github repo using SSH auth in Rust has proved to be a pretty gnarly problem (for

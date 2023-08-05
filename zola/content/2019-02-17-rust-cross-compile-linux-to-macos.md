@@ -1,8 +1,8 @@
 +++
-layout: post
-title:  "Cross compiling Rust from Linux to macOS"
-date:   2019-02-17 13:40:00
-categories: rust
+layout = "post"
+title = "Cross compiling Rust from Linux to macOS"
+date = "2019-02-17 13:40:00"
+categories = "rust"
 +++
 
 I've recently been working on a Rust project at [work](https://repositive.io/) which requires

@@ -1,8 +1,8 @@
 +++
-layout: post
-title:  "Optimising out calls to `new()`"
-date:   2018-12-13T20:13:21+00:00
-categories: rust
+layout = "post"
+title = "Optimising out calls to `new()`"
+date = "2018-12-13T20:13:21+00:00"
+categories = "rust"
 +++
 
 Rust (and LLVM) are _really_ good at optimising things.

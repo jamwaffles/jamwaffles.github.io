@@ -1,8 +1,8 @@
 +++
-layout: post
-title:  "Default arguments for cooler testing"
-date:   2018-12-10 22:02:59
-categories: typescript
+layout = "post"
+title = "Default arguments for cooler testing"
+date = "2018-12-10 22:02:59"
+categories = "typescript"
 +++
 
 In my [other post](/typescript/2018/12/10/typechecking-helper-functions-in-typescript.html) about
