@@ -132,7 +132,7 @@ more signals in your `.hal` files, and change the signal names in the PyVCP XML.
 All I need from the panel is the spindle RPM, a spindle-at-speed indicator and a Modbus comm OK
 light. It currently looks like this (panel on the right):
 
-![LinuxCNC with custom Huanyang panel screenshot](/assets/images/linuxcnc-spindle.png)
+![LinuxCNC with custom Huanyang panel screenshot](/images/linuxcnc-spindle.png)
 
 And here's the PyVCP XML to generate it:
 

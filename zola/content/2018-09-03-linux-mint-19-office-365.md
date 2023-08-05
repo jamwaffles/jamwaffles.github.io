@@ -22,7 +22,7 @@ apt install evolution evolution-ews evolution-plugins
    password a descriptive name. Once created, copy the generated password to your clipboard.
 1. Add your details like the following:
 
-   ![Office365 login details](/assets/images/mint-o365-details.png)
+   ![Office365 login details](/images/mint-o365-details.png)
 
    Enter your email address and password as usual. Under **Custom**, make sure **Username** is your
    email address, and **Server** is `outlook.office365.com`.

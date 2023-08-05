@@ -1,7 +1,9 @@
 @import "./variables.scss";
 @import "./header.scss";
 @import "./list.scss";
-@import "./highlight.scss";
+// We'll let Zola do the code highlight. This is legacy from the Jekyll days
+// @import "./highlight.scss";
+@import "./code.scss";
 @import "./post.scss";
 @import "./footer.scss";
 @import "./cv.scss";

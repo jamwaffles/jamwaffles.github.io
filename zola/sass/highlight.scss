@@ -105,6 +105,7 @@ pre {
     letter-spacing: -0.5px;
   }
 }
+
 // Comment
 .highlight .c {
   color: var(--hl-grey-light);
@@ -113,8 +114,7 @@ pre {
   color: var(--hl-red);
 }
 // Keyword
-.highlight .k,
-.z-source .z-storage {
+.highlight .k {
   color: var(--hl-purple);
 }
 .highlight .l {

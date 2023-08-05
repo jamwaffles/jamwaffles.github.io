@@ -29,7 +29,7 @@ electric scraper and a posh granite surface plate whereas I have a cast iron sur
 and a lathe toolbit. YMMV but if you're on a budget, I think you can get pretty good results without
 eye wateringly expensive equipment.
 
-![Scraping tools](/assets/images/scraping-tools.jpg)
+![Scraping tools](/images/scraping-tools.jpg)
 
 Scraping started with a small triangular file. This will make most sensible machinists cringe, but
 it works quite well and removes material more quickly than a scraping tool which sped up the initial
@@ -42,7 +42,7 @@ After a bunch of print/scrape/deburr/print cycles, I ended up with a pretty cons
 pattern. The surface is still full of file marks despite my best efforts to sand them down, but the
 most important thing is that it's a uniform surface. See what you think:
 
-![Scraping tools](/assets/images/scraping-header.jpg)
+![Scraping tools](/images/scraping-header.jpg)
 
 So it turns out that scraping is one of those pleasantly satisfying manual processes, and it gave me
 an excuse to break out the seldom used surface plate. I'd definitely like to get better at scraping

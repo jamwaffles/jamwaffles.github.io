@@ -326,7 +326,7 @@ the correct `PixelColor*` used in calling code. I'll explain that better in the 
 
 Let's walk through some of the steps to display this image on an embedded display:
 
-![Rust logo with rainbow.](/assets/images/rust-bmp-large.jpg)
+![Rust logo with rainbow.](/images/rust-bmp-large.jpg)
 
 The [SSD1331 crate](https://crates.io/crates/ssd1331) uses the new TinyBMP support in Embedded
 Graphics to draw colour images like the one in the header for this post. The SSD1331 is a 16 bit

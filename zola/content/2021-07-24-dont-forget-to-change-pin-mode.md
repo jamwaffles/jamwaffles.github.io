@@ -13,7 +13,7 @@ After successfully getting MCO (Microcontroller Clock Output) working on the onl
 find in the universe, I was seeing some strange behaviour when attempting to push the output
 frequency above 2MHz.
 
-![](/assets/images/mco/mco-1.png)
+![](/images/mco/mco-1.png)
 
 If you look at the measurements at the bottom, the frequency is correct but why is the amplitude so
 low and where's that DC offset come from?!
@@ -33,7 +33,7 @@ using the HAL or Rust, check your datasheet for the correct values to set.
 
 Now I can double the output frequency (8MHz) and get a far better defined squarewave:
 
-![](/assets/images/mco/mco-8mhz.png)
+![](/images/mco/mco-8mhz.png)
 
 ## Other speeds
 
@@ -41,7 +41,7 @@ I thought I'd experiment with `Speed::High` and `Speed::VeryHigh` too using a si
 
 Here's `Speed::High`, zoomed in a little bit:
 
-![](/assets/images/mco/pin-speed-high.png)
+![](/images/mco/pin-speed-high.png)
 
 The rise time is more than twice as good as `Medium`, giving us more frequency headroom.
 
@@ -50,7 +50,7 @@ traces between the MCU and the test point the scope is attached to.
 
 And `Speed::VeryHigh`:
 
-![](/assets/images/mco/pin-speed-veryhigh.png)
+![](/images/mco/pin-speed-veryhigh.png)
 
 Rise time has improved a bit from `High` (6ns down to 4ns) but the ringing has got a little bit
 worse. YMMV!

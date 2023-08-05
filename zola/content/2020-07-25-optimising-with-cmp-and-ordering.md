@@ -26,8 +26,8 @@ written some test code to triangulate between these computed corners and form a 
 Below is an example of a triangle. You can see (if you squint hard enough) the wireframe component
 triangles on the left, and the final filled triangle on the right. Looks alright!
 
-![Wireframe triangle with thick stroke](/assets/images/tri-wireframe.png)
-![Filled triangle with thick stroke](/assets/images/tri-filled.png)
+![Wireframe triangle with thick stroke](/images/tri-wireframe.png)
+![Filled triangle with thick stroke](/images/tri-filled.png)
 
 Now the issue is stroke offsets. Embedded-graphics allows three stroke positions relative to the
 theoretical "skeleton" lines of a shape: centered, inside and outside. To ensure the offset remains
@@ -35,7 +35,7 @@ on the same side of each edge of the triangle (or polygon), we need to ensure th
 shape are sorted in clockwise order. This allows us to derive the outside lines highlighted in
 magenta in the image below:
 
-![Triangle outer edge highlighted](/assets/images/tri-outside.png)
+![Triangle outer edge highlighted](/images/tri-outside.png)
 
 If the points aren't sorted correctly, some lines will flip sides over their length.
 
@@ -472,8 +472,8 @@ the sorting algorithm, as the sort function itself has a fixed input size.
 
 Now triangle points are correctly ordered!
 
-![Clockwise triangle #1](/assets/images/tri-clockwise-up.png)
-![Clockwise triangle #2](/assets/images/tri-clockwise-down.png)
+![Clockwise triangle #1](/images/tri-clockwise-up.png)
+![Clockwise triangle #2](/images/tri-clockwise-down.png)
 
 Notice the order of `P1`, `P2` and `P3` changes to keep the outside edge on the left of each line.
 The only point that is moved between the two screenshots is `P2` in the first (becoming `P3`).
@@ -486,7 +486,7 @@ So, which version is best? Considering they all have about the same performance,
 a large amount, I might've gone with the Pro Rust™ nested `match` with guards, but it's certainly
 not easily read.
 
-![You never stopped to think whether you should dot jpeg](/assets/images/should-could.jpeg)
+![You never stopped to think whether you should dot jpeg](/images/should-could.jpeg)
 
 Performance stuff is always worth checking if you're not sure! It's also pretty simple with
 `criterion` doing most of the heavy lifting.

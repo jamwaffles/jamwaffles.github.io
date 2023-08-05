@@ -115,12 +115,12 @@ fn intersection(l1: &Line, l2: &Line) -> Option<(Point, bool)> {
 In the demo, two line segments (red and green) are drawn. If they intersect and the point of
 intersection is on both line segments, a magenta dot is drawn at that point:
 
-![Two line segments with intersection on both line segments, denoted by magenta dot](/assets/images/intersect.png)
+![Two line segments with intersection on both line segments, denoted by magenta dot](/images/intersect.png)
 
 If the lines intersect, but the intersection does not lie on both line _segments_ (i.e. the
 `is_on_segments` flag is `false`) , a cyan dot is drawn at the intersection:
 
-![Two line segments with intersection off both lines](/assets/images/intersect-off-line.png).
+![Two line segments with intersection off both lines](/images/intersect-off-line.png).
 
 Now that this is out of the way, I should be able to focus on getting thick line support for
 polylines, polygons and triangles working, as the above intersection logic is required to get

@@ -37,7 +37,7 @@ trim the bare wires and solder them to a DB25 cable-end connector in a bit.
     <img style="max-width: 300px;" src="/assets/images/mesa-5i25-annotated.png" alt="Mesa 5i25 FPGA card product image" />
 </div>
 
-I'm using a [Mesa 5i25](/assets/images/mesa-5i25.png) FPGA card through a DB25 breakout cable (like
+I'm using a [Mesa 5i25](/images/mesa-5i25.png) FPGA card through a DB25 breakout cable (like
 [this one](https://www.ebay.co.uk/itm//380662654989)) connected to `P2`. Other Mesa cards with
 parallel port breakout options like the 6i25 should also work, but are untested.
 
