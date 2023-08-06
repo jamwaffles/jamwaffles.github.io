@@ -12,6 +12,8 @@ search for
 on AliExpress turns up a bunch of results. For this post, I'll cover connecting a wired jog pendant
 with ESTOP to a Mesa 5i25 FPGA card to control a 3 axis CNC mill.
 
+<!-- more -->
+
 The config below works for me. The plethora of hardware configs out there mean this article likely
 won't work for you verbatim, but it's my hope that it provides a good starting point for other
 configs.

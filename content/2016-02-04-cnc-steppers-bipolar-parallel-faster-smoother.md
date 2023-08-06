@@ -15,6 +15,8 @@ the windings in parallel instead of series. According to
 it can increase torque at higher speeds, reducing the chance that the motor will stall during fast
 rapids.
 
+<!-- more -->
+
 _Header photo by [Yung Chang](https://unsplash.com/@yungnoma)_
 
 ![Parallel wiring diagram](/images/bipolar-parallel.jpg)

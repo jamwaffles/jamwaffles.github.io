@@ -11,6 +11,8 @@ and [tower-web](https://crates.io/crates/tower-web) for the backend. There don't
 Tower examples using state in request handlers, so this is a quick copypasta showing how to add
 Diesel so request handlers can do database operations.
 
+<!-- more -->
+
 First, establish a connection. I'm using an `r2d2::Pool` wrapping a Diesel Postgres connection:
 
 ```rust

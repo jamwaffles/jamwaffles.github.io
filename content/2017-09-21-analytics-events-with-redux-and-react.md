@@ -18,6 +18,8 @@ into a React/Redux application in a way that's scaleable and testable. Unit test
 important when the rest of the business relies heavily on the events and the data in them like many
 companies do.
 
+<!-- more -->
+
 tl;dr: pass your logger to React's `context` to make logging from deeply nested components much
 easier.
 

@@ -13,6 +13,8 @@ Air. This is naturally a bit crap, so I set out to find a Linux-only solution to
 macOS using [osxcross](https://github.com/tpoechtrager/osxcross). A weekend of pain later, and I
 have the following post. Hopefully it spares you a weekend of your own pain.
 
+<!-- more -->
+
 ## Environment
 
 This process should work in any modern-ish Debian-based environment. This is the setup I used:

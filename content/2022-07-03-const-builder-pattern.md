@@ -18,6 +18,8 @@ struct Client<const N: usize, const D: usize, const TIMEOUT: u64> {
 }
 ```
 
+<!-- more -->
+
 There are/will be a few more parameters in the future, but this is already pretty unwieldy, so let's
 fix that.
 

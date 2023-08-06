@@ -6,13 +6,13 @@ categories = "linux"
 path = "linux/2018/09/03/linux-mint-19-office-365.html"
 +++
 
-# Office 365 mail, calendar and notifications in Linux Mint 19
-
 1. Install Evolution with the Exchange addons
 
 ```bash
 apt install evolution evolution-ews evolution-plugins
 ```
+
+<!-- more -->
 
 1. Add your Exchange account by going to **Settings** -> **Online Accounts** and selecting
    **Microsoft Exchange**.

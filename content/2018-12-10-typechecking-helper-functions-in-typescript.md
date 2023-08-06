@@ -13,6 +13,8 @@ Typescript codebases. During my refactoring rampage, I encountered some places w
 were missing fields or otherwise weren't being generated properly. To this end, I set out to create
 a type-checked solution to this problem.
 
+<!-- more -->
+
 ## What events look like to us
 
 Firstly, an event as seen on a Repositive-branded wire looks like this (prettified):

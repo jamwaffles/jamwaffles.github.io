@@ -17,6 +17,8 @@ time, we'll be looking at some not-so-great optimisations made to a point sortin
 **Update: A kind Twitter user pointed out a more optimised solution for triangles which you can find
 [here](/rust/2020/07/26/perf-addendum.html).**
 
+<!-- more -->
+
 ## Some context
 
 I've already covered

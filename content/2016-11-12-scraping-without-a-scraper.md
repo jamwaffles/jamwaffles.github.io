@@ -15,6 +15,8 @@ due to me not owning a scraping tool, but I worked with what I have to make what
 satisfctory results. This post will be a short log of what went down and will hopefully demonstrate
 that one can achieve reasonably good (i.e. flat) results without having a real scraper.
 
+<!-- more -->
+
 I bought a shitty magbase indicator holder off eBay a while back (header image). It's served me well
 enough, but the major pain point is the base - it's not even close to being flat. This makes the
 indicator wobble if you knock it, and reduces magnetic stiction significantly due to the magnetic

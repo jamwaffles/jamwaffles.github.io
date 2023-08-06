@@ -10,6 +10,8 @@ A quick guide on how to set up a LinuxCNC simulator on Linux Mint. The LinuxCNC 
 for testing/debugging drivers, gcode parsing and other non-realtime features without having to crawl
 around under your machine's actual control.
 
+<!-- more -->
+
 ## Versions
 
 - LinuxCNC Git at commit

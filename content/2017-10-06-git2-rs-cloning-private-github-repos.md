@@ -15,6 +15,8 @@ struggling with the same issue. I'm using [git2-rs](https://github.com/alexcrich
 has good interface documentation, but _very few pieces of example code_, so I set out to fix that
 somewhat with this post.
 
+<!-- more -->
+
 _Header photo by [Mark Wilson](https://unsplash.com/@mkwlsn)_
 
 Boosh. Straight in:

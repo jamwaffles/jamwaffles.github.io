@@ -11,6 +11,8 @@ A quick update on my [previous article](/rust/2020/07/25/optimising-with-cmp-and
 [Nicholas Wilcox (@redbluemonkey) on Twitter](https://twitter.com/redbluemonkey/status/1287186446986514432)
 made a very good point:
 
+<!-- more -->
+
 <blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><p lang="en" dir="ltr">Do you need a full sort, or do you just need to reverse the order if it doesn&#39;t already have the correct winding? You can check the winding of any polygon with only the first 3 points using a cross product.</p>&mdash; Nicholas Wilcox (@redbluemonkey) <a href="https://twitter.com/redbluemonkey/status/1287186446986514432?ref_src=twsrc%5Etfw">July 26, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 I might need a full sort for polygons, but with a focus on triangles right now this sounded like a

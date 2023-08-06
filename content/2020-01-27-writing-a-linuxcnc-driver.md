@@ -12,6 +12,8 @@ can find them at [linuxcnc-hal](https://crates.io/crates/linuxcnc-hal) (high-lev
 this post is a getting started tutorial, so follow along if you have a cool idea for a custom bit of
 CNC hardware and an itch to write the interface in Rust!
 
+<!-- more -->
+
 [LinuxCNC](https://linuxcnc.org) is a popular, open source machine controller. It's very powerful
 and is an excellent way to get into CNC on an absolute budget. LinuxCNC is also expandable with
 custom components called HAL components or HAL comps.

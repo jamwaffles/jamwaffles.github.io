@@ -11,6 +11,8 @@ incredible effort into making Rust itself work great in Windows environments, bu
 it can be difficult to get working correctly. My current problem was making GDB load a `.gdbinit`
 file from the current projecting when doing `xargo run`. Here's how I fixed it in `.cargo/config`:
 
+<!-- more -->
+
 ```toml
 # .cargo/config
 [target.thumbv7em-none-eabihf]

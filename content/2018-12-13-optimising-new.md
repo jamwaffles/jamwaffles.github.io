@@ -12,6 +12,8 @@ I have a struct, `TrajectoryStep`, that I pass to some methods in my program. I 
 positional arguments as it's impossible to tell what `some_func(f32, f32, f32)` might actually
 require. It looks like this:
 
+<!-- more -->
+
 ```rust
 pub struct TrajectoryStep {
     pub position: f64,

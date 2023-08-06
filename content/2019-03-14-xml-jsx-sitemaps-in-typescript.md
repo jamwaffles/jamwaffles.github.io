@@ -13,6 +13,8 @@ the XML tags used in the sitemap component. What follows is a quick "note to sel
 that error. There might be _much_ better solutions out there, but this is the one that worked for
 me.
 
+<!-- more -->
+
 A slimmed down sitemap component is listed below. It's rendered on the NodeJS server so search
 engines _et al_ can pick it up without having to execute any JS.
 

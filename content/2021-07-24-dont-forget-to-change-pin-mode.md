@@ -13,6 +13,8 @@ After successfully getting MCO (Microcontroller Clock Output) working on the onl
 find in the universe, I was seeing some strange behaviour when attempting to push the output
 frequency above 2MHz.
 
+<!-- more -->
+
 ![](/images/mco/mco-1.png)
 
 If you look at the measurements at the bottom, the frequency is correct but why is the amplitude so

@@ -17,6 +17,8 @@ see if it's viable for production use. It's a simple service that polls a
 Postgres database. It's not a very complicated task, but I saw this as a good opportunity to try
 Rust in a production-ish role.
 
+<!-- more -->
+
 _Header photo by [Sandra Starke](https://unsplash.com/@fotospielerin)_
 
 > Note: I could very well have written this in NodeJS like the rest of the app it fits into, but I

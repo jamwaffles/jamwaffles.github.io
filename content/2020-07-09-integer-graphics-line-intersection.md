@@ -12,6 +12,8 @@ days that provides solution in terms of integer-only maths.
 so in pursuing a solution to good line joints for the `Polyline` and `Polygon` shape
 implementations, a bit of interweb detective work was required.
 
+<!-- more -->
+
 I eventually stumbled upon
 [this StackOverflow question](https://stackoverflow.com/questions/21224361/calculate-intersection-of-two-lines-using-integers-only/62819649#62819649),
 the answers to which mostly seem to do what I'm looking for. I'm not a good mathematician by any

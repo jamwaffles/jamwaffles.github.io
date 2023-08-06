@@ -10,6 +10,8 @@ Version 0.5.0 is released! This is a pretty big one, focussed around ergonomics.
 macros to make drawing and positioning primitives and text much less noisy, as well as changes to
 the `Drawing` trait to remove the explicit `.into_iter()` call when passing objects to it.
 
+<!-- more -->
+
 Embedded Graphics is a no_std library for adding graphics features to display drivers. It aims to
 use the minimum amount of memory for builtin graphics objects by leveraging Rust's iterators to
 avoid large allocations. It targets embedded environments, but can run anywhere like a Raspberry Pi

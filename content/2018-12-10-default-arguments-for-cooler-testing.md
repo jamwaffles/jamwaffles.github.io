@@ -17,6 +17,8 @@ use
 to keep the ergonomics of a clean public API, but still support unit testing and special cases
 gracefully.
 
+<!-- more -->
+
 Let's say we have the following function:
 
 ```typescript

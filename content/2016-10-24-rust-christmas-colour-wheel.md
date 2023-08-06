@@ -13,6 +13,8 @@ Here's a quick one; I'm making a Christmas display out of a bunch of serially co
 RGB LEDs, but how do I turn a value of `0 – 255` into a glorious RGW (Red Green White) struct with
 the correct colour, and the correct wrapping rules?
 
+<!-- more -->
+
 ## First, some theory
 
 The code in the next section is based on the RGB linear colour wheel approximation from the

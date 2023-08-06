@@ -15,6 +15,8 @@ time type safety really pays off. One of the (few!) problems I've found as a new
 that the documentation can be really frustrating sometimes. In this post, I hope to remedy that
 slightly by providing a newcomer's perspective on a little bit of data processing in Elm.
 
+<!-- more -->
+
 _Header photo by [@rawpixel](https://unsplash.com/photos/ndP5Oj0sSps)_
 
 Let's say I've collected a list of tags from questions on StackOverflow. I want to create a unique

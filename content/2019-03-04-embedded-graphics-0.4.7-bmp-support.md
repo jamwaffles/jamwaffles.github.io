@@ -18,6 +18,8 @@ simple image format. The header photo was made using Embedded Graphics and the
 the BMP file is parsed in no_std environments with [nom](https://crates.io/crates/nom) and how to
 get BMP images working with embedded_graphics.
 
+<!-- more -->
+
 ## BMP format
 
 The BMP format is pretty simple. It consists of the following sections which I'll cover separately
