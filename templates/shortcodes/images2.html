@@ -1,0 +1,10 @@
+<div class="post__2-images">
+  <div>
+    {% set i1 = resize_image(path=p1, width=1000, op="fit_width") %}
+    <img src="{{ i1.url | safe }}" />
+  </div>
+  <div>
+    {% set i2 = resize_image(path=p2, width=1000, op="fit_width") %}
+    <img src="{{ i2.url | safe }}" />
+  </div>
+</div>

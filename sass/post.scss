@@ -61,4 +61,22 @@
       width: 100vw;
     }
   }
+
+  &__2-images {
+    display: flex;
+    flex-direction: column;
+
+    > div + div {
+      margin-top: 1rem;
+    }
+
+    @media screen and (min-width: 1001px) {
+      flex-direction: row;
+
+      > div + div {
+        margin-top: 0;
+        margin-left: 1rem;
+      }
+    }
+  }
 }
