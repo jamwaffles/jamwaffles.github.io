@@ -10,7 +10,7 @@
           <a target="_blank" href="https://github.com/jamwaffles">https://github.com/jamwaffles</a>
         </li>
         <li><a target="_blank" href="https://wapl.es">https://wapl.es</a></li>
-        <li>English: Native speaker</li>
+        <li>English: Native</li>
         <li>German: Basic</li>
       </ul>
     </aside>
@@ -23,12 +23,13 @@
 
     <div class="cv__description">
       <p>
-        Hi, I'm James, a Rust, electronics and CNC enthusiast. I've been programming for about 20
-        years since I was 10 years old, starting with 8 bit assembler, Visual Basic and C. I started
-        my professional career at 18 with a PHP web development role and slowly moved towards the
-        JavaScript/Typescript ecosystem as it grew around the popularity of libraries like React. My
-        work now revolves around the wonderful Rust programming language, gladly using it both
-        professionally and in open source to write high quality code for various environments.
+        Hi, I'm James, a Rust, electronics and CNC enthusiast. My work revolves around the wonderful
+        Rust programming language, gladly using it both professionally, personally and in open
+        source to write high quality code for embedded Linux, microcontrollers and realtime systems.
+        I've been programming for about 20 years since I was 10, beginning with 8 bit assembler,
+        Visual Basic and C. I started my professional career at 18 with a PHP web development role
+        and moved towards the JavaScript/Typescript ecosystem before moving into writing Rust
+        fulltime.
       </p>
 
       <p>
@@ -38,16 +39,75 @@
       </p>
 
       <p>
-        I also have a strong interest in electronics. It was a quick discovery after computers and
-        has become a long running hobby, most recently using Rust on STM32 microcontrollers.
+        I have a solid interest in electronics. It was a quick discovery after computers and has
+        become a long running hobby, most recently developing a Rust EtherCAT controller for
+        microcontrollers.
       </p>
 
       <p>
         Melding electronics and programming lead me to discover the expensive yet fascinating world
         of DIY CNC machines, myself having built at least 5 of improving capabilities (and heft)
-        over time. It's a great escape from the keyboard to step into the workshop and make
-        something in the physical world.
+        over time, with a parallel dream of building motion control software one day. Stepping into
+        the garage to work on/with the machine with one's hands is a great escape from the keyboard.
       </p>
+    </div>
+
+    <h1>Top skills</h1>
+
+    <div class="cv__skills">
+      <div>
+        <h3>Professional</h3>
+
+        <p>Used every day, strong knowledge</p>
+
+        <ul>
+          <li>Rust</li>
+          <li>Github (reviews, PRs, etc)</li>
+          <li>Linux (SSH, CLI, systemd, etc)</li>
+          <li>Docker</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>+ Proficient</h3>
+
+        <p>Used often, good knowledge</p>
+
+        <ul>
+          <li>CircleCI</li>
+          <li>PostgreSQL</li>
+          <li>Rust <code>no_std</code> development</li>
+          <li>EtherCAT</li>
+          <li>KiCAD PCB design</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>+ Familiar</h3>
+
+        <p>Used a little, light knowledge</p>
+
+        <ul>
+          <li>CAN networking</li>
+          <li>Battery management</li>
+          <li>Bitbake</li>
+          <li>Kubernetes</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>+ Previous</h3>
+
+        <p>Used a while ago but could be picked up again quickly</p>
+
+        <ul>
+          <li>AWS (ECS, RDS, EC2)</li>
+          <li>Google Cloud Platform</li>
+          <li>Typescript</li>
+          <li>SASS</li>
+          <li>Node.js</li>
+        </ul>
+      </div>
     </div>
 
     <h1>Open source projects</h1>
@@ -70,8 +130,9 @@
           <a target="_blank" href="https://github.com/jamwaffles/linuxcnc-hal-rs"
             >https://github.com/jamwaffles/linuxcnc-hal-rs</a
           >
-          - Rust bindings and a high level API to allow writing Rust modules for the popular open
-          source LinuxCNC motion controller.
+          - Rust FFI bindings and a high level API to allow writing Rust modules for the popular
+          open source LinuxCNC motion controller, for example to control
+          <a href="https://github.com/jamwaffles/simplemotion-rs/">Granite Devices servo drives</a>.
         </p>
       </li>
 
@@ -80,9 +141,9 @@
           <a target="_blank" href="https://github.com/embedded-graphics/embedded-graphics"
             >https://github.com/embedded-graphics/embedded-graphics</a
           >
-          - A graphics library for embedded applications using no dynamic allocation, with
-          primitives, fonts and image support. I'm proud to say it has over 400,000 downloads and a
-          vibrant community around it.
+          - A graphics library for embedded devices using integer-only drawing algorithms no dynamic
+          allocation, with primitives, fonts and image support. I'm proud to say it has over 400,000
+          downloads and a vibrant community around it.
         </p>
       </li>
     </ul>
@@ -113,6 +174,16 @@
           <li>
             Creating a network monitor/failover service to ensure connectivity with the cloud in any
             given installation condition.
+          </li>
+
+          <li>
+            Implementing and maintaining a factory API for use by the production line to run tests
+            against the hardware in each produced unit.
+          </li>
+
+          <li>
+            Working with fellow developers to improve an aging codebase over time by adding tests,
+            documentation and refactors to reduce technical debt and developer cognitive load.
           </li>
         </ul>
       </li>
@@ -268,6 +339,8 @@
     </p>
   </li> -->
     </ul>
+
+    <p>—</p>
   </div>
 </article>
 {% endblock content %}
