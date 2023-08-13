@@ -101,6 +101,10 @@
 
     h3 {
       margin-bottom: 0;
+
+      @media print {
+        margin-top: 1rem;
+      }
     }
 
     // Date
@@ -134,5 +138,9 @@
 
   * {
     color: black !important;
+  }
+
+  h1 {
+    margin: 1rem 0 !important;
   }
 }
