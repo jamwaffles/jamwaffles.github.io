@@ -5,46 +5,75 @@ date = "2023-09-19 11:50:47"
 draft = true
 +++
 
-> I'm looking for work!
->
-> - Contracting/consulting
-> - Fulltime
-> - EtherCAT or other Rust work
-> - Please
-> - CV [here](https://wapl.es/cv/)
-> - Remote pls, or Edinburgh local
+The EtherCrab story started with my dream of writing a motion controller in Rust to provide a modern
+alternative to the venerable [LinuxCNC project](https://github.com/LinuxCNC/linuxcnc/). But motion
+controllers are hard, even with the right books, so I did what any good programmer would do:
+procrastinate by implementing an entire industrial automation protocol in instead! Say hello to
+[EtherCrab](https://crates.io/crates/ethercrab) - a pure Rust EtherCAT controller that supports
+Linux, macOS, Windows and even `no_std`.
 
-# Intro
+<!-- more -->
 
-- I have a CNC machine I'd like to control with some nice servos
-  - Most drives support at least EtherCAT these days
-  - It's a nice protocol that just uses normal Ethernet cables so you don't need special control
-    hardware
-- I like Rust. A lot.
-- Rust is perfect for automation: fast, safe
-- Not much going on yet though. Let's fix that!
-- I looked at IgH (TODO: Full name), SOEM. Gave the Rust wrappers a go but they leak the C-ness of
-  the underlying library
+{% callout() %}
 
-  - Lack of good examples and docs (although EtherCrab does still need work in this area)
-  - EtherCrab was borne of this frustration with docs and C-like API of SOEM
+TODO P.s. I'm looking for work!
+
+- Contracting/consulting
+- Fulltime
+- EtherCAT or other Rust work
+- Please
+- CV [here](https://wapl.es/cv/)
+- Remote pls, or Edinburgh local
+
+{% end %}
 
 # A quick primer on EtherCAT
 
 Feel free to skip this section if you're already familiar with EtherCAT.
 
-- Very widely supported industrial communication protocol pioneered and standardised by Beckhoff.
-- It uses Ethernet physical layer for good compatibility, but uses its own packet structure to cater
-  to EtherCAT needs
-- Designed for realtime systems with cycle times into the microseconds if desired
-- Devices have at least an input and output port. Conceptual topology is a tree, but more often used
-  as a simpler single chain of devices.
-- Packets are sent to the end of the tree in a defined traversal order, then sent all the way back
-  to the controller, allowing a quite elegant way to read and write data
-- Packets are read/written during their transit through each device so latencies are in the hundreds
-  of nanoseconds per device range
+If not, here's a high level overview [EtherCAT](https://www.ethercat.org/default.htm):
 
-# With that then, what is EtherCrab
+- It is a very widely supported and used industrial communication protocol pioneered and
+  standardised by [Beckhoff](https://www.beckhoff.com).
+- It uses the Ethernet physical layer (i.e. cables and connectors) for good compatibility, but uses
+  its own packet structure to cater to EtherCAT's needs around latency and topology.
+- It is designed for realtime systems with cycle times into the microseconds if desired
+- There is one controller ("master" in EtherCAT terminology)
+- Many devices ("slaves") are connected in a long chain, so have at least two ports: input and
+  output.
+  - A quick aside: EtherCAT is really a tree topology, traversed in a well defined order, but is
+    most often deployed in a chain. "Fork" or "star" nodes will have 3 or 4 ports respectively.
+- EtherCAT packets are sent along the entire chain in a fixed traversal order, then sent all the way
+  back to the controller, allowing devices to read and write data to packets addressed to them.
+- Packets are read/written during their transit through each device meaning latencies are in the low
+  hundreds of nanoseconds per device range.
+- Cyclic process data is sent in one 4GB address space. Devices are configured by the controller to
+  read from/write into specific pieces of this address space.
+
+There are other bits of the protocol and many extensions available, but the above hopefully gives a
+good high level introduction. I've also found the
+[EtherCAT Device Protocol poster](https://www.ethercat.org/download/documents/EtherCAT_Device_Protocol_Poster.pdf)
+a good reference.
+
+# Prior art
+
+There are a couple of good solutions out there already, namely the Etherlab
+[IgH master](https://gitlab.com/etherlab.org/ethercat) as well as
+[SOEM](https://github.com/OpenEtherCATsociety/SOEM), so why didn't I just use those? These are both
+popular and battle-tested EtherCAT controllers and there are even Rust wrappers for both. SOEM
+seemed a good choice as it provides a lower level interface which is what I was looking for, but I
+decided the world needed a pure Rust implementation instead. I found SOEM quite frustrating to work
+with, mainly because there is very little documentation and example code, along with the C API which
+is just a pile of functions in a trench code. Alas the
+[Rust wrapper](https://crates.io/search?q=soem) is quite lightweight and leaks a lot of the C-ness
+through, so it didn't help much.
+
+EtherCrab was borne out of these frustrations, and hopefully provides a better option for those like
+me joining the nascent Rust automation field. Human and physical safety is critical in many
+applications, so why are we still writing the control software behind these systems in unsafe
+languages like C? Let's fix that!
+
+# TODO: Title. EtherCrab's ethos, design, etc
 
 - Safe with various API design decisions
   - There's some unsafety in the core, but it's abstracted away in a safe high level API, as is Rust
@@ -95,3 +124,4 @@ Find more at [here](todo lol).
 - Link to Github again
   - Star it pls
   - Share it pls
+- Link to Matrix
