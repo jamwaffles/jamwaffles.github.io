@@ -174,3 +174,10 @@ table {
     font-weight: bold;
   }
 }
+
+div.callout {
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.1);
+  background-color: color-mix(in srgb, var(--blue-light) 10%, transparent);
+  border-radius: 5px;
+}
