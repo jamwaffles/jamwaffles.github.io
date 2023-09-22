@@ -1,1 +1,5 @@
-<div class="callout">{{ body }}</div>
+<div class="callout">
+
+{{ body }}
+
+</div>
