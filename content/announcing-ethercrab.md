@@ -59,17 +59,20 @@ a good reference.
 
 There are a couple of good solutions out there already, namely the Etherlab
 [IgH master](https://gitlab.com/etherlab.org/ethercat) as well as
-[SOEM](https://github.com/OpenEtherCATsociety/SOEM), so why didn't I just use those? These are both
-popular and battle-tested EtherCAT controllers and there are even Rust wrappers for both. SOEM
-seemed a good choice as it provides a lower level interface which is what I was looking for, but I
-decided the world needed a pure Rust implementation instead. I found SOEM quite frustrating to work
+[SOEM](https://github.com/OpenEtherCATsociety/SOEM), so why didn't I just use those? These are
+battle-tested EtherCAT controllers and there are even Rust wrappers for both.
+
+C. They're written in C.
+
+SOEM seemed a good choice as it provides a lower level interface which is what I was looking for,
+but I decided the world needed a pure Rust implementation instead. I found SOEM frustrating to work
 with, mainly because there is very little documentation and example code, along with the C API which
-is just a pile of functions in a trench code. Alas the
-[Rust wrapper](https://crates.io/search?q=soem) is quite lightweight and leaks a lot of the C-ness
-through, so it didn't help much.
+is just a pile of functions in a trench coat. The [Rust wrapper](https://crates.io/search?q=soem) is
+quite lightweight and leaks a lot of the C-ness through, so it didn't help much as glad as I was to
+find it.
 
 EtherCrab was borne out of these frustrations, and hopefully provides a better option for those like
-me joining the nascent Rust automation field. Human and physical safety is critical in many
+me joining the nascent Rust-in-automation field. Human and physical safety is critical in many
 applications, so why are we still writing the control software behind these systems in unsafe
 languages like C? Let's fix that!
 
