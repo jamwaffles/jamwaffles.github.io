@@ -106,11 +106,12 @@ use ethercrab::{
 ```
 
 One import of note is `std::tx_rx_task`. This is a ready-made function that creates a future that
-will handle all network communications.
+will handle all network communications. This would be switched out for something else if a different
+network driver is used, or for a mock if writing tests.
 
 Next, EtherCrab needs to know some details about how much storage it should be given. We could use
-magic numbers where the const generics require them, but let's give them names so the numbers have
-meaning.
+magic numbers where the const generics require them, but let's give them names so we know which
+numbers mean what.
 
 ```rust
 /// Maximum number of slaves that can be stored. This must be a power of 2 greater than 1.
@@ -127,7 +128,8 @@ example uses `tokio`, which requires `Send + 'static` futures, we'll make a stat
 `let` binding.
 
 `PduStorage` contains `unsafe` code, but is carefully designed and checked to contain it, whilst
-providing a safe higher level interface.
+providing a safe API. `PduStorage` has no public API, but its creation is handled by the end
+application to control lifetimes.
 
 ```rust
 static PDU_STORAGE: PduStorage<MAX_FRAMES, MAX_PDU_DATA> = PduStorage::new();
@@ -196,7 +198,26 @@ let Groups {
     .expect("Init");
 ```
 
-Create a clone of the client so we can pass it to a second task.
+{% callout() %}
+
+ℹ️ If only one group is desired, we could forego the `Groups` struct and use
+`client.init_single_group` instead:
+
+```rust
+/// Maximum total PDI length.
+const PDI_LEN: usize = 64;
+
+let all_devices = client
+    .init_single_group::<MAX_SLAVES, MAX_PDI>()
+    .await
+    .expect("Init");
+```
+
+{% end %}
+
+Now we'll create a clone of the client (well, the `Arc` that wraps it) so we can pass it to a second
+task. Again, we don't need a lock or mutex because the methods on `Client` are `&self`, `Client` is
+`Sync`, and EtherCrab's internals are concurrency safe.
 
 ```rust
 let client_slow = client.clone();
@@ -248,13 +269,13 @@ let slow_task = tokio::spawn(async move {
 
 Pay attention to the `loop { ... }`. Things of note:
 
-1. This is the cyclic application logic. The logic here does some low level bit twiddling but this
-   is where more complex logic can be performed, **as long as the computation time doesn't exceed
-   the cycle time.** If it does, you'll get stalls or hitches in the devices.
+1. This is the cyclic application logic. The code in this example does some low level bit twiddling
+   but this is where more complex logic can be performed, **as long as the computation time doesn't
+   exceed the cycle time.** If it does, you'll get stalls or hitches in the output.
 2. The `tx_rx` method **must** be called every cycle otherwise the group's data will not be sent or
    received!
-3. The `tick().await` internally compensates for the execution time in each loop iteration, so
-   there's no need to handle this manually.
+3. `tick().await` internally compensates for the execution time in each loop iteration, so there's
+   no need to handle this manually.
 
 Now we can spawn the other "fast" task which just increments each byte of the outputs of each device
 in this group's PDI (Process Data Image).
@@ -288,10 +309,13 @@ Now we can start both tasks concurrently, exiting if one of them errors out.
 tokio::join!(slow_task, fast_task);
 ```
 
-A few lines have been omitted for brevity in this walkthrough. The full example can be found
-[here](TODO).
+Error handling and a few other lines have been omitted from this walkthrough for brevity. The full
+example can be found
+[here](https://github.com/ethercrab-rs/ethercrab/blob/master/examples/multiple-groups.rs).
 
 # EtherCrab's design
+
+BIG TODO
 
 EtherCrab supports Linux, macOS and Windows but please, for your sanity, target Linux or macOS at a
 push. There is also `no_std` support as EtherCrab makes heavy use of const generics to remove the
