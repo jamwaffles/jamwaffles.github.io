@@ -1,6 +1,7 @@
 +++
 layout = "post"
-title = "Announcing EtherCrab: A 100% Rust EtherCAT controller"
+title = "Announcing EtherCrab: The 100% Rust EtherCAT controller"
+slug = "announcing-ethercrab-the-rust-ethercat-controller"
 date = "2023-09-19 11:50:47"
 draft = true
 +++
@@ -8,9 +9,9 @@ draft = true
 The EtherCrab story started with my dream of writing a motion controller in Rust to provide a modern
 alternative to the venerable [LinuxCNC project](https://github.com/LinuxCNC/linuxcnc/). But motion
 controllers are hard, even with the right books, so I did what any good programmer would do:
-procrastinate by implementing an entire industrial automation protocol in instead! Say hello to
+procrastinate by implementing an entire industrial automation protocol in instead! **Say hello to
 [EtherCrab](https://crates.io/crates/ethercrab) - a pure Rust EtherCAT controller that supports
-Linux, macOS, Windows and even `no_std`.
+Linux, macOS, Windows and even `no_std`.**
 
 <!-- more -->
 
@@ -71,10 +72,11 @@ is just a pile of functions in a trench coat. The [Rust wrapper](https://crates.
 quite lightweight and leaks a lot of the C-ness through, so it didn't help much as glad as I was to
 find it.
 
-EtherCrab was borne out of these frustrations, and hopefully provides a better option for those like
-me joining the nascent Rust-in-automation field. Human and physical safety is critical in many
-applications, so why are we still writing the control software behind these systems in unsafe
-languages like C? Let's fix that!
+Human and physical safety is critical in many applications, so why are we still writing the control
+software behind these systems in unsafe languages like C? Let's fix that!
+
+EtherCrab was borne out of these frustrations, and I think provides a better, safer, native option
+for those wanting to expand the nascent Rust-in-automation field.
 
 # TODO: Title. EtherCrab's ethos, design, etc
 
@@ -82,6 +84,11 @@ languages like C? Let's fix that!
   - There's some unsafety in the core, but it's abstracted away in a safe high level API, as is Rust
     tradition
 - async-first for a nice API, and the ability to easily use EtherCrab from multiple threads
+  - You can block if you like
+    - Spawn a dedicated PDU loop thread, set RT prio, use e.g. `smol::block_on`
+    - Main thread can run a single task or multiple tasks
+    - `thread::scoped` is handy here
+    - Should be possible in embedded as well with interrupts, but this needs testing
 - no-std compatible. Doesn't even need an allocator
 - Designed around device groups from the ground up, so it's easy to run different devices at
   different cycle times
@@ -93,17 +100,31 @@ languages like C? Let's fix that!
   good results on a PREEMPT_RT system!
 - Works on Linux, macOS and Windows but please just use Linux for your sanity's sake
 
-# A quick note on no_std
+## A quick note on `no_std``
 
-- Requires async but we're getting better at that with stuff like RTIC and Embassy
-- Point to Embassy example
-- Arrays and const generics so known memory footprint
-- "Allocate"s everything up front
-- Also a good design for std systems as the lack of dynamic alloc makes the system deterministic
+EtherCrab is async, therefore needs an executor to run on. It's still early days in the embedded
+Rust async ecosystem, but there are at least two rather good environments to consider:
+[RTIC 2](https://rtic.rs/2) and [Embassy](https://embassy.dev/). There's a basic EtherCrab example
+using Embassy to get started with
+[here](https://github.com/ethercrab-rs/ethercrab/tree/master/examples/embassy-stm32). If you use
+RTIC and would like to contribute an example for it, I'd be very happy to accept a PR!
+
+Because EtherCrab's storage is all fixed-size, and the fixed sizes are configurable with const
+generics, it's easy to tune EtherCrab to the resources available on whichever target microcontroller
+is used. Statically allocating resources like this is also of benefit to `std` environments - no
+dynamic alloc means no hitches or hiccups from dynamically allocating more memory.
 
 # Example tiem!!11!
 
-Find more at [here](todo lol).
+Now I've described EtherCrab's design, let's see it in action with a quick example.
+
+This code is taken from
+[here](https://github.com/ethercrab-rs/ethercrab/blob/master/examples/multiple-groups.rs). It
+initialises the EtherCAT network and groups the devices into two groups, allowing two concurrent
+tasks to update different parts of the process data at different rates.
+
+More examples can be found in
+[the `examples/` folder in the repo](https://github.com/ethercrab-rs/ethercrab/tree/master/examples).
 
 - Walk through line by line
 - Use a std environment for niceness.
@@ -117,10 +138,10 @@ Find more at [here](todo lol).
 - Still some features to go
   - FSoE
   - MDP
-  - One pain point for me was CiA402/DS402. Would like to build in support for servos as it's a
-    common use case
-    - Would like ideas
-    - Open a Github discussion and link to it
+    - One pain point for me was CiA402/DS402. Would like to build in support for servos as it's a
+      common use case
+      - Would like ideas
+      - Open a Github discussion and link to it
 - EtherCrab is already in limited commercial use.
   - I'm looking for guinea pigs!
 - I'm looking for work (again)
