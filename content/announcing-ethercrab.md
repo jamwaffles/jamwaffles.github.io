@@ -96,21 +96,47 @@ More examples can be found in
 You can also find a `no_std` example using [Embassy](https://embassy.dev/)
 [here](https://github.com/ethercrab-rs/ethercrab/tree/master/examples/embassy-stm32).
 
+Firstly, some imports as is tradition.
+
 ```rust
 use ethercrab::{
     error::Error, std::tx_rx_task, Client, ClientConfig, PduStorage, SlaveGroup, SlaveGroupState,
     Timeouts,
 };
+```
 
+One import of note is `std::tx_rx_task`. This is a ready-made function that creates a future that
+will handle all network communications.
+
+Next, EtherCrab needs to know some details about how much storage it should be given. We could use
+magic numbers where the const generics require them, but let's give them names so the numbers have
+meaning.
+
+```rust
 /// Maximum number of slaves that can be stored. This must be a power of 2 greater than 1.
 const MAX_SLAVES: usize = 16;
 /// Maximum PDU data payload size - set this to the max PDI size or higher.
 const MAX_PDU_DATA: usize = 1100;
 /// Maximum number of EtherCAT frames that can be in flight at any one time.
 const MAX_FRAMES: usize = 16;
+```
 
+Next up is `PduStorage`. This is where all network packets are queued and stored. Because the
+example uses `tokio`, which requires `Send + 'static` futures, we'll make a static instance called
+`PDU_STORAGE`. If you're using scoped threads or a more relaxed executor, this could be an ordinary
+`let` binding.
+
+`PduStorage` contains `unsafe` code, but is carefully designed and checked to contain it, whilst
+providing a safe higher level interface.
+
+```rust
 static PDU_STORAGE: PduStorage<MAX_FRAMES, MAX_PDU_DATA> = PduStorage::new();
+```
 
+We'd like multiple groups so let's define a struct to give them names. This could easily be a tuple
+instead, but the naming can get confusing.
+
+```rust
 #[derive(Default)]
 struct Groups {
     /// EL2889 and EK1100/EK1501. For EK1100, 2 items, 2 bytes of PDI for 16 output bits. The EK1501
@@ -122,99 +148,144 @@ struct Groups {
     /// EL2828. 1 item, 1 byte of PDI for 8 output bits.
     fast_outputs: SlaveGroup<1, 1>,
 }
+```
 
-#[tokio::main]
-async fn main() -> Result<(), Error> {
+Let's begin our app code by starting the TX/RX task in the background, along with creating a
+`Client`. The `Client` is the main handle into EtherCrab and is what any application code should
+use.
 
-    let interface = "enp2s0";
+```rust
+let interface = "enp2s0";
 
-    let (tx, rx, pdu_loop) = PDU_STORAGE.try_split().expect("can only split once");
+let (tx, rx, pdu_loop) = PDU_STORAGE.try_split().expect("can only split once");
 
-    let client = Client::new(pdu_loop, Timeouts::default(), ClientConfig::default());
+let client = Client::new(pdu_loop, Timeouts::default(), ClientConfig::default());
 
-    tokio::spawn(tx_rx_task(&interface, tx, rx).expect("spawn TX/RX task"));
+tokio::spawn(tx_rx_task(&interface, tx, rx).expect("spawn TX/RX task"));
+```
 
-    let client = Arc::new(client);
+We're going to need the client in two tasks, so we'll wrap it in an `Arc` to allow it to be
+`clone()`d. The methods on `Client` are `&self` allowing concurrent usage. Note that this is still
+safe as the EtherCrab internals are designed with this in mind.
 
-    // Read configurations from slave EEPROMs and configure devices.
-    let Groups {
-        slow_outputs,
-        fast_outputs,
-    } = client.init::<MAX_SLAVES, _>(|groups: &Groups, slave| match slave.name() {
-            "EL2889" | "EK1100" | "EK1501" => Ok(&groups.slow_outputs),
-            "EL2828" => Ok(&groups.fast_outputs),
-            _ => Err(Error::UnknownSlave),
-        })
+```rust
+let client = Arc::new(client);
+```
+
+Now we'll initialise the EtherCAT network. `client.init()` (or `client.init_single_group()` if you
+prefer) will assign addresses to each device, read their EEPROM configurations and set up the sync
+managers and FMMUs ready for configuration and communication.
+
+`init()` takes a closure that must return a reference to a group the current device must be added
+to. In this example, we match on the device name but other identifiers could be used, or other
+application-specific logic.
+
+Once `init` returns, we will have two groups with all devices in `PRE-OP` state.
+
+```rust
+let Groups {
+    slow_outputs,
+    fast_outputs,
+} = client
+    .init::<MAX_SLAVES, _>(|groups: &Groups, device| match device.name() {
+        "EL2889" | "EK1100" | "EK1501" => Ok(&groups.slow_outputs),
+        "EL2828" => Ok(&groups.fast_outputs),
+        _ => Err(Error::UnknownSlave),
+    })
+    .await
+    .expect("Init");
+```
+
+Create a clone of the client so we can pass it to a second task.
+
+```rust
+let client_slow = client.clone();
+```
+
+Now we come to the application logic. This will most often be a `loop` with a set delay in it to
+define the cycle time for the group.
+
+```rust
+let slow_task = tokio::spawn(async move {
+    let slow_outputs = slow_outputs
+        .into_op(&client_slow)
         .await
-        .expect("Init");
+        .expect("PRE-OP -> OP");
 
-    let client_slow = client.clone();
+    let mut slow_cycle_time = tokio::time::interval(Duration::from_millis(10));
 
-    let slow_task = tokio::spawn(async move {
-        let slow_outputs = slow_outputs
-            .into_op(&client_slow)
-            .await
-            .expect("PRE-OP -> OP");
+    let slow_duration = Duration::from_millis(250);
 
-        let mut slow_cycle_time = tokio::time::interval(Duration::from_millis(10));
+    let mut tick = Instant::now();
 
-        let slow_duration = Duration::from_millis(250);
+    // We're assuming the first device is the EL2889
+    let el2889 = slow_outputs
+        .slave(&client_slow, 1)
+        .expect("EL2889 not present!");
 
-        // Only update "slow" outputs every 250ms using this instant
-        let mut tick = Instant::now();
+    // Set initial output state
+    el2889.io_raw().1[0] = 0x01;
+    el2889.io_raw().1[1] = 0x80;
 
-        // EK1100 is first slave, EL2889 is second
-        let el2889 = slow_outputs
-            .slave(&client_slow, 1)
-            .expect("EL2889 not present!");
+    loop {
+        slow_outputs.tx_rx(&client_slow).await.expect("TX/RX");
 
-        // Set initial output state
-        el2889.io_raw().1[0] = 0x01;
-        el2889.io_raw().1[1] = 0x80;
+        // Increment every output byte for every slave device by one
+        if tick.elapsed() > slow_duration {
+            tick = Instant::now();
 
-        loop {
-            slow_outputs.tx_rx(&client_slow).await.expect("TX/RX");
+            let (_i, o) = el2889.io_raw();
 
-            // Increment every output byte for every slave device by one
-            if tick.elapsed() > slow_duration {
-                tick = Instant::now();
-
-                let (_i, o) = el2889.io_raw();
-
-                // Make a nice pattern on EL2889 LEDs
-                o[0] = o[0].rotate_left(1);
-                o[1] = o[1].rotate_right(1);
-            }
-
-            slow_cycle_time.tick().await;
+            // Make a nice pattern on EL2889 LEDs
+            o[0] = o[0].rotate_left(1);
+            o[1] = o[1].rotate_right(1);
         }
-    });
 
-    let fast_task = tokio::spawn(async move {
-        let mut fast_outputs = fast_outputs.into_op(&client).await.expect("PRE-OP -> OP");
+        slow_cycle_time.tick().await;
+    }
+});
+```
 
-        let mut fast_cycle_time = tokio::time::interval(Duration::from_millis(5));
+Pay attention to the `loop { ... }`. Things of note:
 
-        loop {
-            fast_outputs.tx_rx(&client).await.expect("TX/RX");
+1. This is the cyclic application logic. The logic here does some low level bit twiddling but this
+   is where more complex logic can be performed, **as long as the computation time doesn't exceed
+   the cycle time.** If it does, you'll get stalls or hitches in the devices.
+2. The `tx_rx` method **must** be called every cycle otherwise the group's data will not be sent or
+   received!
+3. The `tick().await` internally compensates for the execution time in each loop iteration, so
+   there's no need to handle this manually.
 
-            // Increment every output byte for every slave device by one
-            for slave in fast_outputs.iter(&client) {
-                let (_i, o) = slave.io_raw();
+Now we can spawn the other "fast" task which just increments each byte of the outputs of each device
+in this group's PDI (Process Data Image).
 
-                for byte in o.iter_mut() {
-                    *byte = byte.wrapping_add(1);
-                }
+```rust
+let fast_task = tokio::spawn(async move {
+    let mut fast_outputs = fast_outputs.into_op(&client).await.expect("PRE-OP -> OP");
+
+    let mut fast_cycle_time = tokio::time::interval(Duration::from_millis(5));
+
+    loop {
+        fast_outputs.tx_rx(&client).await.expect("TX/RX");
+
+        // Increment every output byte for every slave device by one
+        for slave in fast_outputs.iter(&client) {
+            let (_i, o) = slave.io_raw();
+
+            for byte in o.iter_mut() {
+                *byte = byte.wrapping_add(1);
             }
-
-            fast_cycle_time.tick().await;
         }
-    });
 
-    tokio::join!(slow_task, fast_task);
+        fast_cycle_time.tick().await;
+    }
+});
+```
 
-    Ok(())
-}
+Now we can start both tasks concurrently, exiting if one of them errors out.
+
+```rust
+tokio::join!(slow_task, fast_task);
 ```
 
 A few lines have been omitted for brevity in this walkthrough. The full example can be found
