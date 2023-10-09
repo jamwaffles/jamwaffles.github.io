@@ -32,7 +32,7 @@ TODO P.s. I'm looking for work!
 
 Feel free to skip this section if you're already familiar with EtherCAT.
 
-If not, here's a high level overview [EtherCAT](https://www.ethercat.org/default.htm):
+If not, here's a high level overview of [EtherCAT](https://www.ethercat.org/default.htm):
 
 - It is a very widely supported and used industrial communication protocol pioneered and
   standardised by [Beckhoff](https://www.beckhoff.com).
@@ -58,10 +58,10 @@ a good reference.
 
 # Prior art
 
-There are a couple of good solutions out there already, namely the Etherlab
+There are a couple of EtherCAT controller solutions out there already, namely the Etherlab
 [IgH master](https://gitlab.com/etherlab.org/ethercat) as well as
-[SOEM](https://github.com/OpenEtherCATsociety/SOEM), so why didn't I just use those? These are
-battle-tested EtherCAT controllers and there are even Rust wrappers for both.
+[SOEM](https://github.com/OpenEtherCATsociety/SOEM). These are battle-tested EtherCAT controllers
+and there are even Rust wrappers for both, so why didn't I just pick one and use it?
 
 C. They're written in C.
 
@@ -86,9 +86,13 @@ Let's see EtherCrab in action with a quick example.
 
 This code is taken from
 [here](https://github.com/ethercrab-rs/ethercrab/blob/master/examples/multiple-groups.rs). It
-initialises the EtherCAT network and groups the devices into two groups allowing two concurrent
-tasks to update different parts of the process data at different rates. This example targets Linux,
-but should work on macOS and even Windows as long as the weird NPcap driver is setup correctly.
+initialises the EtherCAT network and assigns the discovered devices into two groups. The groups are
+an EtherCrab concept, and allow concurrent tasks to update different parts of the process data image
+(PDI) at different rates. For example, a machine might have some digital IOs polled at 10ms, and a
+servo drive cycle at 1ms. Groups are `Send` so can be serviced from different threads.
+
+This example targets Linux, but should work on macOS and even Windows as long as the weird NPcap
+driver is setup correctly.
 
 More examples can be found in
 [the `examples/` folder in the repo](https://github.com/ethercrab-rs/ethercrab/tree/master/examples).
@@ -107,11 +111,12 @@ use ethercrab::{
 
 One import of note is `std::tx_rx_task`. This is a ready-made function that creates a future that
 will handle all network communications. This would be switched out for something else if a different
-network driver is used, or for a mock if writing tests.
+network driver is used, or for a mock if writing tests. EtherCrab provides building blocks to make
+writing your own networking adapters as easy as possible.
 
-Next, EtherCrab needs to know some details about how much storage it should be given. We could use
-magic numbers where the const generics require them, but let's give them names so we know which
-numbers mean what.
+Next, because EtherCrab statically allocates all its memory, it needs to know some details about how
+much storage it should be given. We could use magic numbers where the const generics require them,
+but let's give them names so we know which numbers mean what.
 
 ```rust
 /// Maximum number of slaves that can be stored. This must be a power of 2 greater than 1.
@@ -122,26 +127,26 @@ const MAX_PDU_DATA: usize = 1100;
 const MAX_FRAMES: usize = 16;
 ```
 
-Next up is `PduStorage`. This is where all network packets are queued and stored. Because the
-example uses `tokio`, which requires `Send + 'static` futures, we'll make a static instance called
-`PDU_STORAGE`. If you're using scoped threads or a more relaxed executor, this could be an ordinary
-`let` binding.
+Next up is `PduStorage`. This is where all network packets are queued and held while waiting for a
+response. Because this example uses `tokio`, which requires `Send + 'static` futures, we'll make a
+static instance called `PDU_STORAGE`. If you're using scoped threads or a more relaxed executor,
+this could be an ordinary `let` binding in `main`.
 
 `PduStorage` contains `unsafe` code, but is carefully designed and checked to contain it, whilst
 providing a safe API. `PduStorage` has no public API, but its creation is handled by the end
-application to control lifetimes.
+application so as to control the lifetimes of the data it hands out.
 
 ```rust
 static PDU_STORAGE: PduStorage<MAX_FRAMES, MAX_PDU_DATA> = PduStorage::new();
 ```
 
 We'd like multiple groups so let's define a struct to give them names. This could easily be a tuple
-instead, but the naming can get confusing.
+instead, but the indexes can get confusing so we'll use a struct.
 
 ```rust
 #[derive(Default)]
 struct Groups {
-    /// EL2889 and EK1100/EK1501. For EK1100, 2 items, 2 bytes of PDI for 16 output bits. The EK1501
+    /// EL2889 and EK1100/EK1501. For EK1100, 2 items, 2 bytes of PDI for 16 output bits. The
     /// has 2 bytes of its own PDI so we'll use an upper bound of 4.
     ///
     /// We'll keep the EK1100/EK1501 in here as it has no useful PDI but still needs to live
@@ -167,20 +172,20 @@ tokio::spawn(tx_rx_task(&interface, tx, rx).expect("spawn TX/RX task"));
 ```
 
 We're going to need the client in two tasks, so we'll wrap it in an `Arc` to allow it to be
-`clone()`d. The methods on `Client` are `&self` allowing concurrent usage. Note that this is still
-safe as the EtherCrab internals are designed with this in mind.
+`clone()`d. The methods on `Client` are `&self` allowing concurrent usage. Note that the EtherCrab
+internals are designed to be threadsafe.
 
 ```rust
 let client = Arc::new(client);
 ```
 
-Now we'll initialise the EtherCAT network. `client.init()` (or `client.init_single_group()` if you
-prefer) will assign addresses to each device, read their EEPROM configurations and set up the sync
-managers and FMMUs ready for configuration and communication.
+Now we'll initialise the EtherCAT network. `client.init()` will assign addresses to each device,
+read their EEPROM configurations and set up the sync managers and FMMUs ready for configuration and
+communication.
 
-`init()` takes a closure that must return a reference to a group the current device must be added
-to. In this example, we match on the device name but other identifiers could be used, or other
-application-specific logic.
+`init()` takes a closure that must return a reference to a group the current device will be added
+to. In this example, we match on the device name but other identifiers or application-specific logic
+could be used.
 
 Once `init` returns, we will have two groups with all devices in `PRE-OP` state.
 
@@ -389,10 +394,12 @@ dynamic alloc means no hitches or hiccups from dynamically allocating more memor
 
 # Use in non-async contexts
 
-The example above is async. This can be a problem if:
+The example shown earlier uses `tokio` and a lot of `async`/`await`. This can be a problem if:
 
 1. The application around EtherCrab isn't async and/or
 2. You need more control over the threads that each task runs in for jitter or latency reasons
+
+TODO
 
 - You can block instead if you like - just run everything in threads. This gives more control over
   priority and scheduling, e.g. using the
@@ -440,7 +447,3 @@ The example above is async. This can be a problem if:
   - Star it pls
   - Share it pls
 - Link to Matrix
-
-```
-
-```
