@@ -179,7 +179,7 @@ div.callout {
   margin: 1rem 0;
   padding: 1rem;
   background-color: rgba(0, 0, 0, 0.1);
-  background-color: color-mix(in srgb, var(--blue-light) 10%, transparent);
+  background-color: color-mix(in srgb, var(--blue-light) 20%, transparent);
   border-radius: 5px;
 
   :first-child {
