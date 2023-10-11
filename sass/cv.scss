@@ -2,6 +2,10 @@
   &__name {
     margin: 2rem 0;
 
+    @media print {
+      margin-top: 0;
+    }
+
     h1 {
       font-size: 3rem;
     }
