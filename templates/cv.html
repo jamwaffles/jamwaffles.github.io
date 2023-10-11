@@ -25,11 +25,15 @@
       <p>
         Hi, I'm James, a Rust, electronics and CNC enthusiast. My work revolves around the wonderful
         Rust programming language, gladly using it both professionally, personally and in open
-        source to write high quality code for embedded Linux, microcontrollers and realtime systems.
+        source to write high quality code for web, Linux (embedded and desktop), microcontrollers
+        and realtime systems.
+      </p>
+
+      <p>
         I've been programming for about 20 years since I was 10, beginning with 8 bit assembler,
-        Visual Basic and C. I started my professional career at 18 with a PHP web development role
-        and moved towards the JavaScript/Typescript ecosystem before moving into writing Rust
-        fulltime.
+        Visual Basic and C. I started my professional career at 18 with PHP web development, then
+        moved towards the JavaScript/Typescript ecosystem for a while. I discovered Rust about 5
+        years ago and am now working in it fulltime.
       </p>
 
       <p>
@@ -85,13 +89,14 @@
       <div>
         <h3>Familiar</h3>
 
-        <p>Used a little, light knowledge</p>
+        <p>Used a little, reasonable knowledge</p>
 
         <ul>
           <li>CAN networking</li>
           <li>Battery management</li>
           <li>Bitbake</li>
           <li>Kubernetes</li>
+          <li>Linux realtime tuning</li>
         </ul>
       </div>
 
@@ -119,9 +124,9 @@
             >https://github.com/ethercrab-rs/ethercrab</a
           >
           - EtherCrab is a pure-Rust EtherCAT master runtime born of the frustrations of working
-          with existing C-based libraries. It's an interesting introduction to the world of
-          industrial automation and German beaurocracy when applying for (and receiving) EtherCAT
-          organisation membership.
+          with existing C-based libraries. It is fully <code>async</code> and has a threadsafe
+          design, which was a fun challenge to implement correctly, encapsulating unsafe code and
+          providing a foolproof API.
         </p>
       </li>
 
@@ -153,8 +158,38 @@
     <ul class="cv__work-history">
       <li>
         <h3>
+          Freelance Rust and EtherCAT consultant
+          <time>July 2023 - Current, fully remote</time>
+        </h3>
+
+        <p class="cv__work-history__tags"><em>rust, ethercat, realtime, linux optimisation</em></p>
+
+        <ul>
+          <li>
+            Working with a client in Australia to migrate a Modbus TCP solution to EtherCAT with
+            Rust for a newly developed industrial machine.
+          </li>
+
+          <li>
+            Creating a multithreaded solution to initialise the device network and begin cyclic
+            communication, then providing a non-<code>async</code> interface to retrieve current
+            process data.
+          </li>
+
+          <li>
+            Reproducing, investigating and analysing a performance regression in the client's
+            network hardware. This was a great learning experience in testing and validating
+            assumptions, along with tuning a realtime Linux OS. This work resulted in the
+            development of visual debugging tools to help provide the client with some good
+            optimisation suggestions.
+          </li>
+        </ul>
+      </li>
+
+      <li>
+        <h3>
           Senior Developer at Moixa Technology / Lunar Energy
-          <time>August 2021 - Present, fully remote</time>
+          <time>August 2021 - September 2023, fully remote</time>
         </h3>
 
         <p class="cv__work-history__tags"><em>rust, embedded linux, bitbake, aws</em></p>
@@ -168,7 +203,7 @@
 
           <li>
             Writing an AT-command-based Rust driver to configure and monitor a cellular modem using
-            a pleasant Rust API.
+            a pleasant high-level API.
           </li>
 
           <li>
