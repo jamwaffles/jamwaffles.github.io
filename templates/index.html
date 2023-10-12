@@ -12,11 +12,11 @@
               <div class="image-holder show">
                 <a href="{{ page.permalink | safe }}" class="inner">
                   <picture>
-                    {% set image_800 = resize_image(path=page.extra.image, width=800, op="fit_width") %}
-                    {% set image_1600 = resize_image(path=page.extra.image, width=1600, op="fit_width") %}
+                    {% set image_970 = resize_image(path=page.extra.image, width=970, op="fit_width") %}
+                    {% set image_1940 = resize_image(path=page.extra.image, width=1940, op="fit_width") %}
                     {% set image_640 = resize_image(path=page.extra.image, width=640, op="fit_width") %}
                     {% set image_1280 = resize_image(path=page.extra.image, width=1280, op="fit_width") %}
-                    <source media="(min-width: 800px)" srcset="{{ image_800.url }}, {{ image_1600.url }} 2x">
+                    <source media="(min-width: 970px)" srcset="{{ image_970.url }}, {{ image_1940.url }} 2x">
                     <source media="(max-width: 640px)" srcset="{{ image_640.url }}, {{ image_1280.url }} 2x">
                     <img class="post__feature-image__inner" src="{{ get_url(path=page.extra.image) }}" alt="Blog post header image decoration.">
                   </picture>
