@@ -10,7 +10,7 @@ draft = true
 The EtherCrab story started with my dream of writing a motion controller in Rust to provide a modern
 alternative to the venerable [LinuxCNC project](https://github.com/LinuxCNC/linuxcnc/). But motion
 controllers are hard, even with the right books, so I did what any good programmer would do:
-procrastinate by implementing an entire industrial automation protocol in instead! **Say hello to
+procrastinate by implementing an entire industrial automation protocol instead! **Say hello to
 [EtherCrab](https://crates.io/crates/ethercrab) - a pure Rust EtherCAT controller that supports
 Linux, macOS, Windows and even `no_std`.**
 
@@ -37,10 +37,10 @@ overview:
 
 - It is a very widely supported and used industrial communication protocol pioneered and
   standardised by [Beckhoff](https://www.beckhoff.com).
-- It uses the Ethernet physical layer (i.e. cables and connectors) for good compatibility, but uses
-  its own packet structure on top of Ethernet II frames to cater to EtherCAT's needs around latency
-  and topology.
-- It is designed for realtime systems with cycle times into the microseconds if desired
+- It uses the Ethernet physical layer (i.e. cables and connectors) for good compatibility, but
+  describes its own packet structure on top of Ethernet II frames to cater to EtherCAT's needs
+  around latency and topology.
+- It is designed for realtime systems with cycle times down into the microseconds if desired
 - There is one controller ("master" in EtherCAT terminology)
 - One or more devices ("slaves") are connected in a long chain, so have at least two ports: input
   and output.
@@ -54,11 +54,11 @@ overview:
 There are other bits of the protocol and many extensions available, but the above hopefully gives a
 decent introduction to the basics. I've also found the
 [EtherCAT Device Protocol poster](https://www.ethercat.org/download/documents/EtherCAT_Device_Protocol_Poster.pdf)
-a good jumping off point for further learning.
+a good starting point for further learning.
 
 # Prior art
 
-There are a couple of EtherCAT controller solutions out there already, two of which are the Etherlab
+There are many EtherCAT controller solutions out there already, two of which are the Etherlab
 [IgH master](https://gitlab.com/etherlab.org/ethercat) as well as
 [SOEM](https://github.com/OpenEtherCATsociety/SOEM). These are battle-tested EtherCAT controllers
 and there are even Rust wrappers for both, so why didn't I just pick one and use it?
@@ -69,17 +69,16 @@ And I like Rust. A lot. More seriously though, human, physical, electrical and A
 others) is critical in many industrial applications, so why are we still writing the control
 software behind these systems in an unsafe, easy to misuse language? Let's fix that!
 
-Of these two solutions I looked at in detail, SOEM seemed like a good choice for me as it provides a
-lower level interface which is what I was looking for. After working through some code and even
-getting a servo drive running, I pretty quickly decided the world needed a Rust implementation
-instead.
+Of the solutions I looked at in detail, SOEM seemed like a good choice for me as it provides a lower
+level interface, which is what I was looking for. After working through some code and even getting a
+servo drive running, I pretty quickly decided the world needed a Rust implementation instead.
 
 SOEM, like many C libraries, is frustrating to work with. It has very little documentation and
 example code, along with a C API which is just a pile of functions in a trench coat. The
 [Rust wrapper](https://crates.io/search?q=soem) is quite thin and leaks a lot of the C-ness through,
 so it didn't help much.
 
-EtherCrab was borne out of these frustrations. I was looking for a safe, ergonomic EtherCAT
+EtherCrab was borne out of these frustrations. I was looking for an open, safe, ergonomic EtherCAT
 controller and couldn't find one that was particularly well suited to the Rust ecosystem. One
 EtherCAT membership application later, and here we are.
 
@@ -279,7 +278,7 @@ let slow_task = tokio::spawn(async move {
 });
 ```
 
-Pay attention to the `loop { ... }`, Specifically:
+Pay attention to the `loop { ... }`, specifically:
 
 1. This is the cyclic application logic. The code in this example does some low level bit twiddling
    but this is where more complex logic can be performed, **as long as the computation time doesn't
@@ -346,10 +345,10 @@ behaviours during operation. A device is always owned by only one group.
 
 EtherCAT devices must be transitioned through various operational states before they can operate
 with cyclic application data. EtherCrab leverages Rust's strong type system to only allow method
-calls that are valid for the current state of a group. For example, the `tx_rx` method to transfer
-the group's PDI is only callable in `SAFE-OP` or `OP` as this functionality is invalid in any other
-state. This makes the API simpler to use, and removes most of the footguns I found when trying out
-SOEM.
+calls that are valid for the current state of a group. For example, the `tx_rx` method which
+transfers the group's PDI is only callable in `SAFE-OP` or `OP` as this functionality is invalid in
+any other state. This makes the API simpler to use, and removes most of the footguns I found when
+trying out SOEM.
 
 <!-- 1. Devices are in groups - you can have one by default or multiple
 1. groups need the client
@@ -362,19 +361,23 @@ SOEM.
 
 ## Thread safety and ownership
 
-The PDU loop is the single place where writable data is stored. It contains the only occurrences
-unsafety in the crate, and has checks, careful design and uses atomics to ensure that packet buffers
-are only ever loaned to one owner. This means that the PDU loop is `Sync`, allowing `Client` to be
-sync, thus allowing it to be used safely by multiple threads or tasks running their own process
-cycles.
+The PDU loop is the single place where writable data is stored. It contains the only `unsafe` code
+in the crate, and has checks, careful design and uses atomics to ensure that packet buffers are only
+ever loaned to one owner. This means that the PDU loop is `Sync`, allowing `Client` to also be
+`Sync`, so can be used safely by multiple threads or tasks running their own process cycles.
 
 A lot of EtherCAT controllers let you do whatever you want with the PDI which is flexible, but isn't
 even close to safe. Concurrent writes and other potential race conditions erode confidence in what
 is actually sent to the device.
 
-EtherCrab solves this mostly with the type system and borrow checker at compile time to remain,
-although does use an `atomic_refcell::AtomicRefCell` and a fallible API when getting a reference to
-a device in a group to prevent the same device reference being held in two places.
+By leveraging Rust's strong type system and borrow checker, EtherCrab prevents this issue from
+happening almost entirely at compile time. There is a single runtime check using an
+`atomic_refcell::AtomicRefCell` when getting a reference to a device in a group, but performance is
+otherwise unaffected when accessing the PDI.
+
+<!-- EtherCrab solves this mostly with Rust's strong type system and borrow checker at compile time.
+The only runtime check is the use of `atomic_refcell::AtomicRefCell` and a fallible API when getting a reference to
+a device in a group to prevent the same device reference being held in two places. -->
 
 A good concise example of this deliberate safety in the API is the `group.tx_rx().await` call:
 
@@ -389,7 +392,7 @@ impl SlaveGroup {
 
 Because `tx_rx()` is `&mut self`, no references to any devices may be held while their underlying
 PDI data is read/written over the network. This completely removes the possibility of a race
-condition _entirely at compile time with no performance penalty._
+condition _entirely at compile time_ with _no performance penalty._
 
 # Use in non-async contexts
 
@@ -515,7 +518,7 @@ other extensions.
 [open a feature request](https://github.com/ethercrab-rs/ethercrab/issues/new?assignees=&labels=feature&projects=&template=feature.md&title=)!**
 
 I've really enjoyed working on EtherCrab to both scratch my own itch, and hopefully help others at
-the same time. If you're interested in seeing where it goes and to help expand Rust's industrial
+the same time. If you're interested in seeing where it goes or in helping expand Rust's industrial
 automation footprint, please [give it a star](https://github.com/ethercrab-rs/ethercrab), share it
 with anyone who might find it interesting/useful, and try it out! I'm always looking for guinea pigs
 to see what EtherCrab might be missing, or what oddware it refuses to work on.
