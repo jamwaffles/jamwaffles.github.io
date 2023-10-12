@@ -32,18 +32,18 @@ TODO P.s. I'm looking for work!
 
 Feel free to skip this section if you're already familiar with EtherCAT.
 
-If not, here's a high level overview of [EtherCAT](https://www.ethercat.org/default.htm):
+If you're new to [EtherCAT](https://www.ethercat.org/default.htm), here's a quick high level
+overview:
 
 - It is a very widely supported and used industrial communication protocol pioneered and
   standardised by [Beckhoff](https://www.beckhoff.com).
 - It uses the Ethernet physical layer (i.e. cables and connectors) for good compatibility, but uses
-  its own packet structure to cater to EtherCAT's needs around latency and topology.
+  its own packet structure on top of Ethernet II frames to cater to EtherCAT's needs around latency
+  and topology.
 - It is designed for realtime systems with cycle times into the microseconds if desired
 - There is one controller ("master" in EtherCAT terminology)
-- Many devices ("slaves") are connected in a long chain, so have at least two ports: input and
-  output.
-  - A quick aside: EtherCAT is really a tree topology, traversed in a well defined order, but is
-    most often deployed in a chain. "Fork" or "star" nodes will have 3 or 4 ports respectively.
+- One or more devices ("slaves") are connected in a long chain, so have at least two ports: input
+  and output.
 - EtherCAT packets are sent along the entire chain in a fixed traversal order, then sent all the way
   back to the controller, allowing devices to read and write data to packets addressed to them.
 - Packets are read/written during their transit through each device meaning latencies are in the low
@@ -52,9 +52,9 @@ If not, here's a high level overview of [EtherCAT](https://www.ethercat.org/defa
   read from/write into specific pieces of this address space.
 
 There are other bits of the protocol and many extensions available, but the above hopefully gives a
-good high level introduction. I've also found the
+decent introduction to the basics. I've also found the
 [EtherCAT Device Protocol poster](https://www.ethercat.org/download/documents/EtherCAT_Device_Protocol_Poster.pdf)
-a good reference.
+a good jumping off point for further learning.
 
 # Prior art
 
