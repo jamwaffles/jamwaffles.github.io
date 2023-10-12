@@ -15,7 +15,7 @@ Linux, macOS, Windows and even `no_std`.**
 
 <!-- more -->
 
-{% callout() %}
+<!-- {% callout() %}
 
 TODO P.s. I'm looking for work!
 
@@ -26,7 +26,7 @@ TODO P.s. I'm looking for work!
 - CV [here](https://wapl.es/cv/)
 - Remote pls, or Edinburgh local
 
-{% end %}
+{% end %} -->
 
 # A quick primer on EtherCAT
 
