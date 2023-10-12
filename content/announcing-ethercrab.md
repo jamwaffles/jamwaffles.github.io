@@ -58,7 +58,7 @@ a good jumping off point for further learning.
 
 # Prior art
 
-There are a couple of EtherCAT controller solutions out there already, namely the Etherlab
+There are a couple of EtherCAT controller solutions out there already, two of which are the Etherlab
 [IgH master](https://gitlab.com/etherlab.org/ethercat) as well as
 [SOEM](https://github.com/OpenEtherCATsociety/SOEM). These are battle-tested EtherCAT controllers
 and there are even Rust wrappers for both, so why didn't I just pick one and use it?
@@ -69,8 +69,11 @@ And I like Rust. A lot. More seriously though, human, physical, electrical and A
 others) is critical in many industrial applications, so why are we still writing the control
 software behind these systems in an unsafe, easy to misuse language? Let's fix that!
 
-At first, SOEM seemed like a good choice for me as it provides a lower level interface which is what
-I was looking for, but I pretty quickly decided the world needed a Rust implementation instead.
+Of these two solutions I looked at in detail, SOEM seemed like a good choice for me as it provides a
+lower level interface which is what I was looking for. After working through some code and even
+getting a servo drive running, I pretty quickly decided the world needed a Rust implementation
+instead.
+
 SOEM, like many C libraries, is frustrating to work with. It has very little documentation and
 example code, along with a C API which is just a pile of functions in a trench coat. The
 [Rust wrapper](https://crates.io/search?q=soem) is quite thin and leaks a lot of the C-ness through,
@@ -82,14 +85,15 @@ EtherCAT membership application later, and here we are.
 
 # A motivating example
 
-Let's see EtherCrab in action with a quick example.
+With our brief history lesson over, let's see EtherCrab in action with a quick example.
 
 This code is taken from
 [here](https://github.com/ethercrab-rs/ethercrab/blob/master/examples/multiple-groups.rs). It
-initialises the EtherCAT network and assigns the discovered devices into two groups. The groups are
-an EtherCrab concept, and allow concurrent tasks to update different parts of the process data image
-(PDI) at different rates. For example, a machine might have some digital IOs polled at 10ms, and a
-servo drive cycle at 1ms. Groups are `Send` so can be serviced from different threads.
+initialises the EtherCAT network and assigns the discovered devices into two groups. Groups are an
+EtherCrab concept, and allow concurrent tasks to update different parts of the process data image
+(PDI) at different rates. For example, a machine in a factory might have some digital IOs polled at
+a "slow" 10ms, and a servo drive cycle at 1ms. Groups are `Send` so can be run concurrently in
+different threads.
 
 This example targets Linux, but should work on macOS and even Windows as long as the weird NPcap
 driver is setup correctly.
@@ -109,14 +113,14 @@ use ethercrab::{
 };
 ```
 
-One import of note is `std::tx_rx_task`. This is a ready-made function that creates a future that
-will handle all network communications. This would be switched out for something else if a different
+One import of note is `std::tx_rx_task`. This is a ready-made function that creates a future which
+handles all network communications. This would be switched out for something else if a different
 network driver is used, or for a mock if writing tests. EtherCrab provides building blocks to make
 writing your own networking adapters as easy as possible.
 
-Next, because EtherCrab statically allocates all its memory, it needs to know some details about how
-much storage it should be given. We could use magic numbers where the const generics require them,
-but let's give them names so we know which numbers mean what.
+Next, because EtherCrab statically allocates all its memory using const generics, it needs to know
+some details about how much storage it should be given. We could use magic numbers where required,
+but let's give these values sensible names so we know which numbers mean what.
 
 ```rust
 /// Maximum number of slaves that can be stored. This must be a power of 2 greater than 1.
@@ -133,14 +137,14 @@ static instance called `PDU_STORAGE`. If you're using scoped threads or a more r
 this could be an ordinary `let` binding in `main`.
 
 `PduStorage` contains `unsafe` code, but is carefully designed and checked to contain it, whilst
-providing a safe API. `PduStorage` has no public API, but its creation is handled by the end
+providing a safe API on top. `PduStorage` has no public API, but its creation is handled by the end
 application so as to control the lifetimes of the data it hands out.
 
 ```rust
 static PDU_STORAGE: PduStorage<MAX_FRAMES, MAX_PDU_DATA> = PduStorage::new();
 ```
 
-We'd like multiple groups so let's define a struct to give them names. This could easily be a tuple
+We'd like multiple groups so let's define a struct to give them names. This could be a tuple
 instead, but the indexes can get confusing so we'll use a struct.
 
 ```rust
@@ -171,17 +175,20 @@ let client = Client::new(pdu_loop, Timeouts::default(), ClientConfig::default())
 tokio::spawn(tx_rx_task(&interface, tx, rx).expect("spawn TX/RX task"));
 ```
 
+If different network machinery is used, `tx` and `rx` would be passed into custom code to drive
+them.
+
 We're going to need the client in two tasks, so we'll wrap it in an `Arc` to allow it to be
-`clone()`d. The methods on `Client` are `&self` allowing concurrent usage. Note that the EtherCrab
-internals are designed to be threadsafe.
+`clone()`d. The methods on `Client` are `&self` allowing concurrent usage without any kind of mutex
+or lock. EtherCrab was designed from the start to be thread safe.
 
 ```rust
 let client = Arc::new(client);
 ```
 
-Now we'll initialise the EtherCAT network. `client.init()` will assign addresses to each device,
-read their EEPROM configurations and set up the sync managers and FMMUs ready for configuration and
-communication.
+Now we'll initialise the EtherCAT network. `client.init()` will assign an EtherCAT "Configured
+Station Address" to each device, read their EEPROM configurations and set up the sync managers and
+FMMUs ready for configuration and communication.
 
 `init()` takes a closure that must return a reference to a group the current device will be added
 to. In this example, we match on the device name but other identifiers or application-specific logic
@@ -222,7 +229,7 @@ let all_devices = client
 
 Now we'll create a clone of the client (well, the `Arc` that wraps it) so we can pass it to a second
 task. Again, we don't need a lock or mutex because the methods on `Client` are `&self`, `Client` is
-`Sync`, and EtherCrab's internals are concurrency safe.
+`Sync`, and EtherCrab's internals are thread safe.
 
 ```rust
 let client_slow = client.clone();
@@ -272,7 +279,7 @@ let slow_task = tokio::spawn(async move {
 });
 ```
 
-Pay attention to the `loop { ... }`. Things of note:
+Pay attention to the `loop { ... }`, Specifically:
 
 1. This is the cyclic application logic. The code in this example does some low level bit twiddling
    but this is where more complex logic can be performed, **as long as the computation time doesn't
