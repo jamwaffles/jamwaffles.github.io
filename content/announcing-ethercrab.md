@@ -327,11 +327,10 @@ example can be found
 
 # EtherCrab's design
 
-BIG TODO
-
-EtherCrab supports Linux, macOS and Windows but please, for your sanity, target Linux or macOS at a
-push. There is also `no_std` support as EtherCrab makes heavy use of const generics to remove the
-need for an allocator. You can find an embedded example using [Embassy](https://embassy.dev/)
+EtherCrab is `async`-first and supports Linux, macOS and Windows but please, for your sanity, target
+Linux. macOS at a push. There is also `no_std` support as EtherCrab makes heavy use of const
+generics to remove the need for an allocator. You can find an embedded example using
+[Embassy](https://embassy.dev/)
 [here](https://github.com/ethercrab-rs/ethercrab/tree/master/examples/embassy-stm32), although other
 runtimes should work great too, like [RTICv2](https://rtic.rs/2).
 
@@ -345,59 +344,52 @@ each discovered device. Two options are then available: a single group can be cr
 devices in it, or multiple groups can be created, allowing different devices to have different
 behaviours during operation. A device is always owned by only one group.
 
-1. Devices are in groups - you can have one by default or multiple
-2. groups need the client
-3. client is a wrapper around the PDU loop
-4. PDU loop is a split design
-5. TX/RX task can be run in a different thread
-6. TX/RX task is not coupled to the actual network comms mechanism so can support whatever you want
+EtherCAT devices must be transitioned through various operational states before they can operate
+with cyclic application data. EtherCrab leverages Rust's strong type system to only allow method
+calls that are valid for the current state of a group. For example, the `tx_rx` method to transfer
+the group's PDI is only callable in `SAFE-OP` or `OP` as this functionality is invalid in any other
+state. This makes the API simpler to use, and removes most of the footguns I found when trying out
+SOEM.
+
+<!-- 1. Devices are in groups - you can have one by default or multiple
+1. groups need the client
+2. client is a wrapper around the PDU loop
+3. PDU loop is a split design
+4. TX/RX task can be run in a different thread
+5. TX/RX task is not coupled to the actual network comms mechanism so can support whatever you want
    as long as that interface can send a byte slice, and pass one to the PDU loop when a response is
-   received
+   received -->
 
-## Thread safety
+## Thread safety and ownership
 
-The PDU loop is the only place writable data is stored. It contains the only unsafety in the crate,
-and has checks, careful design and atomics to ensure that packet buffers are only ever given out
-once. This means that the PDU loop is `Sync`, allowing `Client` to be sync, allowing it to be used
-safely by multiple threads or tasks running their own process cycles.
+The PDU loop is the single place where writable data is stored. It contains the only occurrences
+unsafety in the crate, and has checks, careful design and uses atomics to ensure that packet buffers
+are only ever loaned to one owner. This means that the PDU loop is `Sync`, allowing `Client` to be
+sync, thus allowing it to be used safely by multiple threads or tasks running their own process
+cycles.
 
-- Designed around device groups from the ground up, so it's easy to run different devices at
-  different cycle times, e.g. IO at low freq and a servo loop at high freq
-- Safe with various API design decisions
-  - There's some unsafety in the core, but it's abstracted away in a safe high level API, as is Rust
-    tradition
-- Uses Rust's trait/ownership system to ensure the EtherCAT PDI is held correctly. A lot of EtherCAT
-  controllers let you do whatever with the PDI which can be useful, but isn't safe. EtherCrab does a
-  lot of checks at compile time to remain fast, although does use an `atomic_refcell::AtomicRefCell`
-  when getting a device reference from a group.
+A lot of EtherCAT controllers let you do whatever you want with the PDI which is flexible, but isn't
+even close to safe. Concurrent writes and other potential race conditions erode confidence in what
+is actually sent to the device.
 
-  - E.g. a group can only transmit/receive the PDI by calling `group.tx_rx().await`. This method is
-    `&mut self` which doesn't allow anything else to access the PDI while it's in flight.
+EtherCrab solves this mostly with the type system and borrow checker at compile time to remain,
+although does use an `atomic_refcell::AtomicRefCell` and a fallible API when getting a reference to
+a device in a group to prevent the same device reference being held in two places.
 
-  - Something for the future: an API to interpret the raw PDI as a struct, with some checks, for
-    better ergonomics whilst retaining safety. Still a chance that the bytes don't map to the right
-    things if the slave is misconfigured, but that's difficult to fix as the slave's PDI can be
-    configured in so many different ways. But it will be safe in Rust's meaning of the word - no
-    leaks or out of bounds reads.
+A good concise example of this deliberate safety in the API is the `group.tx_rx().await` call:
 
-- Low jitter is achievable when used in a realtime system. Caveat benchmark of course, but
-  [`examples/jitter.rs`](https://github.com/ethercrab-rs/ethercrab/blob/master/examples/jitter.rs)
-  gives pretty good results on a PREEMPT_RT system!
+```rust
+impl SlaveGroup {
+    // snip
 
-<!-- NOTE: This probably isn't needed - no_std could just block too -->
-<!-- ## A quick note on `no_std``
+    async fn tx_rx(&self, client: &Client<'_>) -> Result<u16, Error> {
+        // ...
+    }
+```
 
-EtherCrab is async, therefore needs an executor to run on. It's still early days in the embedded
-Rust async ecosystem, but there are at least two rather good environments to consider:
-[RTIC 2](https://rtic.rs/2) and [Embassy](https://embassy.dev/). There's a basic EtherCrab example
-using Embassy to get started with
-[here](https://github.com/ethercrab-rs/ethercrab/tree/master/examples/embassy-stm32). If you use
-RTIC and would like to contribute an example for it, I'd be very happy to accept a PR!
-
-Because EtherCrab's storage is all fixed-size, and the fixed sizes are configurable with const
-generics, it's easy to tune EtherCrab to the resources available on whichever target microcontroller
-is used. Statically allocating resources like this is also of benefit to `std` environments - no
-dynamic alloc means no hitches or hiccups from dynamically allocating more memory. -->
+Because `tx_rx()` is `&mut self`, no references to any devices may be held while their underlying
+PDI data is read/written over the network. This completely removes the possibility of a race
+condition _entirely at compile time with no performance penalty._
 
 # Use in non-async contexts
 
@@ -406,51 +398,130 @@ The example shown earlier uses `tokio` and a lot of `async`/`await`. This can be
 1. The application around EtherCrab isn't async and/or
 2. You need more control over the threads that each task runs in for jitter or latency reasons
 
-TODO
+If your application (std or even `no_std`) does not use `async`, EtherCrab's methods can be wrapped
+in functions that block on the returned future, making it a sync API.
 
-- You can block instead if you like - just run everything in threads. This gives more control over
-  priority and scheduling, e.g. using the
-  [`thread_priority` crate](https://crates.io/crates/thread_priority).
+Here's an example of a small blocking application using `smol::block_on`. It spawns a thread in the
+background to run the TX/RX task.
 
-  E.g.
+```rust
+use ethercrab::{error::Error, std::tx_rx_task, Client, ClientConfig, PduStorage, Timeouts};
+use std::{sync::Arc, time::Duration};
 
-  ```rust
-  let thread_id = thread_native_id();
-  set_thread_priority_and_policy(
-      thread_id,
-      ThreadPriority::Crossplatform(ThreadPriorityValue::try_from(99u8).unwrap()),
-      ThreadSchedulePolicy::Realtime(RealtimeThreadSchedulePolicy::Fifo),
-  )
-  .expect("could not set thread priority. Are the PREEMPT_RT patches in use?");
-  ```
+const MAX_SLAVES: usize = 16;
+const MAX_PDU_DATA: usize = 1100;
+const MAX_FRAMES: usize = 16;
+const PDI_LEN: usize = 64;
 
-- We'll use `smol::block_on` for this example as it gave good jitter results when tested against
-  `tokio`.
-- Spawn a dedicated PDU loop thread, set RT as above
-- Main thread can run a single task or multiple tasks in spawned threads. Each group can be sent to
-  only one thread, guaranteeing no clobbering of PDI.
-- `thread::scoped` is handy here
-- Should be possible to use a blocking wrapper in embedded as well with interrupts so you're not
-  tied to e.g. RTICv2 or Embassy, although this is untested
-- This approach works pretty well
+static PDU_STORAGE: PduStorage<MAX_FRAMES, MAX_PDU_DATA> = PduStorage::new();
+
+fn main() -> Result<(), Error> {
+    let (tx, rx, pdu_loop) = PDU_STORAGE.try_split().expect("can only split once");
+
+    let client = Arc::new(Client::new(
+        pdu_loop,
+        Timeouts::default(),
+        ClientConfig::default(),
+    ));
+
+    std::thread::spawn(move || {
+        smol::block_on(tx_rx_task(&interface, tx, rx).expect("spawn TX/RX task"))
+            .expect("TX/RX task failed");
+    });
+
+    let mut group = smol::block_on(async {
+        let group = client
+            .init_single_group::<MAX_SLAVES, PDI_LEN>()
+            .await
+            .expect("Init");
+
+        log::info!("Discovered {} slaves", group.len());
+
+        group.into_op(&client).await.expect("PRE-OP -> OP")
+    });
+
+    loop {
+        smol::block_on(group.tx_rx(&client)).expect("TX/RX");
+
+        // Increment every output byte for every slave device by one
+        for slave in group.iter(&client) {
+            let (_i, o) = slave.io_raw();
+
+            for byte in o.iter_mut() {
+                *byte = byte.wrapping_add(1);
+            }
+        }
+
+        // NOTE: Jitter on this will be awful - consider using `timerfd` or something better.
+        std::thread::sleep(Duration::from_millis(5));
+    }
+}
+```
+
+Running EtherCrab this way does give more control over thread priority and placement. For example,
+on a realtime system we can use the
+[`thread_priority` crate](https://crates.io/crates/thread_priority) to set the priority of the TX/RX
+thread:
+
+E.g.
+
+```rust
+std::thread::spawn(move || {
+    let thread_id = thread_native_id();
+
+    set_thread_priority_and_policy(
+        thread_id,
+        ThreadPriority::Crossplatform(ThreadPriorityValue::try_from(49u8).unwrap()),
+        ThreadSchedulePolicy::Realtime(RealtimeThreadSchedulePolicy::Fifo),
+    )
+    .expect("could not set thread priority. Are the PREEMPT_RT patches in use?");
+
+    smol::block_on(tx_rx_task(&interface, tx, rx).expect("spawn TX/RX task"))
+        .expect("TX/RX task failed");
+});
+```
+
+# Performance
+
+Tests on both of my dev machines, as well as those of a client using EtherCrab in production, have
+shown that with a little bit of system tuning an extremely consistent process data cycle of 1000us
+is achievable using [`smol`](https://docs.rs/smol) in a `SCHED_FIFO` thread. Network latencies are
+low and predictable, and timing jitter from `smol`'s timer is miniscule which is great to see for
+such an easy to use API.
+
+A small benchmark in
+[`examples/jitter.rs`](https://github.com/ethercrab-rs/ethercrab/blob/master/examples/jitter.rs) is
+available to see how your system performs. It prints statistics every few seconds, so doesn't give
+much insight but is still useful.
+
+I've also created some tools in [`dump-analyser`](https://github.com/ethercrab-rs/dump-analyser)
+which ingests Wireshark packet captures into a Postgres database for further analysis. Please note
+that at time of writing it is _very_ rough but it's already proven invaluable when checking results
+of system tuning in Linux.
 
 # Conclusion
 
-- Hmm.
-- If you find some unsoundness or unsafety please tell me. I'll look like a tit for saying EtherCrab
-  is safe, and I do even test some bits with MIRI, but I'm sure I've missed something.
-- Use it, break it, let me know!
-- Still some features to go
-  - FSoE
-  - MDP
-    - One pain point for me was CiA402/DS402. Would like to build in support for servos as it's a
-      common use case
-      - Would like ideas
-      - Open a Github discussion and link to it
-- EtherCrab is already in limited commercial use.
-  - I'm looking for guinea pigs!
-- I'm looking for work (again)
-- Link to Github again
-  - Star it pls
-  - Share it pls
-- Link to Matrix
+Give EtherCrab a try, and do reach out via
+[Github issues](https://github.com/ethercrab-rs/ethercrab/issues/new) or
+[Matrix](https://matrix.to/#/#ethercrab:matrix.org) if you get stuck!
+
+EtherCrab is in a pretty good state already - you may have noticed the `0.2.x` version if you visit
+it on [crates.io](https://crates.io/crates/ethercrab) - and I'm proud to say it is already in
+production use! That said, there are still many features to implement, including `FSoE` (Functional
+Safety over EtherCAT), MDP (Modular Device Profile) for easier communication with servo drives, and
+other extensions.
+
+**If you want to use EtherCrab but it doesn't currently provide functionality you need, please
+[open a feature request](https://github.com/ethercrab-rs/ethercrab/issues/new?assignees=&labels=feature&projects=&template=feature.md&title=)!**
+
+I've really enjoyed working on EtherCrab to both scratch my own itch, and hopefully help others at
+the same time. If you're interested in seeing where it goes and to help expand Rust's industrial
+automation footprint, please [give it a star](https://github.com/ethercrab-rs/ethercrab), share it
+with anyone who might find it interesting/useful, and try it out! I'm always looking for guinea pigs
+to see what EtherCrab might be missing, or what oddware it refuses to work on.
+
+We're [on Matrix](https://matrix.to/#/#ethercrab:matrix.org) too, so come and hang out if chatting
+about industrial automation (Rust or not) is your kind of thing. We'd love more members, so I'll see
+you there! ;)
+
+As always, thanks for reading, and happy automating!
