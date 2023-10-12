@@ -15,18 +15,17 @@ Linux, macOS, Windows and even `no_std`.**
 
 <!-- more -->
 
-<!-- {% callout() %}
+{% callout() %}
 
-TODO P.s. I'm looking for work!
+A quick aside before we begin: I'm looking for work!
 
-- Contracting/consulting
-- Fulltime
-- EtherCAT or other Rust work
-- Please
-- CV [here](https://wapl.es/cv/)
-- Remote pls, or Edinburgh local
+If you need an experienced Rust programmer to help bring your awesome product to market, please send
+a message to [james@wapl.es](mailto:james@wapl.es). I I'm happy to work fully remote, or local to
+Edinburgh, Scotland. Let's chat!
 
-{% end %} -->
+Thanks for reading through this brief interruption. Now, on to the announcement!
+
+{% end %}
 
 # A quick primer on EtherCAT
 
