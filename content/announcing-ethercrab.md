@@ -4,6 +4,9 @@ title = "Announcing EtherCrab: The 100% Rust EtherCAT controller"
 slug = "announcing-ethercrab-the-rust-ethercat-controller"
 started_date = "2023-10-12 14:11:00"
 date = "2023-10-12 14:11:00"
+
+[extra]
+image = "/images/ethercat.jpg"
 +++
 
 The EtherCrab story started with my dream of writing a motion controller in Rust to provide a modern
