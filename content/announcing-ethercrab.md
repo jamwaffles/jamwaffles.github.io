@@ -2,7 +2,8 @@
 layout = "post"
 title = "Announcing EtherCrab: The 100% Rust EtherCAT controller"
 slug = "announcing-ethercrab-the-rust-ethercat-controller"
-date = "2023-09-19 11:50:47"
+started_date = "2023-10-12 14:11:00"
+date = "2023-10-12 14:11:00"
 draft = true
 +++
 
