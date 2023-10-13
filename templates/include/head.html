@@ -19,7 +19,15 @@
   <title>{% if page.title %}{{ page.title }}{% elif section.title %}{{ section.title }}{% else %}{{ config.extra.title }}{% endif %}</title>
   <meta
     name="description"
-    content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate(length = 160) }}{% else %}{{ config.extra.description }}{% endif %}"
+    content="{{ config.extra.description }}"
+  />
+  <meta
+    name="og:description"
+    content="{{ config.extra.description }}"
+  />
+  <meta
+    name="twitter:description"
+    content="{{ config.extra.description }}"
   />
 
   <meta name="HandheldFriendly" content="True" />
