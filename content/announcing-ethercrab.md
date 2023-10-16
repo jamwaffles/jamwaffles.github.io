@@ -20,13 +20,9 @@ Linux, macOS, Windows and even `no_std`.**
 
 {% callout() %}
 
-A quick aside before we begin: I'm looking for work!
-
-If you need an experienced Rust programmer to help bring your awesome product to market, please send
-a message to [james@wapl.es](mailto:james@wapl.es). I'm happy to work fully remote, or local to
-Edinburgh, Scotland. Let's chat!
-
-Thanks for reading through this brief interruption. Now, on to the announcement!
+Are you looking to use Rust in your next EtherCAT deployment? Commercial support for EtherCrab is
+available! Send me a message at [james@wapl.es](mailto:james@wapl.es) to get started with a free
+consulting call.
 
 {% end %}
 
