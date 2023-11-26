@@ -23,4 +23,8 @@
   Rust is also much more conducive to better tested libraries with the inclusion of `cargo test`.
 
 - The C "feel" seems to be the classic "good programmers don't make mistakes" which has been proven
-  time and time again to be false.
+  time and time again to be false. Package management is either dynamic linking more C, or copying
+  and pasting a few files into the project. How many bugfixes and security vulns are missed in
+  important projects because nobody can (rightly) be arsed to merge in new changes from upstream.
+
+  What's wrong with a `cargo update`? (caveat semver shut up lol)
