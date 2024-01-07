@@ -60,3 +60,55 @@ pub fn skip4(len: usize, buf: &mut [u8]) -> &mut [u8] {
 `skip3` seems to be the best here. If the returned buffer length is zero, the other original code
 that uses it will panic instead so we've probably just moved the assertion check in the wide program
 than removed it entirely.
+
+## 2. Idiomatic method chaining is smarter than you think
+
+[Godbolt](https://godbolt.org/z/T5xTK83dM)
+
+Fewer lines really is faster!
+
+```rust
+use core::hint::unreachable_unchecked;
+use core::convert::TryInto;
+
+/// Original attempt at getting optimised output, with sad trombone bonus `unsafe`` :(
+pub fn unpack_from_slice_naive(buf: &[u8]) -> Result<u32, ()> {
+    if buf.len() < 4 {
+        return Err(());
+    }
+
+    let arr = match buf[0..4].try_into() {
+        Ok(arr) => arr,
+        // SAFETY: We check the buffer size above
+        Err(_) => unsafe { unreachable_unchecked() },
+    };
+
+    Ok(u32::from_le_bytes(arr))
+}
+
+/// Look at this nice API!
+pub fn unpack_from_slice_pleasant(buf: &[u8]) -> Result<u32, ()> {
+    buf.get(0..4)
+        .ok_or(())
+        .and_then(|raw| raw.try_into().map_err(|_| ()))
+        .map(u32::from_le_bytes)
+}
+```
+
+The two latter solutions produce identical assembly, so there's no need for `unsafe` here - the
+performance is already there.
+
+There's also an in-between if you find a lot of chained methods hard to read, which is
+understandable:
+
+```rust
+pub fn unpack_from_slice_naive(buf: &[u8]) -> Result<u32, ()> {
+    if buf.len() < 4 {
+        return Err(());
+    }
+
+    buf[0..4].try_into().map(u32::from_le_bytes).map_err(|_| ())
+}
+```
+
+Again, identical assembly as the two above.
