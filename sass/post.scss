@@ -46,6 +46,38 @@
   }
 
   &__text {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      // Relative positioning for header link
+      contain: layout;
+
+      &:hover {
+        .zola-anchor {
+          display: inherit;
+          text-decoration: none;
+        }
+      }
+
+      .zola-anchor {
+        margin-top: -0.7rem;
+        position: absolute;
+        font-size: 1rem;
+        right: 0;
+        padding: var(--spacing);
+
+        @media screen and (min-width: 1079px) {
+          left: calc(-1.5rem - var(--spacing)) !important;
+        }
+
+        @media not (pointer: coarse) {
+          display: none;
+        }
+      }
+    }
+
     @media screen and (max-width: var(--site-width)) {
       padding: 0 var(--screen-padding);
     }
