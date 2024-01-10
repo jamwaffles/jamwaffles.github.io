@@ -41,7 +41,8 @@ apt install --no-recommends \
     tk-dev \
     yapps2 \
     libreadline-dev \
-    asciidoc
+    asciidoc \
+    python3-opengl
 ```
 
 There might be an issue finding `yapps` where it's installed as `yapps2`. In this case, remove the
