@@ -11,6 +11,9 @@ draft = true
   - Will gladly accept anything that might help
   - But I'm specifically looking for:
     - Desktop(-ish) robot arms to test more complex kinematics
+      - 5R parallel robots
+      - Scara
+      - Mini "normal" robot arms
     - Compact EtherCAT servo drives like the Beckhoff ELM72xx series
     - Dead cartesian machines (3D printers, cheapo CNCs, etc). Doesn't have to be beefy. It's just
       to test motion.
