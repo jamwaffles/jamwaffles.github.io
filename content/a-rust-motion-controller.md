@@ -1,6 +1,6 @@
 +++
 title = "Motion Control for Everything"
-date = ""
+date = "2024-01-19 11:11:13"
 draft = true
 +++
 
