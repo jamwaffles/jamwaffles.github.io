@@ -1,25 +1,26 @@
 +++
 layout = "post"
 title = "This Month In Rust EtherCat: `io_uring`"
-slug = "this-month-in-rust-ethercrab-io-uring-ethercrab"
+slug = "this-month-in-rust-ethercat-io-uring-ethercrab"
 started_date = "2024-02-23 15:29:34"
 draft = true
 # TODO
-# date = "2023-10-12 14:11:00"
+date = "2024-02-23"
 
 # [extra]
 # image = "/images/ethercat.jpg"
 +++
 
-- Coming in 0.4.0: `io_uring` support! For excellent performance with minimal CPU overhead.
+- Waiting for 0.4 release
+- Available in 0.4.0: `io_uring` support! For excellent performance with minimal CPU overhead.
 - Alternative to current `smol` impl
 
 <!-- more -->
 
 {% callout() %}
 
-Are you looking to use Rust in your next EtherCAT deployment? Need help performance tuning an
-existing EtherCrab app? I'm who you need! Send me a message at [james@wapl.es](mailto:james@wapl.es)
+Are you looking to use Rust in your next EtherCAT deployment? Experiencing jitter or latency issues
+in an existing EtherCrab app? I can help! Send me an email at [james@wapl.es](mailto:james@wapl.es)
 to discuss your needs.
 
 {% end %}
@@ -29,7 +30,7 @@ to discuss your needs.
 - EtherCAT is a realtime industrial fieldbus protocol
 - EtherCrab is a Rust implementation of EtherCAT
   - GH link
-  - For more, see [TODO: Announcement post]()
+  - For more, see [the EtherCrab announcement post](@/announcing-ethercrab.md)
 
 # Current impl: `smol`
 

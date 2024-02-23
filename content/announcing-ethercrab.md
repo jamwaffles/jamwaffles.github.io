@@ -20,9 +20,9 @@ Linux, macOS, Windows and even `no_std`.**
 
 {% callout() %}
 
-Are you looking to use Rust in your next EtherCAT deployment? Commercial support for EtherCrab is
-available! Send me a message at [james@wapl.es](mailto:james@wapl.es) to get started with a free
-consulting call.
+Are you looking to use Rust in your next EtherCAT deployment? Experiencing jitter or latency issues
+in an existing EtherCrab app? I can help! Send me an email at [james@wapl.es](mailto:james@wapl.es)
+to discuss your needs.
 
 {% end %}
 
