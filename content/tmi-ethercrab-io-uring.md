@@ -25,6 +25,8 @@ to discuss your needs.
 
 {% end %}
 
+TODO: Series TOC
+
 # Quick intro to EtherCAT and EtherCrab
 
 - EtherCAT is a realtime industrial fieldbus protocol

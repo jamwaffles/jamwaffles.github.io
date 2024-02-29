@@ -24,6 +24,8 @@ to discuss your needs.
 
 {% end %}
 
+TODO: Series TOC
+
 # WTF even are Distributed Clocks
 
 - Link to announcement post for general EtherCAT intro

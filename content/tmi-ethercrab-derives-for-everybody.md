@@ -20,6 +20,8 @@ to discuss your needs.
 
 {% end %}
 
+TODO: Series TOC
+
 Why did I go my own way
 
 - This post is waiting for 0.4.0 release
