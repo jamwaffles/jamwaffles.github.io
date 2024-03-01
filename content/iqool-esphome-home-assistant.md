@@ -65,6 +65,8 @@ TODO INTRO
 - Works with Apple Home, presumably other stuff too!
 - Had to use some not-yet-merged ESPHome stuff. Link to my repo and the upstream PR from that other
   guy's changes.
+- My unit has a PTC heater. Alas I couldn't see anything that responds to the PTC :(. The manual
+  says it's only supported on the remote, which might be why.
 - The ESPHome Tuya component can talk to the MCU in the aircon. Startup log looked like this:
 
   ```
