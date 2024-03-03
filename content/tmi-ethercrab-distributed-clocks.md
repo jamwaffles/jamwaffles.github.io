@@ -18,9 +18,8 @@ date = "2024-02-23"
 
 {% callout() %}
 
-Are you looking to use Rust in your next EtherCAT deployment? Experiencing jitter or latency issues
-in an existing EtherCrab app? I can help! Send me an email at [james@wapl.es](mailto:james@wapl.es)
-to discuss your needs.
+TODO: This is an experimental feature, so ask for HW to test with or GH sponsors instead of
+commercial support.
 
 {% end %}
 
