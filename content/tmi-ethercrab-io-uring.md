@@ -15,6 +15,15 @@ date = "2024-02-23"
 - Available in 0.4.0: `io_uring` support! For excellent performance with minimal CPU overhead.
 - Alternative to current `smol` impl
 
+# BENCHMARK TODO
+
+- `multiple-groups`
+  - `tokio`
+  - `smol` with spawn and main thread single block on
+  - `smol` with controlled threads and `block_on`
+  - `io_uring` with all controlled threads with futures_lite block_on
+  - `io_uring` tx/rx but with `smol` main tasks and a join
+
 <!-- more -->
 
 {% callout() %}
