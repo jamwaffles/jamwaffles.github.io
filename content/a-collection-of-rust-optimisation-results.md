@@ -208,3 +208,30 @@ impl Pdo {
 
 `unpack_from_slice_new` is prettier if that matters. Either way it's nice to see that prettier code
 doesn't make for worse code.
+
+## Pointer offsets just turn into numbers
+
+[Godbolt](https://godbolt.org/z/G6jTaWWrj)
+
+As you might expect, but it's nice to have the confirmation. Original code is this:
+
+```rust
+unsafe fn ethercat_payload_ptr(this: NonNull<FrameElement<N>>) -> NonNull<u8> {
+    NonNull::new_unchecked(
+        Self::ptr(this)
+            .as_ptr()
+            .byte_add(EthernetFrame::<&[u8]>::header_len())
+            .byte_add(EthercatFrameHeader::header_len()), // .byte_add(PduFrame::header_len()),
+    )
+}
+```
+
+This just turns into
+
+```asm
+example::ethercat_payload_ptr:
+        lea     rax, [rdi + 16]
+        ret
+```
+
+Because both `byte_add`s are given constants.
