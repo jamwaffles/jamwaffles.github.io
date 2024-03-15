@@ -3,9 +3,7 @@ layout = "post"
 title = "Controlling an Electric iQool AC with ESPHome and Home Assistant"
 slug = "electriq-iqool-aircon-esphome-home-assistant"
 started_date = "2024-02-25 15:06:14"
-draft = true
-# TODO
-date = "2024-02-23"
+date = "2024-03-15"
 
 # [extra]
 # image = "/images/ethercat.jpg"
@@ -364,7 +362,7 @@ I'm curious to know what the bitmasks are - maybe defrost state, errors, somethi
 But they were _always_ zero when I inspected them. If I can be bothered, I'll grab some logs when
 the unit is in defrost mode and see if anything changes.
 
-## Home assistant
+<!-- ## Home assistant
 
 TODO: Screenshot of AC pane
 
@@ -373,4 +371,4 @@ TODO: Screenshot of AC pane
 - I'm using InfluxDB
 - TODO: Screenshots
 - Talk about presenting sensors for logging stuff in Grafana. Link back to section where I add the
-  sensors in ESPHome
+  sensors in ESPHome -->
