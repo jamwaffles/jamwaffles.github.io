@@ -1,6 +1,6 @@
 +++
 layout = "post"
-title = "Controlling an Electric iQool AC with ESPHome and Home Assistant"
+title = "Controlling an Electriq iQool AC with ESPHome and Home Assistant"
 slug = "electriq-iqool-aircon-esphome-home-assistant"
 started_date = "2024-02-25 15:06:14"
 date = "2024-03-15"
