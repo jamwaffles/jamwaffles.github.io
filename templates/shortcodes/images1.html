@@ -1,0 +1,4 @@
+<div>
+  {% set i1 = resize_image(path=path, width=1000, op="fit_width") %}
+  <img src="{{ i1.url | safe }}" />
+</div>
