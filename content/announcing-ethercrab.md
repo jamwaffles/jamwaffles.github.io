@@ -12,7 +12,7 @@ image = "/images/ethercat.jpg"
 The EtherCrab story started with my dream of writing a motion controller in Rust to provide a modern
 alternative to the venerable [LinuxCNC project](https://github.com/LinuxCNC/linuxcnc/). But motion
 controllers are hard, even with the right books, so I did what any good programmer would do:
-procrastinate by implementing an entire industrial automation protocol instead! **Say hello to
+procrastinate by implementing an entire industrial fieldbus protocol instead! **Say hello to
 [EtherCrab](https://crates.io/crates/ethercrab) - a pure Rust EtherCAT controller that supports
 Linux, macOS, Windows and even `no_std`.**
 
@@ -33,8 +33,8 @@ Feel free to skip this section if you're already familiar with EtherCAT.
 If you're new to [EtherCAT](https://www.ethercat.org/default.htm), here's a quick high level
 overview:
 
-- It is a very widely supported and used industrial communication protocol pioneered and
-  standardised by [Beckhoff](https://www.beckhoff.com).
+- It is a very widely supported and used industrial fieldbus protocol pioneered and standardised by
+  [Beckhoff](https://www.beckhoff.com).
 - It uses the Ethernet physical layer (i.e. cables and connectors) for good compatibility, but
   describes its own packet structure on top of Ethernet II frames to cater to EtherCAT's needs
   around latency and topology.
