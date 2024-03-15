@@ -99,8 +99,9 @@ plastic case to reveal the module inside.
 
 ## Connections
 
-The Tuya module [datasheet](https://developer.tuya.com/en/docs/iot/tyjw2s5vbl?id=Kaax48319lsfq)
-shows the pinout as the following:
+The Tuya TYJW2S-5V-YA
+[datasheet](https://developer.tuya.com/en/docs/iot/tyjw2s5vbl?id=Kaax48319lsfq) shows the pinout as
+the following:
 
 {{ images1(path="/images/iqool/tuya-pinout.png") }}
 
@@ -118,8 +119,9 @@ I got a bit... inventive with the wiring.
 - Unplug the 4 pin connector on the WiFi module
 - On your PC/laptop, run whatever command you want to send to the module, e.g. `esphome run ac.yaml`
   or `esptool.py`
-- Hold the single button on the module, plug it into the AC connector to power it on, then release
-  the button. This puts the module in programming mode.
+- Hold the single button on the module,
+- Plug the 4 pin connector to the AC back into the module to repower it, then release the button.
+  This puts the module in programming mode.
 - The `esphome`/`esptool.py` command should start communicating now. You might have to try this
   process a few times to get the command to bite as the timeouts are quite short.
 
