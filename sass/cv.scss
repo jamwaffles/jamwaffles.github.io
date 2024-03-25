@@ -8,6 +8,10 @@
 
     h1 {
       font-size: 3rem;
+
+      @media print {
+        margin-top: 0 !important;
+      }
     }
 
     h1,
