@@ -46,3 +46,20 @@ TODO: Series TOC
 - What's supported for now
 - What's not
 - Still kind of experimental
+
+# SubDevice clock alignment
+
+- Debug this by logging the various SubDevice `DcSystemTimeDifference` (note: it's not `i32`!)
+- TODO: Capture example plot from Gnuplot or something, showing bouncing effect
+
+# Dynamic MainDevice clock sync
+
+- Key point is aligning first sync pulse to round multiple of cycle time
+- Then in the future, when we read the DC System Time back during process cycle, we can modulo that
+  time against our sync0 period.
+- This then allows us to calculate a dynamic delay to the _next_ process data send time, meaning we
+  get very good sync with the DC System Time (and therefore SYNC0 pulses) even though the OS clock
+  might be a bit jittery.
+- You can debug this in your setup by logging `this_cycle_delay`. It should be nice and low. If it
+  isn't, sort your OS/NIC/etc settings out
+  - TODO: Grab a Gnuplot example of good jitter
