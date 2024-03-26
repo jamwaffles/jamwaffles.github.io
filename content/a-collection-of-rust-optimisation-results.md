@@ -149,7 +149,7 @@ pub fn unpack_new(buf: &[u8]) -> Result<u32, ()> {
 
 The methods all generate the same assembly.
 
-## Another scenario
+## 4. Another scenario
 
 [Godbolt](https://godbolt.org/z/Gar1MbKWf)
 
@@ -209,7 +209,7 @@ impl Pdo {
 `unpack_from_slice_new` is prettier if that matters. Either way it's nice to see that prettier code
 doesn't make for worse code.
 
-## Pointer offsets just turn into numbers
+## 4. Pointer offsets just turn into numbers
 
 [Godbolt](https://godbolt.org/z/G6jTaWWrj)
 
@@ -235,3 +235,126 @@ example::ethercat_payload_ptr:
 ```
 
 Because both `byte_add`s are given constants.
+
+## 5. Converting `Duration` into `u64` nanoseconds isn't that bad
+
+[EtherCAT](https://ethercat.org) uses nanosecond time everywhere, stored as a `u64`. I'm using
+`core::time::Duration` for convenience, but wanted to know if there's much of a performance hit when
+doing some conversions.
+
+### Just converting a `Duration` to `u64`
+
+[Godbolt](https://godbolt.org/z/ad9571jsf)
+
+```rust
+#![no_std]
+
+#[no_mangle]
+pub fn nanos_u64(input: core::time::Duration) -> u64 {
+    input.as_nanos() as u64
+}
+
+#[no_mangle]
+pub fn nanos_u128(input: core::time::Duration) -> u128 {
+    input.as_nanos()
+}
+```
+
+The assembly for `thumbv7` comes out as this:
+
+```asm
+nanos_u64:
+        movw    r3, #51712
+        movt    r3, #15258
+        muls    r1, r3, r1
+        umlal   r2, r1, r0, r3
+        mov     r0, r2
+        bx      lr
+
+nanos_u128:
+        push    {r4, r6, r7, lr}
+        add     r7, sp, #8
+        movw    r12, #51712
+        movs    r4, #0
+        movt    r12, #15258
+        mov.w   lr, #0
+        umull   r0, r3, r0, r12
+        umlal   r3, r4, r1, r12
+        adds    r0, r0, r2
+        adcs    r1, r3, #0
+        adcs    r2, r4, #0
+        adc     r3, lr, #0
+        pop     {r4, r6, r7, pc}
+```
+
+### Closer to real life
+
+[Godbolt](https://godbolt.org/z/nK16bb9oc)
+
+The IRL code does a bit more maths. Let's see how that checks out.
+
+```rust
+pub struct Conf {
+    sync0_period: Duration,
+    sync0_shift: Duration,
+}
+
+pub fn nanos_irl(time: u64, conf: &Conf) -> Duration {
+    let cycle_start_offset =
+        Duration::from_nanos(time % conf.sync0_period.as_nanos() as u64);
+
+    let time_to_next_iter =
+        conf.sync0_period + (conf.sync0_shift - cycle_start_offset);
+
+    time_to_next_iter
+}
+```
+
+171 lines of assembly. `ROBLOX_OOF.mp3`. Lots of divisions and overflow checks.
+
+### Optimising: make everything `u64`
+
+[Godbolt](https://godbolt.org/z/8Kr6vsvTj)
+
+The real code is library-internal, so we can just pass `u64`s around and convert to a `Duration` at
+the public boundary.
+
+```rust
+pub struct Conf {
+    sync0_period: u64,
+    sync0_shift: u64,
+}
+
+#[no_mangle]
+pub fn nanos_irl(time: u64, conf: &Conf) -> Duration {
+    let cycle_start_offset = time % conf.sync0_period;
+
+    let time_to_next_iter = conf.sync0_period + (conf.sync0_shift - cycle_start_offset);
+
+    Duration::from_nanos(time_to_next_iter)
+}
+```
+
+Much less assembly now with fewer branches to boot.
+
+### Optimising: checked/saturating operations
+
+[Godbolt](https://godbolt.org/z/fzYz5qG7W)
+
+```rust
+#[no_mangle]
+pub fn nanos_irl(time: u64, conf: &Conf) -> Duration {
+    let cycle_start_offset = time
+        .checked_rem(conf.sync0_period)
+        .unwrap_or(0);
+
+    let time_to_next_iter = conf.sync0_period.saturating_add(
+        conf.sync0_shift.saturating_sub(cycle_start_offset)
+    );
+
+    Duration::from_nanos(time_to_next_iter)
+}
+```
+
+No more panics which is nice, but still quite a bit of branching. I'll leave this here for now and
+revisit if performance becomes an issue on embedded systems.
