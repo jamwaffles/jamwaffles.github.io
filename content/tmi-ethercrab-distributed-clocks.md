@@ -68,3 +68,4 @@ TODO: Series TOC
 - Jitter wise, `thread::sleep` and `smol::Timer::at` are identical. Very low jitter numbers in my
   testing with a pair of LAN9252s TODO: Insert pic
 - Tokio is atrocious TODO insert pic/numbers
+  - BUT `tokio_timerfd` fixes this!
