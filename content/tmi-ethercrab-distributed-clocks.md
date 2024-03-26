@@ -40,7 +40,6 @@ TODO: Series TOC
 
 # Support in EtherCrab
 
-- TODO: Impl lol
 - Show a simple example
 - Link to long example
 - What's supported for now
@@ -63,3 +62,9 @@ TODO: Series TOC
 - You can debug this in your setup by logging `this_cycle_delay`. It should be nice and low. If it
   isn't, sort your OS/NIC/etc settings out
   - TODO: Grab a Gnuplot example of good jitter
+
+# Performance
+
+- Jitter wise, `thread::sleep` and `smol::Timer::at` are identical. Very low jitter numbers in my
+  testing with a pair of LAN9252s TODO: Insert pic
+- Tokio is atrocious TODO insert pic/numbers
