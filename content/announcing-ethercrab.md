@@ -147,7 +147,7 @@ instead, but the indexes can get confusing so we'll use a struct.
 ```rust
 #[derive(Default)]
 struct Groups {
-    /// EL2889 and EK1100/EK1501. For EK1100, 2 items, 2 bytes of PDI for 16 output bits. The
+    /// EL2889 and EK1100/EK1501. For EK1100, 2 items, 2 bytes of PDI for 16 output bits. The EL2889
     /// has 2 bytes of its own PDI so we'll use an upper bound of 4.
     ///
     /// We'll keep the EK1100/EK1501 in here as it has no useful PDI but still needs to live

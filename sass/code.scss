@@ -56,7 +56,7 @@ pre,
 code {
   @extend .font-mono;
 
-  font-size: 14px;
+  font-size: 0.8rem;
 
   @media screen and (min-width: var(--site-width-desktop)) {
     font-size: 15px;

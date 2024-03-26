@@ -21,12 +21,17 @@
 
 body,
 html {
-  font-size: 12pt;
-  font-family: "Open Sans", "Helvetica Neue", "Helvetica-Neue", helvetica, sans-serif;
+  font-size: 14pt;
+  font-family: "Atkinson Hyperlegible", "Open Sans", "Helvetica Neue", "Helvetica-Neue", helvetica,
+    sans-serif;
   color: var(--font-color);
   background-color: var(--bg-color);
   padding: 0;
   margin: 0;
+
+  @media screen and (max-width: 1000px) {
+    font-size: 13pt;
+  }
 }
 
 body {
