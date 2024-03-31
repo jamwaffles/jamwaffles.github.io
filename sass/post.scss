@@ -56,26 +56,29 @@ $site-width: 1000px;
       // Relative positioning for header link
       contain: layout;
 
-      &:hover {
+      @media screen and (min-width: 1079px) {
         .zola-anchor {
-          display: inherit;
-          text-decoration: none;
-        }
-      }
+          &:hover {
+            text-decoration: none;
 
-      .zola-anchor {
-        margin-top: -0.7rem;
-        position: absolute;
-        font-size: 1rem;
-        right: 0;
-        padding: var(--spacing);
+            &:before {
+              display: block;
+            }
+          }
 
-        @media screen and (min-width: 1079px) {
-          left: calc(-1.5rem - var(--spacing)) !important;
-        }
+          &:before {
+            content: "🔗";
+            margin-top: -0.7rem;
+            position: absolute;
+            font-size: 1rem;
+            right: 0;
+            padding: var(--spacing);
+            left: calc(-1.5rem - var(--spacing)) !important;
 
-        @media not (pointer: coarse) {
-          display: none;
+            @media not (pointer: coarse) {
+              display: none;
+            }
+          }
         }
       }
     }
