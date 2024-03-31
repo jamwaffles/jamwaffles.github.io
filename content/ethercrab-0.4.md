@@ -10,7 +10,13 @@ draft = true
 # image = "/images/ethercat.jpg"
 +++
 
-TODO intro
+[EtherCrab 0.4.0](https://crates.io/crates/ethercrab/0.4.0), the pure Rust EtherCAT MainDevice is
+out! I've added a lot of features and fixes to this release, including Distributed Clocks support,
+an `io_uring`-based network driver for better performance, and a brand new set of derive-able traits
+to make getting data into and out of your EtherCAT network easier than ever! The full changelog
+including breaking changes can be found
+[here](https://github.com/ethercrab-rs/ethercrab/blob/master/CHANGELOG.md), but for the rest of this
+article let's dig a little deeper into some of the headline features.
 
 <!-- more -->
 
@@ -22,49 +28,155 @@ to discuss your needs.
 
 {% end %}
 
+# A quick note on terminology
+
+The EtherCAT Technology Group (ETG) historically used the words "master" and "slave" to refer to the
+controller of an EtherCAT network, and a downstream device respectively. These terms were changed by
+the ETG recently to "MainDevice" and "SubDevice".The EtherCrab crate itself hasn't yet made this
+transition, but will be doing so in a future release. This article uses "MainDevice" to refer to the
+EtherCrab `Client` and "SubDevice" to refer to a `Slave` or `SlaveRef`.
+
 # Distributed clocks
 
-- Brief intro to DC
+First up, Distributed Clocks (DC) support. I'm really proud of this feature because DC is complex to
+implement and verifying correct operation is challenging, but I got through all that, and EtherCrab
+now has support for Distributed Clocks! It's currently being used in the field and has solved a
+bunch of problems the user was having with their servo drives without DC enabled which was fantastic
+to see.
 
-  - OS clocks are good but not quite good enough for smooth and precise motion control e.g. for a
-    DS402 drive in cyclic synchronous position mode.
-  - Some systems also need to update outputs and read inputs at exactly the same time, e.g. to
-    synchronise motion between multiple axes of a robot arm, otherwise you get deviations from the
-    true path because axes aren't synced.
-  - Briefly mention SYNC0 - need to define this terminology
-  - DC fixes this by
+## A quick intro to Distributed Clocks
 
-    1. Using the first SD in the chain that supports DC as a reference clock for the rest of the
-       network. This reference clock is much more consistent than the OS clock as it isn't
-       constantly being interrupted by kernels, tasks, web browsers, etc
-    2. Continuously sending alignment PDUs over the network to the other SDs to mitigate both phase
-       and frequency drift between the reference clock and each SD's internal timebase as no two
-       clocks will ever run at the same frequency
+If you're not familiar with EtherCAT's Distributed Clocks functionality, I'll give a quick intro
+here. Feel free to skip ahead if you don't need the refresher.
 
-  - With this, it is possible to sync IO to within 100ns over the whole network.
-  - Mitigates jitter from the MD by giving a window between SYNC0 pulses. The SD accepts the new
-    data, then waits until the next SYNC0 to output it, or writes its inputs into a buffer ready for
-    the next PD frame to transit the ESC.
-  - There's other stuff to DC like calc and copy time but I won't cover it here
+Distributed Clocks or DC for short is a fantastic part of EtherCAT that compensates for the fact
+that the clocks in every device in the network suffer from drift, phase noise and incoherence
+relative to each other. It is able to do this by designating a specific SubDevice as a reference
+clock and distributing (hah) that timebase across the network, taking into account propagation
+delays as well as continuously compensating for drift. EtherCAT networks with DC enabled can
+synchronise all SubDevice input and ouput latching to within 100ns of each other if desired.
 
-- My test system already has low jitter with `smol` executor, but this still isn't good enough for
-  precise applications like motion control.
-- EtherCrab can now do DC
-- DC is quite complex so the example is long af but
-  [here it is](https://github.com/ethercrab-rs/ethercrab/blob/cd049d84d144ca279c9c641b13104093daa04481/examples/dc.rs)
-- The MD can read the EtherCAT system time. This can be moduloed to get an offset into the current
-  DC cycle
+Because the timebase consistency is now handed over from the MainDevice to a SubDevice with a much
+tighter clock source, this absolves the network of any jitter or latency in the clock or network
+stack of the MainDevice when sending the PDI (Process Data Image).
 
-  - This is how we sync the MD clock to the SYNC0 cycle
-  - EtherCrab provides some utilities to allow a variable delay in the PD cycle to compensate for MD
-    clock drift and jitter
+A lot of applications don't need levels of timing this accurate (e.g. reading sensor data every half
+a second is pretty relaxed) but for SubDevices like servo drives in Cyclic Synchronous Position
+mode, it is vital to have a regular point in time where inputs and outputs are sampled. If the
+timing is even a little irregular, the drive can error out, or even cause damage to the plant.
 
-- Results
-  - Oscope screenshot: two SD clocks are aligned now, even though there's about 350ns of network
-    propagation delay between them and the two clocks drift apart when not actively synced
-  - Oscope screenshot: the example sends the PD frame at a 50% phase offset to SYNC0. You can also
-    see the jitter, but it's consistently 50% in the DC cycle and very low, because we dynamically
-    delay each PD cycle on the MD to account for network delays, hitches in the OS, clock drift, etc
+Another common use case for DC is synchronising multiple axes of motion. If the outputs of each axis
+are not latched at the same time, deviations from the planned trajectory can occur.
+
+With DC, a SubDevice will buffer the PDI until the next DC sync cycle (SYNC0 pulse), at which time
+it will latch the input/output data. This gives a window of time in which the MainDevice can jitter,
+stall or go on smoko before it sends the next PDI without the SubDevice having to care, as long as
+the MainDevice sends the PDI before the next SYNC0 pulse.
+
+## DC in EtherCrab
+
+As an example of the best possible performance, EtherCrab is capable of sub-10ns coherence between
+two SubDevices. The plot below shows the SYNC0 falling edge of two SubDevices aligned to within ~7ns
+of each other. The green trace exhibits a small amount of jitter as real life is never perfect, but
+still, seven nanoseconds!
+
+{{ images1(path="/images/ethercrab-dc/lan9252-jitter.png") }}
+
+The MainDevice (EtherCrab) is responsible for repeatedly sending synchronisation frames to keep all
+SubDevice clocks aligned, as well as ensuring the Process Data Image (PDI) is sent at the right time
+within the DC cycle.
+
+EtherCrab's new `tx_rx_dc` method will handle sending the sync frame alongside the PDI, but also
+returns a `CycleInfo` struct containing some timing data that can be used to establish a consistent
+offset into the process data cycle. Here's an example using `smol` timers:
+
+```rust
+let (_tx, _rx, pdu_loop) = PDU_STORAGE.try_split().expect("can only split once");
+let client = Client::new(pdu_loop, Timeouts::default(), ClientConfig::default());
+
+let cycle_time = Duration::from_millis(5);
+
+let mut group = client
+    .init_single_group::<MAX_SUBDEVICES, PDI_LEN>(ethercat_now)
+    .await
+    .expect("Init");
+
+// This example enables SYNC0 for every detected SubDevice
+for mut sd in group.iter(&client) {
+    sd.set_dc_sync(DcSync::Sync0);
+}
+
+let group = group
+    .into_pre_op_pdi(&client)
+    .await
+    .expect("PRE-OP -> PRE-OP with PDI")
+    .configure_dc_sync(
+        &client,
+        DcConfiguration {
+            // Start SYNC0 100ms in the future
+            start_delay: Duration::from_millis(100),
+            // SYNC0 period should be the same as the process data loop in most cases
+            sync0_period: cycle_time,
+            // Send process data half way through cycle
+            sync0_shift: cycle_time / 2,
+        },
+    )
+    .await
+    .expect("DC configuration")
+    .request_into_op(&client)
+    .await
+    .expect("PRE-OP -> SAFE-OP -> OP");
+
+// Wait for all SubDevices in the group to reach OP, whilst sending PDI to allow DC to start correctly.
+while !group.all_op(&client).await? {
+    let now = Instant::now();
+
+    let (
+        _wkc,
+        CycleInfo {
+            next_cycle_wait, ..
+        },
+    ) = group.tx_rx_dc(&client).await.expect("TX/RX");
+
+    smol::Timer::at(now + next_cycle_wait).await;
+}
+
+// Main application process data cycle
+loop {
+    let now = Instant::now();
+
+    let (
+        _wkc,
+        CycleInfo {
+            next_cycle_wait, ..
+        },
+    ) = group.tx_rx_dc(&client).await.expect("TX/RX");
+
+    // Process data computations happen here
+
+    smol::Timer::at(now + next_cycle_wait).await;
+}
+```
+
+This example configures a 5ms DC cycle time, and will produce delay values that allow the MainDevice
+to send the PDI 2.5ms or 50% into the cycle. You can find a more complete example
+[here](https://github.com/ethercrab-rs/ethercrab/blob/cd049d84d144ca279c9c641b13104093daa04481/examples/dc.rs).
+DC is tricky to get right, so the example is quite long.
+
+It's important to use `smol::Timer::at` (or equivalent for your executor/blocking code) instead of a
+naive delay to compensate for variable computation times in the loop. With the above code, we can
+achieve extraordinarily low jitter from the MainDevice that fits well within the established DC
+cycle:
+
+{{ images1(path="/images/ethercrab-dc/lan9252-low-std-dev-30s-persist-edit.png") }}
+
+If you decide not to use the `next_cycle_wait` parameter, **or you use `tokio`**, the jitter will
+look a lot worse:
+
+{{ images1(path="/images/ethercrab-dc/lan9252-bad-tokio.png") }}
+
+If you would prefer not to use async timers, I'd recommend the
+[`timerfd` crate](https://docs.rs/timerfd/latest/timerfd/) to get best timing accuracy.
 
 # `io_uring`
 
@@ -100,6 +212,21 @@ to discuss your needs.
     accesses, need to use `addr_of!()` everywhere or make your own setters/getters
   - `packed_struct` works too but you have to be careful with the bit/byte indexing around little
     endian data.
+
+# Honourable mentions
+
+## Multiple EtherCAT frames can now be sent in one Ethernet frame
+
+If two or more EtherCAT frames needed to be sent at once, EtherCrab 0.3.x would send these in two
+separate Ethernet frames. This is inefficient and became an issue when DC support was added. DC
+requires a sync frame to be sent alongside the PDI, and in 0.3.x this means doubling the network
+overhead.
+
+EtherCrab 0.4 now sends this sync frame next to the PDI frame, reducing overhead and improving
+performance.
+
+There are other places in EtherCrab that don't yet use this functionality, but they're less
+performance sensitive than the application process data cycle.
 
 # Conclusion
 
