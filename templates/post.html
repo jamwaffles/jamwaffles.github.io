@@ -51,11 +51,11 @@
   <header>
     <a href="{{ config.base_url }}" id="home_link">« Posts list</a>
     <div class="post__title">
-      <h1>{{ page.title }}</h1>
+      <h1>{{ page.title | markdown(inline=true) | safe }}</h1>
 
-      <time datetime="{{ page.date | date(format = '%Y-%m-%d') }}"
-        ><a href="{{ page.permalink }}">{{ page.date | date(format = "%B %d, %Y") }}</a></time
-      >
+      <time datetime="{{ page.date | date(format = '%Y-%m-%d') }}">
+        <a href="{{ page.permalink | safe }}">{{ page.date | date(format = "%B %d, %Y") }}</a>
+      </time>
     </div>
   </header>
 
