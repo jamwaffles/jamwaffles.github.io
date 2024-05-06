@@ -16,6 +16,9 @@ procrastinate by implementing an entire industrial fieldbus protocol instead! **
 [EtherCrab](https://crates.io/crates/ethercrab) - a pure Rust EtherCAT controller that supports
 Linux, macOS, Windows and even `no_std`.**
 
+**Heads up! EtherCrab 0.4.0 was released in March 2024 with some breaking changes. Why not head over
+to [the announcement post](@/ethercrab-0.4.md) to see what's new?**
+
 <!-- more -->
 
 {% callout() %}
