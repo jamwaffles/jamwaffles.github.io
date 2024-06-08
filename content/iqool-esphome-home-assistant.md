@@ -177,16 +177,6 @@ esphome:
     then:
       - delay: 10s
 
-# Patch with fixes for `tuya` component. Remove when #5159 is merged!
-external_components:
-  # Waiting for <https://github.com/esphome/esphome/pull/5159> to be merged. In the meantime, use the following fork-of-a-fork
-  # Forked from https://github.com/moriahmorgan/esphome.git to get things compiling with recent ESPHome versions.
-  - source:
-      type: git
-      url: https://github.com/jamwaffles/esphome.git
-      ref: fix_tuya_climate_updates
-    components: [tuya]
-
 esp8266:
   # Tuya module has 2MB flash
   board: esp_wroom_02
