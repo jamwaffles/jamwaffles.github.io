@@ -41,8 +41,8 @@ EtherCrab `Client` and "SubDevice" to refer to a `Slave` or `SlaveRef`.
 
 # Last thing I promise
 
-Are you using EtherCrab already? **I'm collecting testimonials, so please let me know if you are!**
-I'd love to know where EtherCrab is being used.
+Are you using EtherCrab in production or even just as a hobby? **I'm collecting testimonials, so
+please let me know if you are!** I'd love to know where and how EtherCrab is ending up!
 
 I can be reached via [james@wapl.es](mailto:james@wapl.es),
 [@jamwaffles on Mastodon](https://mastodon.social/@jamwaffles) or
@@ -55,7 +55,7 @@ Righto, onto the snazzy new features.
 First up, Distributed Clocks (DC) support. I'm really proud of this feature because DC is complex to
 implement and verifying correct operation is challenging, but I got through all that, and EtherCrab
 now has support for Distributed Clocks! It's currently being used in the field and has solved a
-bunch of problems the user was having with their servo drives without DC enabled which was fantastic
+bunch of problems the user was having with their servo drives without DC enabled, which was great
 to see.
 
 ## A quick intro to Distributed Clocks
@@ -63,16 +63,17 @@ to see.
 If you're not familiar with EtherCAT's Distributed Clocks functionality, I'll give a quick intro
 here. Feel free to skip ahead if you don't need the refresher.
 
-Distributed Clocks or DC for short is a fantastic part of EtherCAT that compensates for the fact
+Distributed Clocks, or DC for short, is a fantastic part of EtherCAT that compensates for the fact
 that the clocks in every device in the network suffer from drift, phase noise and incoherence
 relative to each other. It is able to do this by designating a specific SubDevice as a reference
 clock and distributing (hah) that timebase across the network, taking into account propagation
 delays as well as continuously compensating for drift. EtherCAT networks with DC enabled can
-synchronise all SubDevice input and ouput latching to within 100ns of each other if desired.
+synchronise all SubDevice input and output latching to well within 100ns of each other if desired.
 
-Because the timebase consistency is now handed over from the MainDevice to a SubDevice with a much
-tighter clock source, this absolves the network of any jitter or latency in the clock or network
-stack of the MainDevice when sending the PDI (Process Data Image).
+A SubDevice is much more likely to have a cleaner clock than the MainDevice as it doesn't suffer
+from OS noise like software interrupts, multiple CPU power states, core swapping and the like. This
+cleanliness is distributed to all other SubDevices, absolving the network of nearly all jitter,
+glitches or latency from the MainDevice when it transmits the PDI (Process Data Image).
 
 A lot of applications don't need levels of timing this accurate (e.g. reading sensor data every half
 a second is pretty relaxed) but for SubDevices like servo drives in Cyclic Synchronous Position
@@ -80,7 +81,8 @@ mode, it is vital to have a regular point in time where inputs and outputs are s
 timing is even a little irregular, the drive can error out, or even cause damage to the plant.
 
 Another common use case for DC is synchronising multiple axes of motion. If the outputs of each axis
-are not latched at the same time, deviations from the planned trajectory can occur.
+are not latched at the same time, deviations from the planned trajectory can occur. The global DC
+sync pulse coordinates these actions regardless of network size.
 
 With DC, a SubDevice will buffer the PDI until the next DC sync cycle (SYNC0 pulse), at which time
 it will latch the input/output data. This gives a window of time in which the MainDevice can jitter,
@@ -185,16 +187,19 @@ cycle:
 {{ images1(path="/images/ethercrab-dc/lan9252-low-std-dev-30s-persist-edit.png") }}
 
 If you decide not to use the `next_cycle_wait` parameter, **or you use `tokio`**, the jitter will
-look a lot worse:
+look a lot worse. Notice the varying pulse offset on the cyan trace, as well as the atrocious
+standard deviation of nearly 300us:
 
 {{ images1(path="/images/ethercrab-dc/lan9252-bad-tokio.png") }}
 
-If you would prefer not to use async timers, I'd recommend the
-[`timerfd` crate](https://docs.rs/timerfd/latest/timerfd/) to get best timing accuracy.
+If you would prefer not to use async timers, I'd recommend the[`timerfd` crate]
+(https://docs.rs/timerfd/latest/timerfd/) to get best timing accuracy. `std::thread::sleep` is also
+an enticing option for its simplicity, but is a poor choice due to it not taking into account the
+loop or network processing time.
 
 # `io_uring`
 
-The Linux kernel introduced a new way of doing IO a while back called `io_uring`. It was touted as a
+The Linux kernel introduced a new way of doing IO a while back called `io_uring`. It's touted as a
 more perfomant way to do IO by using a pair of ringbuffers to reduce copies and overhead in the
 system.
 
