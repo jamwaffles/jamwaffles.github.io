@@ -23,9 +23,7 @@ but will not work on anything before the joints/axes split.**
 
 # Hardware
 
-<div class="box-float box-float--left">
-    <img style="max-width: 300px;" src="/assets/images/cnc-mpg.jpg" alt="The jog pendant" />
-</div>
+{{ images1(path="images/cnc-mpg.jpg") }}
 
 This is the jog pendant I'll be using.
 
@@ -33,11 +31,7 @@ It provides estop, axis select, multiplier and encoder outputs on a bunch of bar
 the image. I'm going to connect it to the internal `P2` connector of a Mesa 5i25 FPGA card, so I'll
 trim the bare wires and solder them to a DB25 cable-end connector in a bit.
 
-<div class="box-float-break"></div>
-
-<div class="box-float box-float--right">
-    <img style="max-width: 300px;" src="/assets/images/mesa-5i25-annotated.png" alt="Mesa 5i25 FPGA card product image" />
-</div>
+{{ images1(path="images/mesa-5i25-annotated.png") }}
 
 I'm using a [Mesa 5i25](/images/mesa-5i25.png) FPGA card through a DB25 breakout cable (like
 [this one](https://www.ebay.co.uk/itm//380662654989)) connected to `P2`. Other Mesa cards with
@@ -49,9 +43,7 @@ jumper `W1` is in the `UP` position.
 
 For reference, here's an image of the breakout cable:
 
-<img alt="Parallel port breakout cable" src="/assets/images/parport.png" style="max-width: 300px" />
-
-<div class="box-float-break"></div>
+{{ images1(path="images/parport.png") }}
 
 # Soldering up the jog wheel connector
 
