@@ -358,3 +358,73 @@ pub fn nanos_irl(time: u64, conf: &Conf) -> Duration {
 
 No more panics which is nice, but still quite a bit of branching. I'll leave this here for now and
 revisit if performance becomes an issue on embedded systems.
+
+## 6. Packing two `u16`s into a `[u8; 4]`
+
+[Godbolt](https://godbolt.org/z/57cszev38)
+
+Quite a specific one this, but I need to pack a device address plus register pair of `u16`s into an
+array so it can be written into a network packet buffer.
+
+Original code:
+
+```rust
+pub fn pack1(address: u16, register: u16) -> [u8; 4] {
+    let address = address.to_le_bytes();
+    let register = register.to_le_bytes();
+
+    [address[0], address[1], register[0], register[1]]
+}
+```
+
+And the simpler version:
+
+```rust
+pub fn pack2(address: u16, register: u16) -> [u8; 4] {
+    let res = (u32::from(register) << 16) + u32::from(address);
+
+    res.to_le_bytes()
+}
+```
+
+ARM (`--target thumbv7m-none-eabi`) assembly is pleasantly reduced for `pack2`:
+
+```asm
+pack1:
+        mov.w   r2, #-16777216
+        and.w   r2, r2, r1, lsl #16
+        uxtb    r1, r1
+        orr.w   r1, r2, r1, lsl #16
+        and     r2, r0, #65280
+        add     r1, r2
+        uxtb    r0, r0
+        add     r0, r1
+        bx      lr
+
+pack2:
+        uxth    r0, r0
+        orr.w   r0, r0, r1, lsl #16
+        bx      lr
+```
+
+As is the `x86_64` which is to be expected:
+
+```asm
+pack1:
+        movzx   ecx, sil
+        shl     esi, 16
+        and     esi, -16777216
+        shl     ecx, 16
+        or      ecx, esi
+        movzx   eax, dil
+        and     edi, 65280
+        or      edi, ecx
+        or      eax, edi
+        ret
+
+pack2:
+        shl     esi, 16
+        movzx   eax, di
+        or      eax, esi
+        ret
+```
