@@ -428,3 +428,111 @@ pack2:
         or      eax, esi
         ret
 ```
+
+## 7. Returning `1` or `-1` from a boolean comparison
+
+[Godbolt](https://godbolt.org/z/G1n1cc418)
+
+I needed this for some `embedded-graphics` stuff where I'm changing the sign of another variable
+based on a condition.
+
+Easy to read:
+
+```rust
+pub fn f(a: i32, b: i32) -> i32 {
+    if a == -b {
+        1
+    } else {
+        -1
+    }
+}
+```
+
+Job Security Edition:
+
+```rust
+pub fn f(a: i32, b: i32) -> i32 {
+    i32::from((a == -b) as u8 * 2 -1)
+}
+```
+
+The assembly for both versions is similar:
+
+```asm
+; Easy to read
+f:
+        xor     eax, eax
+        add     edi, esi
+        sete    al
+        lea     eax, [2*rax - 1]
+        ret
+
+; Job Security Edition
+f:
+        add     edi, esi
+        mov     ecx, 1
+        mov     eax, 255
+        cmove   eax, ecx
+        ret
+```
+
+### Bonus round: `thumbv6` and `thumbv7`
+
+[Godbolt](https://godbolt.org/z/z4Tx7jh66)
+
+`embedded-graphics` is designed to run on tiny microcontrollers, not x86_64, so let's see if there's
+much difference down in the low power stuff:
+
+`thumbv6m-none-eabi`:
+
+```asm
+; Easy to read
+f:
+        cmn     r0, r1
+        beq     .LBB0_2
+        movs    r0, #0
+        mvns    r0, r0
+        bx      lr
+.LBB0_2:
+        movs    r0, #1
+        bx      lr
+
+; Job Security Edition
+f:
+        cmn     r0, r1
+        beq     .LBB0_2
+        movs    r0, #255
+        bx      lr
+.LBB0_2:
+        movs    r0, #1
+        bx      lr
+```
+
+Not much difference, although it's interesting there's a jump in there.
+
+`thumbv7-none-eabi`:
+
+```asm
+; Easy to read
+f:
+        mov.w   r2, #-1
+        cmn     r0, r1
+        it      eq
+        moveq   r2, #1
+        mov     r0, r2
+        bx      lr
+
+; Job Security Edition
+f:
+        movs    r2, #255
+        cmn     r0, r1
+        it      eq
+        moveq   r2, #1
+        mov     r0, r2
+        bx      lr
+```
+
+The only difference here is `mov.w r2,#-1` turns into a `movs r2,#255`.
+
+I much prefer the "easy to read" variant as it's obvious what the code is doing. The performance hit
+is nonexistent.
