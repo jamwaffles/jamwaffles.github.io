@@ -40,4 +40,30 @@ now line up with the presumably more exercised SOEM implementation and the actua
 dumped EEPROM files so I believe it's correct, however I couldn't find a match in
 [the catalogue](https://reveng.sourceforge.io/crc-catalogue/1-15.htm) which is weird.
 
+I've also ported SOEM's implementation over to Rust if you don't want to use a whole crate:
+
+```rust
+fn calc_crc(crc: &mut u8, b: u8) {
+    *crc ^= b;
+
+    for _ in 0..8 {
+        if (*crc & 0x80) > 0 {
+            *crc = (*crc << 1) ^ 0x07;
+        } else {
+            *crc = *crc << 1;
+        }
+    }
+}
+
+fn sii_crc(buf: &[u8]) -> u16 {
+    let mut crc = 0xffu8;
+
+    for i in 0..14 {
+        calc_crc(&mut crc, buf[i]);
+    }
+
+    u16::from(crc)
+}
+```
+
 Hope this helps :)
