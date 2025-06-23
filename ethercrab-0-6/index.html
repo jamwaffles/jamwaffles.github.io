@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>EtherCrab 0.6 Released</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;ethercrab-0-6&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header ">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+
+<article role="main" class="post ">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>EtherCrab 0.6 Released</h1>
+
+      <time datetime="2025-03-29">
+        <a href="https://wapl.es/ethercrab-0-6/">March 29, 2025</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p><a href="https://crates.io/crates/ethercrab/0.6.0">EtherCrab 0.6.0</a>
+(<a href="https://lib.rs/crates/ethercrab">lib.rs</a>) is out as the next release of this pure Rust EtherCAT
+MainDevice! I'll go over some of the bigger features in this post, and for the full changelog you
+can check it out <a href="https://github.com/ethercrab-rs/ethercrab/blob/master/CHANGELOG.md">here</a>. The
+MSRV has been bumped from 1.77 to 1.81.</p>
+<span id="continue-reading"></span><h1 id="subdevice-group-pdi-spinlocks"><a class="zola-anchor" href="#subdevice-group-pdi-spinlocks" aria-label="Anchor link for: subdevice-group-pdi-spinlocks">SubDevice group PDI spinlocks</a></h1>
+<p>As of 0.6, the Process Data Image (PDI) for each SubDevice group is wrapped in a spinlock. This
+relaxes some of the API so that SubDevices can be safely shared between tasks/threads now, however
+when locks are involved, deadlocks are also much more likely. As a general rule, try to hold the
+<code>Pdi*Guard</code> returned by <code>SubDevice::{io_raw, outputs_mut, ...}</code> for as little time as possible and
+if you need to persist the PDI somewhere, copy it into other memory like a struct, <code>Vec</code> or array.</p>
+<p>The lock and EtherCrab API is designed in such a way that the PDI state is always consistent. This
+means that all SubDevices will always see the same iteration of the PDI, which is important when the
+PDI is sent over the network in multiple EtherCAT frames. In this case, the group TX/RX call will
+only release the PDI lock when <em>all</em> frame responses have been received. Conversely, if a SubDevice
+is reading from or writing to its PDI, the TX/RX operation for the next cycle will wait for all
+SubDevices to release the PDI lock.</p>
+<p>It's tempting to only lock the part of the PDI storage that's currently being updated (either from
+the application or received frame), however this risks some SubDevices in the group observing the
+next frame's data, whilst others will see the current frame or vice versa. EtherCAT strives to
+produce a temporally accurate representation of the real world, so allowing partial state
+observations is antithetical to that goal. The locks in EtherCrab are designed to uphold this goal.</p>
+<p>The PDI lock is scoped to each group, so running multiple groups with different cycle times is still
+fine and a supported/desired use case.</p>
+<h1 id="subdevice-status-now-read-during-tx-rx"><a class="zola-anchor" href="#subdevice-status-now-read-during-tx-rx" aria-label="Anchor link for: subdevice-status-now-read-during-tx-rx">SubDevice status now read during TX/RX</a></h1>
+<p>Prior to this release, reading the SubDevice status for all devices in a group was cumbersome and,
+more importantly, slow. It required writing a loop to send multiple separate EtherCAT frames without
+a good way to parallelise the network traffic.</p>
+<p>This is now vastly improved by making the <code>SubDeviceGroup::tx_rx*</code> methods pack SubDevice status
+check EtherCAT frames into the same Ethernet packet as the PDI, if there's space left. If there
+isn't, another packet will be sent with as many status check frames packed into it as possible
+resulting in minimal extra network traffic for up to 128 status checks (if memory serves correctly).
+This process continues until all SubDevice status check frames have been sent.</p>
+<p>For small to medium networks, it's quite likely that no additional network layer traffic will be
+sent as the PDI <em>and</em> status check EtherCAT frames will all fit in a single Ethernet packet.</p>
+<p>To make use of this extra data, the <code>tx_rx*</code> methods now return a <code>TxRxResponse</code> struct. This is a
+breaking change to the tuple returned before, but it is a much more flexible API which EtherCrab can
+use more in the future. Here's a short example of running a process data cycle and checking
+SubDevice statuses all in one operation:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-keyword z-control z-rust">loop</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> now <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">Instant<span class="z-punctuation z-accessor z-rust">::</span></span>now<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> response <span class="z-keyword z-operator z-rust">@</span> TxRxResponse <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        working_counter<span class="z-punctuation z-separator z-rust">:</span> _wkc<span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        extra<span class="z-punctuation z-separator z-rust">:</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            CycleInfo <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">                dc_system_time<span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">                next_cycle_wait<span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">                cycle_start_offset<span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        <span class="z-keyword z-operator z-range z-rust">..</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">    </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> group<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">tx_rx_dc</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>maindevice</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span>await<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>TX/RX<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-keyword z-control z-rust">if</span> <span class="z-keyword z-operator z-logical z-rust">!</span>response<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">all_op</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        <span class="z-keyword z-control z-rust">for</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>i<span class="z-punctuation z-separator z-rust">,</span> status</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-rust">in</span> response<span class="z-punctuation z-accessor z-dot z-rust">.</span>subdevice_states<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">iter</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">enumerate</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-keyword z-control z-rust">if</span> <span class="z-keyword z-operator z-arithmetic z-rust">*</span>status <span class="z-keyword z-operator z-comparison z-rust">!=</span> <span class="z-meta z-path z-rust">SubDeviceState<span class="z-punctuation z-accessor z-rust">::</span></span>Op <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">                <span class="z-meta z-path z-rust">log<span class="z-punctuation z-accessor z-rust">::</span></span>error<span class="z-keyword z-operator z-logical z-rust">!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>Subdevice {} is {}, expected OP<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> i<span class="z-punctuation z-separator z-rust">,</span> status</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">    </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> ... logic here ...
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-path z-rust">smol<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-path z-rust">Timer<span class="z-punctuation z-accessor z-rust">::</span></span>at<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>now <span class="z-keyword z-operator z-arithmetic z-rust">+</span> next_cycle_wait</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span>await<span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></code></pre>
+<h1 id="windows"><a class="zola-anchor" href="#windows" aria-label="Anchor link for: windows">Windows</a></h1>
+<p>EtherCrab used to provide the <code>tx_rx_task</code> async function for Windows users for consistency with the
+async function of the same name offered for Linux and macOS, however this is removed in 0.6 as the
+internals of the function are all blocking anyway, and it doesn't make sense to add async executor
+overhead to running the TX/RX task. Now, instead of spawning an async task to run the TX/RX loop,
+you should <code>thread::spawn</code> the <code>tx_rx_task_blocking</code> function. It is also recommended to use
+something like <a href="https://crates.io/crates/thread-priority"><code>thread-priority</code></a> and other tricks in the
+<a href="https://github.com/ethercrab-rs/ethercrab/blob/master/doc/windows-tuning.md">EtherCrab Windows tuning guide</a>
+to improve performance on Windows. It'll never be as good as something like Linux - don't expect
+100us cycle times! - but the tricks in that guide do help timing consistency quite a lot.</p>
+<h1 id="other-stuff"><a class="zola-anchor" href="#other-stuff" aria-label="Anchor link for: other-stuff">Other stuff</a></h1>
+<p>A few EEPROM methods were added which now allows things like dumping of EEPROMs using EtherCrab (see
+example <a href="https://github.com/ethercrab-rs/ethercrab/blob/master/examples/dump-eeprom.rs">here</a>) and
+reading/setting the SubDevice alias address.</p>
+<p>It's now possible to read/write SDO sub indices using arrays, for a bit less typing in configuration
+code. For example:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust">subdevice
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">sdo_write_array</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x1c13</span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-keyword z-operator z-bitwise z-rust">&amp;</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x1a00</span><span class="z-storage z-type z-numeric z-rust">u16</span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x1a02</span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x1a04</span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x1a06</span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span>await<span class="z-keyword z-operator z-rust">?</span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> The `sdo_write_array` call above is equivalent to the following
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> subdevice.sdo_write(0x1c13, 0, 0u8).await?;
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> subdevice.sdo_write(0x1c13, 1, 0x1a00u16).await?;
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> subdevice.sdo_write(0x1c13, 2, 0x1a02u16).await?;
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> subdevice.sdo_write(0x1c13, 3, 0x1a04u16).await?;
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> subdevice.sdo_write(0x1c13, 4, 0x1a06u16).await?;
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> subdevice.sdo_write(0x1c13, 0, 4u8).await?;
+</span></span></code></pre>
+<p>A couple of the variants in <code>Error</code> have been removed as they're no longer returned by any EtherCrab
+code, and a couple of new ones have been added like <code>Error::Mailbox(MailboxError::Emergency)</code>.</p>
+<p>The rest of the changelog is largely filled with reliability and robustness improvements. For
+example, EtherCrab's internal storage is slightly more resilient to race conditions, and SubDevice
+initialisation is a lot more reliable when the EEPROM is empty or only partially populated.</p>
+<h1 id="what-s-next"><a class="zola-anchor" href="#what-s-next" aria-label="Anchor link for: what-s-next">What's next</a></h1>
+<p>While these aren't solid commitments, I thought I'd quickly list some other stuff I'd like to see in
+EtherCrab in the next release anyway:</p>
+<ul>
+<li>
+<p>A primitive API to bypass EtherCrab's automatic SubDevice configuration. Currently, EtherCrab
+relies on a SubDevice's EEPROM being properly populated, which is becoming less and less good as
+EtherCrab is used on more SubDevices where this isn't the case. Most EtherCAT MainDevice
+implementations rely on ESI files or similar static configuration methods. ESI files are even
+required for SubDevice certification, so they're probably a lot more reliable as a config source.</p>
+<p>As a step towards ESI file support, I'd like to expose a reasonably nice way to set explicit
+configuration for FMMUs and Sync Managers, completely bypassing the EEPROM autoconfig. This should
+allow extremely basic support for ESI files too, leading me onto my next feature.</p>
+</li>
+<li>
+<p>Some kind of more ergonomic way to map a SubDevice's PDO configuration into its slice of the PDI
+using the config described above. This could be a precursor to a derive macro which does a bunch
+of magic to automatically configure and map a SubDevice's PDI from its ESI file, but I think a
+first pass should be more basic with no magic.</p>
+</li>
+<li>
+<p>The above features should also allow the creation of a high level DS402 interface for servo drives
+and other motor drivers that support this common protocol. This feature <em>is</em> a solid commitment
+for the next release, so stay tuned.</p>
+</li>
+</ul>
+<p>If you have other features you'd like to see in EtherCrab, please
+<a href="https://github.com/ethercrab-rs/ethercrab/issues">open a feature request</a>!</p>
+<p>To current users of EtherCrab, thanks heaps for using it! It's becoming more widely used in some
+really interesting machines and I love seeing every photo and video posted of EtherCrab in action!</p>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>
