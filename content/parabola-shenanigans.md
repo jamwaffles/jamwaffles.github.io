@@ -3,6 +3,7 @@ layout = "post"
 title = "Parabola Shenanigans"
 slug = "parabola-shenanigans"
 date = "2025-04-15"
+draft = true
 +++
 
 TODO: Should probably merge this with parabola-arc-line.md and make it more medial-axis centric
