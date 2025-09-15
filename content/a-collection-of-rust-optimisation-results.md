@@ -536,3 +536,68 @@ The only difference here is `mov.w r2,#-1` turns into a `movs r2,#255`.
 
 I much prefer the "easy to read" variant as it's obvious what the code is doing. The performance hit
 is nonexistent.
+
+## 8. Checking if a variable is one of several other values
+
+[Godbolt](https://godbolt.org/z/Wzsz3roTq)
+
+This is a check to see if `[].contains()` is the same as a naive `if` chain.
+
+```rust
+#[unsafe(no_mangle)]
+pub fn is_one_of(a: i32, b: i32, c: i32, d: i32, num: i32) -> bool {
+    [a, b, c, d].contains(&num)
+}
+```
+
+```rust
+#[unsafe(no_mangle)]
+pub fn is_one_of(a: i32, b: i32, c: i32, d: i32, num: i32) -> bool {
+    if num == a {
+        true
+    } else if num == b {
+        true
+    } else if num == c {
+        true
+    } else if num == d {
+        true
+    } else {
+        false
+    }
+}
+```
+
+The assembly is nearly identical, but uses registers in a different order which I thought was odd.
+
+```asm
+is_one_of:
+        cmp     edi, r8d
+        sete    al
+        cmp     esi, r8d
+        sete    sil
+        or      sil, al
+        cmp     edx, r8d
+        sete    dl
+        cmp     ecx, r8d
+        sete    al
+        or      al, dl
+        or      al, sil
+        ret
+```
+
+````asm
+is_one_of:
+        cmp     r8d, edi
+        sete    al
+        cmp     r8d, esi
+        sete    sil
+        or      sil, al
+        cmp     r8d, edx
+        sete    dl
+        cmp     r8d, ecx
+        sete    al
+        or      al, dl
+        or      al, sil
+        ret
+        ```
+````
