@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>Logging analytics events in a testable way with React and Redux</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+  <meta property="og:image" content="https://wapl.es/images/logging-header.jpg">
+  <meta name="twitter:image" content="https://wapl.es/images/logging-header.jpg" />
+  <meta property="og:image:width" content="2560">
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;web&#x2F;2017&#x2F;09&#x2F;21&#x2F;analytics-events-with-redux-and-react.html&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header post__header--image">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+<div class="post__feature-image">
+  <picture>
+    
+    
+    
+    
+    
+    
+    <source media="(min-width: 2560px)" srcset="images&#x2F;logging-header.jpg" />
+    <source
+      media="(min-width: 1920px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.b9a388d08b0eb483.jpg, images&#x2F;logging-header.jpg 2x"
+    />
+    <source
+      media="(min-width: 1600px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.97b2adf6121e7c49.jpg, images&#x2F;logging-header.jpg 2x"
+    />
+    <source
+      media="(min-width: 1280px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.30529c1fa82abd39.jpg, images&#x2F;logging-header.jpg 2x"
+    />
+    <source
+      media="(min-width: 960px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.181b2d19d2475405.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.b9a388d08b0eb483.jpg 2x"
+    />
+    <source
+      media="(min-width: 800px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.36d41f66ea19218d.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.97b2adf6121e7c49.jpg 2x"
+    />
+    <source
+      media="(max-width: 640px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.a3312b6e48aba974.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.30529c1fa82abd39.jpg 2x"
+    />
+    <img
+      class="post__feature-image__inner"
+      src="images&#x2F;logging-header.jpg"
+      alt="Blog post header image decoration."
+    />
+  </picture>
+</div>
+
+
+<article role="main" class="post image">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>Logging analytics events in a testable way with React and Redux</h1>
+
+      <time datetime="2017-09-21">
+        <a href="https://wapl.es/web/2017/09/21/analytics-events-with-redux-and-react.html/">September 21, 2017</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p>One of my main responsibilites at <a href="https://www.totallymoney.com/">TotallyMoney</a> was to take care of
+the in-house analytics/event logging framework. Like lots of companies, understanding what users do
+and how they interact with a product is to get good insight on. In this regard, people reinvent the
+logging wheel with various <a href="https://en.wiktionary.org/wiki/krimskrams">krimskrams</a> attached, me
+being no exception. What I want to show in this post is how to integrate an event logging framework
+into a React/Redux application in a way that's scaleable and testable. Unit testable logging is
+important when the rest of the business relies heavily on the events and the data in them like many
+companies do.</p>
+<span id="continue-reading"></span>
+<p>tl;dr: pass your logger to React's <code>context</code> to make logging from deeply nested components much
+easier.</p>
+<p>In this article, I'm assuming you've got an existing React/Redux application, and want to integrate
+some kind of event logging library into it.</p>
+<h2 id="the-logging-library"><a class="zola-anchor" href="#the-logging-library" aria-label="Anchor link for: the-logging-library">The logging library</a></h2>
+<p>Let's make a fake logging library that looks like this:</p>
+<pre data-lang="javascript" class="language-javascript z-code"><code class="language-javascript" data-lang="javascript"><span class="z-source z-ts"><span class="z-comment z-line z-double-slash z-ts"><span class="z-punctuation z-definition z-comment z-ts">//</span></span><span class="z-comment z-line z-double-slash z-ts"> lib/logger.js</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-storage z-type z-class z-ts">class</span> <span class="z-entity z-name z-type z-class z-ts">Logger</span> <span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts">  <span class="z-storage z-type z-ts">constructor</span><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">    <span class="z-variable z-language z-this z-ts">this</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">socket</span> <span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-new z-expr z-ts"><span class="z-keyword z-operator z-new z-ts">new</span> <span class="z-entity z-name z-type z-ts">WebSocket</span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>wss://events.example.com<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span><span class="z-meta z-brace z-round z-ts">)</span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">  <span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts">
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts">  <span class="z-meta z-definition z-method z-ts"><span class="z-entity z-name z-function z-ts">send</span></span><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-variable z-parameter z-ts">eventName</span><span class="z-punctuation z-separator z-parameter z-ts">,</span> <span class="z-variable z-parameter z-ts">eventData</span> <span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-function-call z-ts"><span class="z-variable z-language z-this z-ts">this</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">socket</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-support z-function z-ts">send</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-objectliteral z-ts">      <span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">eventName</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-objectliteral z-ts">      <span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts">payload</span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span> <span class="z-variable z-other z-readwrite z-ts">eventData</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-objectliteral z-ts">    <span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">  <span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-export z-default z-ts"><span class="z-keyword z-control z-export z-ts">export</span> <span class="z-keyword z-control z-default z-ts">default</span> <span class="z-new z-expr z-ts"><span class="z-keyword z-operator z-new z-ts">new</span> <span class="z-entity z-name z-type z-ts">Logger</span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-brace z-round z-ts">)</span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></code></pre>
+<p>This could be anything, even something like Google Analytics or Firebase. How you log events and to
+where doesn't really matter as the logging code will be contained inside an action creator.</p>
+<h2 id="redux-action-creator"><a class="zola-anchor" href="#redux-action-creator" aria-label="Anchor link for: redux-action-creator">Redux – Action creator</a></h2>
+<p>Action creators in Redux can have side effects like making API calls or, in our case, logging
+something. We'll create a simple action creator like this:</p>
+<pre data-lang="javascript" class="language-javascript z-code"><code class="language-javascript" data-lang="javascript"><span class="z-source z-ts"><span class="z-comment z-line z-double-slash z-ts"><span class="z-punctuation z-definition z-comment z-ts">//</span></span><span class="z-comment z-line z-double-slash z-ts"> actions/logger.js</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-variable z-other z-readwrite z-alias z-ts">logger</span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-single z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&#39;</span>../lib/logger<span class="z-punctuation z-definition z-string z-end z-ts">&#39;</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-keyword z-control z-export z-ts">export</span> <span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">LOG_EVENT</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-string z-quoted z-single z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&#39;</span>LOG_EVENT<span class="z-punctuation z-definition z-string z-end z-ts">&#39;</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-keyword z-control z-export z-ts">export</span> <span class="z-storage z-type z-function z-ts">function</span> <span class="z-meta z-definition z-function z-ts"><span class="z-entity z-name z-function z-ts">logEvent</span></span><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-variable z-parameter z-ts">name</span><span class="z-punctuation z-separator z-parameter z-ts">,</span> <span class="z-variable z-parameter z-ts">data❶</span> <span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-meta z-block z-ts">	<span class="z-meta z-function-call z-ts"><span class="z-variable z-other z-object z-ts">logger</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-support z-function z-ts">send</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-variable z-other z-readwrite z-ts">name</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-variable z-other z-readwrite z-ts">data</span><span class="z-meta z-brace z-round z-ts">)</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-meta z-block z-ts">
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-meta z-block z-ts">	<span class="z-variable z-other z-readwrite z-ts">return❷</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-block z-ts">		<span class="z-entity z-name z-label z-ts">type</span><span class="z-punctuation z-separator z-label z-ts">:</span> <span class="z-variable z-other z-constant z-ts">LOG_EVENT</span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-block z-ts">		<span class="z-variable z-other z-readwrite z-ts">name</span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-block z-ts">		<span class="z-variable z-other z-readwrite z-ts">data</span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-block z-ts">	<span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-function z-ts"><span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></code></pre>
+<p>❶ Define a default empty object, so we don't have to worry about handling undefined or null values.</p>
+<p>❷ Returning something from this action creator isn't strictly necessary for just logging events
+using the logger, but if you want to record those events in your Redux store, you need to return an
+action for the reducers to respond to.</p>
+<p>We now have an action creator that, when called, will log an event over our pretend websocket-based
+logging library. Let's hook it up to a button in React.</p>
+<h2 id="integration-with-react-the-bad-way"><a class="zola-anchor" href="#integration-with-react-the-bad-way" aria-label="Anchor link for: integration-with-react-the-bad-way">Integration with React (the bad way)</a></h2>
+<p>The simplest and perhaps obvious way is to pass down an event handler to the elment you want to log
+an event from. React encourages this pattern for handling other events, so why not logs? When an
+event is fired, your code would handle that in the top level Redux-connected page component. We
+could pepper Redux' <code>connect()</code> through our component tree, but that makes testing <em>harder</em>, which
+is the opposite of what we want to do. It also tightly couples our app to Redux instead of dealing
+with plain old Javascript objects.</p>
+<p>This following example is for a login page where we want to log an event when the submit button is
+clicked. Here, logging that event isn't too bad because we already have a click handler for the
+submit button. But what if we had a different component with no other props? In this case, we'd have
+to write a <code>handleClick</code> function in the top level component, and pass an <code>onClick</code> prop all the way
+through the component tree. This is noisy, boilerplate-y and error prone. In the next section, I'll
+show a better way of doing this.</p>
+<pre data-lang="javascript" class="language-javascript z-code"><code class="language-javascript" data-lang="javascript"><span class="z-source z-ts"><span class="z-comment z-line z-double-slash z-ts"><span class="z-punctuation z-definition z-comment z-ts">//</span></span><span class="z-comment z-line z-double-slash z-ts"> pages/Login.jsx</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-variable z-other z-readwrite z-alias z-ts">React</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span> <span class="z-variable z-other z-readwrite z-alias z-ts">PureComponent</span> <span class="z-punctuation z-definition z-block z-ts">}</span></span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-single z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&#39;</span>react<span class="z-punctuation z-definition z-string z-end z-ts">&#39;</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span> <span class="z-variable z-other z-readwrite z-alias z-ts">logEvent</span> <span class="z-punctuation z-definition z-block z-ts">}</span></span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-single z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&#39;</span>../actions/logger<span class="z-punctuation z-definition z-string z-end z-ts">&#39;</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts"><span class="z-entity z-name z-function z-ts">SubmitButton</span></span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-meta z-parameter z-object-binding-pattern z-ts"><span class="z-punctuation z-definition z-binding-pattern z-object z-ts">{</span> <span class="z-variable z-parameter z-ts">onClick</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-variable z-parameter z-ts">children</span> <span class="z-punctuation z-definition z-binding-pattern z-object z-ts">}</span></span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-brace z-round z-ts">(</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">	<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-variable z-parameter z-ts">button</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-variable z-other z-readwrite z-ts">className</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>btn btn--submit<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-variable z-other z-readwrite z-ts">onClick</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">onClick</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">	<span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-parameter z-object-binding-pattern z-ts">		<span class="z-punctuation z-definition z-binding-pattern z-object z-ts">{</span><span class="z-variable z-parameter z-ts">children</span><span class="z-punctuation z-definition z-binding-pattern z-object z-ts">}</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">	<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">button</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-brace z-round z-ts">)</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts"><span class="z-entity z-name z-function z-ts">LoginForm</span></span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-meta z-parameter z-object-binding-pattern z-ts"><span class="z-punctuation z-definition z-binding-pattern z-object z-ts">{</span> <span class="z-variable z-parameter z-ts">onSubmit</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-variable z-parameter z-ts">onChange</span> <span class="z-punctuation z-definition z-binding-pattern z-object z-ts">}</span></span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-brace z-round z-ts">(</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts"><span class="z-cast z-expr z-ts">	<span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">form</span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-variable z-parameter z-ts">input</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">			<span class="z-variable z-other z-readwrite z-ts">onChange</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">onChange</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">			<span class="z-variable z-other z-readwrite z-ts">type</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>text<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">			<span class="z-variable z-other z-readwrite z-ts">name</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>email<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-variable z-parameter z-ts">input</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">			<span class="z-variable z-other z-readwrite z-ts">onChange</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">onChange</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">			<span class="z-variable z-other z-readwrite z-ts">type</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>password<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">			<span class="z-variable z-other z-readwrite z-ts">name</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>password<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-variable z-other z-readwrite z-ts">SubmitButton</span> <span class="z-variable z-other z-readwrite z-ts">onClick</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">onSubmit</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">			<span class="z-variable z-other z-readwrite z-ts">Log</span> <span class="z-keyword z-operator z-expression z-in z-ts">in</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">SubmitButton</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">	<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">form</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-brace z-round z-ts">)</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-storage z-type z-class z-ts">class</span> <span class="z-entity z-name z-type z-class z-ts">LoginPage</span> <span class="z-storage z-modifier z-ts">extends</span> <span class="z-entity z-other z-inherited-class z-ts">PureComponent</span> <span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts">	<span class="z-meta z-definition z-method z-ts"><span class="z-entity z-name z-function z-ts">handleChange</span></span><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-variable z-parameter z-ts">e</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">		<span class="z-keyword z-operator z-spread z-ts">...</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">	<span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts">
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts">	<span class="z-meta z-definition z-method z-ts"><span class="z-entity z-name z-function z-ts">handleSubmit</span></span><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">		<span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-object-binding-pattern-variable z-ts"><span class="z-punctuation z-definition z-binding-pattern z-object z-ts">{</span> <span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">dispatch</span></span> <span class="z-punctuation z-definition z-binding-pattern z-object z-ts">}</span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-variable z-language z-this z-ts">this</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">props</span></span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">		<span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">dispatch</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">logEvent</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-string z-quoted z-single z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&#39;</span>loginSubmit<span class="z-punctuation z-definition z-string z-end z-ts">&#39;</span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-meta z-brace z-round z-ts">)</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">		<span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">dispatch</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">login</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-meta z-brace z-round z-ts">)</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">	<span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts">
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts">	<span class="z-meta z-definition z-method z-ts"><span class="z-entity z-name z-function z-ts">render</span></span><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">		<span class="z-keyword z-control z-flow z-ts">return</span> <span class="z-meta z-brace z-round z-ts">(</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-cast z-expr z-ts">			<span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">main</span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-cast z-expr z-ts">				<span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">header</span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span><span class="z-keyword z-operator z-spread z-ts">...</span><span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">header</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">				<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-variable z-parameter z-ts">LoginForm</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">					<span class="z-variable z-other z-readwrite z-ts">onChange</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>this.<span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">handleChange</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">					<span class="z-variable z-other z-readwrite z-ts">onSubmit</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>this.<span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">handleSubmit</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">				<span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">			<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">main</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">		<span class="z-meta z-brace z-round z-ts">)</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">	<span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-export z-default z-ts"><span class="z-keyword z-control z-export z-ts">export</span> <span class="z-keyword z-control z-default z-ts">default</span> <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">connect</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-arrow z-ts"><span class="z-variable z-parameter z-ts">state</span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> </span><span class="z-variable z-other z-readwrite z-ts">state</span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-variable z-other z-readwrite z-ts">LoginPage</span><span class="z-meta z-brace z-round z-ts">)</span></span>
+</span></code></pre>
+<h2 id="integration-with-react-the-good-better-way"><a class="zola-anchor" href="#integration-with-react-the-good-better-way" aria-label="Anchor link for: integration-with-react-the-good-better-way">Integration with React (the <del>good</del> better way)</a></h2>
+<p>A better way to handle this logging is to use React's
+<a href="https://facebook.github.io/react/docs/context.html">context</a> functionality. Context
+<a href="https://facebook.github.io/react/docs/context.html#why-not-to-use-context">should be used sparingly</a>
+and its caveats like coupling global state, but in this case it can help us create a far cleaner
+logging implementation. First, we need to make a context provider that will make the logger
+available to all child components in our app:</p>
+<pre data-lang="javascript" class="language-javascript z-code"><code class="language-javascript" data-lang="javascript"><span class="z-source z-ts"><span class="z-comment z-line z-double-slash z-ts"><span class="z-punctuation z-definition z-comment z-ts">//</span></span><span class="z-comment z-line z-double-slash z-ts"> components/LoggerProvider.jsx</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-variable z-other z-readwrite z-alias z-ts">React</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span> <span class="z-variable z-other z-readwrite z-alias z-ts">PureComponent</span> <span class="z-punctuation z-definition z-block z-ts">}</span></span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-single z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&#39;</span>react<span class="z-punctuation z-definition z-string z-end z-ts">&#39;</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span> <span class="z-variable z-other z-readwrite z-alias z-ts">logEvent</span> <span class="z-punctuation z-definition z-block z-ts">}</span></span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-single z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&#39;</span>../actions/logger<span class="z-punctuation z-definition z-string z-end z-ts">&#39;</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-storage z-type z-class z-ts">class</span> <span class="z-entity z-name z-type z-class z-ts">LoggerProvider</span> <span class="z-storage z-modifier z-ts">extends</span> <span class="z-entity z-other z-inherited-class z-ts">PureComponent</span> <span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts">	❶<span class="z-variable z-other z-readwrite z-ts">static</span><span class="z-meta z-field z-declaration z-ts"> <span class="z-meta z-definition z-property z-ts"><span class="z-variable z-object z-property z-ts">childContextTypes</span></span> <span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-field z-declaration z-ts"><span class="z-meta z-objectliteral z-ts">		<span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts">logEvent</span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span> <span class="z-variable z-other z-object z-ts">PropTypes</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">func</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-field z-declaration z-ts"><span class="z-meta z-objectliteral z-ts">	<span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts">
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts">	❷<span class="z-meta z-field z-declaration z-ts"><span class="z-meta z-definition z-property z-ts"><span class="z-entity z-name z-function z-ts">getChildContext</span></span> <span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-field z-declaration z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">		<span class="z-keyword z-control z-flow z-ts">return</span><span class="z-meta z-objectliteral z-ts"> <span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-field z-declaration z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-objectliteral z-ts">			<span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-entity z-name z-function z-ts">logEvent</span></span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-variable z-parameter z-ts">eventName</span><span class="z-punctuation z-separator z-parameter z-ts">,</span> <span class="z-variable z-parameter z-ts">eventData</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> </span><span class="z-meta z-function-call z-ts"><span class="z-variable z-language z-this z-ts">this</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">props</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">store</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-function z-ts">dispatch</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">logEvent</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-variable z-other z-readwrite z-ts">eventName</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-variable z-other z-readwrite z-ts">eventData</span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-meta z-brace z-round z-ts">)</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-field z-declaration z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-objectliteral z-ts">		<span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-field z-declaration z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">	<span class="z-punctuation z-definition z-block z-ts">}</span></span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts">
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-punctuation z-whitespace z-comment z-leading z-ts">	</span><span class="z-comment z-line z-double-slash z-ts"><span class="z-punctuation z-definition z-comment z-ts">//</span></span><span class="z-comment z-line z-double-slash z-ts"> Pass through children verbatim</span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-field z-declaration z-ts">	<span class="z-meta z-definition z-property z-ts"><span class="z-entity z-name z-function z-ts">render</span></span> <span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> </span><span class="z-variable z-language z-this z-ts">this</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">props</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">children</span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-export z-default z-ts"><span class="z-keyword z-control z-export z-ts">export</span> <span class="z-keyword z-control z-default z-ts">default</span> <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">connect</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-arrow z-ts"><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-punctuation z-definition z-block z-ts">}</span></span></span>❸<span class="z-meta z-brace z-round z-ts">)</span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-variable z-other z-readwrite z-ts">LoggerProvider</span><span class="z-meta z-brace z-round z-ts">)</span></span>
+</span></code></pre>
+<p>Here we:</p>
+<p>❶ Define <code>childContextTypes</code> to allow child components to ask for <code>logEvent</code> using their
+<code>contextTypes</code> property.</p>
+<p>❷ Make the definition of <code>logEvent</code>. In this case, it's a function that will be called like
+<code>context.logEvent('foo', { bar: 'true '})</code> which matches the Redux action signature written earlier.</p>
+<p>❸ Don't need any state from the store, so we can just return an empty object.</p>
+<p>This component won't work without a Redux store. We can add that by wrapping it in a <code>Provider</code>
+component from <a href="https://npmjs.com/package/react-redux"><code>react-redux</code></a>. An example application might
+look like this:</p>
+<pre data-lang="javascript" class="language-javascript z-code"><code class="language-javascript" data-lang="javascript"><span class="z-source z-ts"><span class="z-comment z-line z-double-slash z-ts"><span class="z-punctuation z-definition z-comment z-ts">//</span></span><span class="z-comment z-line z-double-slash z-ts"> index.jsx</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-variable z-other z-readwrite z-alias z-ts">React</span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>react<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span> <span class="z-variable z-other z-readwrite z-alias z-ts">Provider</span> <span class="z-punctuation z-definition z-block z-ts">}</span></span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>react-redux<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts"><span class="z-entity z-name z-function z-ts">App</span></span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-meta z-parameter z-object-binding-pattern z-ts"><span class="z-punctuation z-definition z-binding-pattern z-object z-ts">{</span> <span class="z-variable z-parameter z-ts">store</span> <span class="z-punctuation z-definition z-binding-pattern z-object z-ts">}</span></span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-brace z-round z-ts">(</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">  <span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-variable z-other z-readwrite z-ts">Provider</span> <span class="z-variable z-other z-readwrite z-ts">store</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">store</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts"><span class="z-cast z-expr z-ts">    <span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">LoggerProvider</span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-comment z-block z-ts"><span class="z-punctuation z-definition z-comment z-ts">/*</span> Insert your router or page container component here <span class="z-punctuation z-definition z-comment z-ts">*/</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">LoggerProvider</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">  <span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">Provider</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-brace z-round z-ts">)</span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></code></pre>
+<p>Make sure <code>LoggerProvider</code> is a child of <code>Provider</code>. If it's the other way round, you won't be able
+to access the store. Now let's modify the <code>&lt;SubmitButton /&gt;</code> component we want to log events from to
+give it access to <code>context</code>:</p>
+<pre data-lang="javascript" class="language-javascript z-code"><code class="language-javascript" data-lang="javascript"><span class="z-source z-ts"><span class="z-comment z-line z-double-slash z-ts"><span class="z-punctuation z-definition z-comment z-ts">//</span></span><span class="z-comment z-line z-double-slash z-ts"> components/LoginButton.jsx</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-variable z-other z-readwrite z-alias z-ts">PropTypes</span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-single z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&#39;</span>prop-types<span class="z-punctuation z-definition z-string z-end z-ts">&#39;</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts"><span class="z-entity z-name z-function z-ts">SubmitButton</span></span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-meta z-parameter z-object-binding-pattern z-ts"><span class="z-punctuation z-definition z-binding-pattern z-object z-ts">{</span> <span class="z-variable z-parameter z-ts">onClick</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-variable z-parameter z-ts">children</span> <span class="z-punctuation z-definition z-binding-pattern z-object z-ts">}</span></span><span class="z-punctuation z-separator z-parameter z-ts">,</span><span class="z-meta z-parameter z-object-binding-pattern z-ts"> <span class="z-punctuation z-definition z-binding-pattern z-object z-ts">{</span> <span class="z-variable z-parameter z-ts">logEvent❶</span> <span class="z-punctuation z-definition z-binding-pattern z-object z-ts">}</span></span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-brace z-round z-ts">(</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">	<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-variable z-parameter z-ts">button</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-variable z-other z-readwrite z-ts">className</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>btn btn--submit<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">		<span class="z-variable z-other z-readwrite z-ts">onClick</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">onClick</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">	<span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-parameter z-object-binding-pattern z-ts">		<span class="z-punctuation z-definition z-binding-pattern z-object z-ts">{</span><span class="z-variable z-parameter z-ts">children</span><span class="z-punctuation z-definition z-binding-pattern z-object z-ts">}</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts">	<span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">button</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-brace z-round z-ts">)</span></span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts">❷<span class="z-variable z-other z-object z-ts">SubmitButton</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">contextTypes</span> <span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"> <span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-objectliteral z-ts">	<span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts">logEvent</span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span> <span class="z-variable z-other z-object z-ts">PropTypes</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">func</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-export z-default z-ts"><span class="z-keyword z-control z-export z-ts">export</span> <span class="z-keyword z-control z-default z-ts">default</span> <span class="z-variable z-other z-readwrite z-ts">SubmitButton</span></span>
+</span></code></pre>
+<p>❶ Stateless functional components access <code>context</code> through the second argument of the function
+declaration.</p>
+<p>❷ React requires you to explicitly mark which pieces of the context you want using
+<code>Component.contextTypes</code>. In this case, just <code>logEvent</code> which is a function. If you don't add this,
+<code>logEvent</code> will be undefined!</p>
+<p>Assuming your app uses <code>LoggerProvider</code> somewhere near the top of its component tree, you should now
+be able to call <code>context.logEvent</code> which will dispatch a Redux action with the functionality
+provided by <code>LoggerProvider</code>. This should work wherever this component is in the component tree.</p>
+<h2 id="testing-with-mocha-and-enzyme"><a class="zola-anchor" href="#testing-with-mocha-and-enzyme" aria-label="Anchor link for: testing-with-mocha-and-enzyme">Testing with Mocha and Enzyme</a></h2>
+<p>Easy testability is a very useful side-effect of using the context method. You could add spies and
+assertions around a Redux store, but this then requires you to store logged events in your store
+which you might not want to do (e.g. with third party logging libraries). It also leads to a much
+more complex test harness involving Redux and a <code>&lt;Provider&gt;</code>.</p>
+<p>I'm using <a href="http://mochajs.org/">Mocha</a>, <a href="http://airbnb.io/enzyme/">Enzyme</a>,
+<a href="http://chaijs.com/">Chai</a> and <a href="http://sinonjs.org/">Sinon</a> for this article, but this technique
+should be applicable to most test environments.</p>
+<p>Using <code>context</code> in a component comes with the caveat that a context obejct must be present in Enzyme
+unit tests. This can get a little frustrating and introduces some obtuse errors if one is not aware
+of the <code>context</code> requirement. However I think the benefits outweigh these extra steps. Context
+<a href="http://airbnb.io/enzyme/docs/api/shallow.html#arguments">can easily be passed into components</a>,
+making it extremely simple to pass spies and catch logging calls.</p>
+<p>It's not strictly necessary, but I'm going to use
+<a href="https://github.com/domenic/sinon-chai"><code>sinon-chai</code></a> to make error messages a bit clearer.</p>
+<p>Here's our test:</p>
+<pre data-lang="javascript" class="language-javascript z-code"><code class="language-javascript" data-lang="javascript"><span class="z-source z-ts"><span class="z-comment z-line z-double-slash z-ts"><span class="z-punctuation z-definition z-comment z-ts">//</span></span><span class="z-comment z-line z-double-slash z-ts"> test/components/SubmitButton.spec.js</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-import z-ts"><span class="z-keyword z-control z-import z-ts">import</span> <span class="z-variable z-other z-readwrite z-alias z-ts">SubmitButton</span> <span class="z-keyword z-control z-from z-ts">from</span> <span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>../components/SubmitButton<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">describe</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>&lt;SubmitButton /&gt;<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">  <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">it</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>Calls the onClick event when clicked<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">clickSpy</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">spy</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-brace z-round z-ts">)</span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">button</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">shallow</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-cast z-expr z-ts"><span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">SubmitButton</span> <span class="z-entity z-name z-type z-ts">onClick</span>=<span class="z-meta z-object z-type z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-field z-declaration z-ts"><span class="z-meta z-definition z-property z-ts"><span class="z-variable z-object z-property z-ts">clickSpy</span></span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span><span class="z-variable z-other z-readwrite z-ts">Submit</span><span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">SubmitButton</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-objectliteral z-ts">      <span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts">context</span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span> <span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span> <span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-entity z-name z-function z-ts">logEvent</span></span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-punctuation z-definition z-block z-ts">}</span></span></span> </span><span class="z-punctuation z-definition z-block z-ts">}</span></span></span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-objectliteral z-ts">    <span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-meta z-brace z-round z-ts">)</span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-function-call z-ts"><span class="z-variable z-other z-object z-ts">button</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-function z-ts">simulate</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>click<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">expect</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-variable z-other z-readwrite z-ts">clickSpy</span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">to</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">have</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">been</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">calledOnce</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">  <span class="z-punctuation z-definition z-block z-ts">}</span></span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">  <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">it</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>Logs an event when clicked<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span><span class="z-meta z-arrow z-ts"> <span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">logSpy</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">spy</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-brace z-round z-ts">)</span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">button</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">shallow</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-cast z-expr z-ts"><span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">SubmitButton</span> <span class="z-entity z-name z-type z-ts">onClick</span>=<span class="z-meta z-object z-type z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> =&gt; <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-punctuation z-definition z-block z-ts">}</span></span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span><span class="z-variable z-other z-readwrite z-ts">Submit</span><span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">SubmitButton</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-objectliteral z-ts">      <span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts">context</span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span> <span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span> <span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts">logEvent</span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span> <span class="z-variable z-other z-readwrite z-ts">logSpy</span> </span><span class="z-punctuation z-definition z-block z-ts">}</span></span></span><span class="z-punctuation z-separator z-comma z-ts">,</span>
+</span></span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-objectliteral z-ts">    <span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-meta z-brace z-round z-ts">)</span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-function-call z-ts"><span class="z-variable z-other z-object z-ts">button</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-function z-ts">simulate</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>click<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-function-call z-ts"><span class="z-entity z-name z-function z-ts">expect</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-variable z-other z-readwrite z-ts">logSpy</span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">to</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">have</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">been</span><span class="z-meta z-function-call z-ts"><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-function z-ts">calledWith</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>loginSubmit<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span> <span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts">foo</span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span> <span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>bar<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span></span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts">baz</span></span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-punctuation z-separator z-key-value z-ts">:</span></span> <span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>quux<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span> </span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">  <span class="z-punctuation z-definition z-block z-ts">}</span></span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">}</span></span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></code></pre>
+<p>We've got two tests here:</p>
+<ol>
+<li>
+<p><code>Calls the onClick event when clicked</code>. Checks to make sure <code>onSubmit()</code> is called when the
+button is clicked. This isn't relevant to event log testing, it just shows another Enzyme test
+being used.</p>
+</li>
+<li>
+<p><code>Logs an event when clicked</code>. Checks that <code>logEvent</code> was called, and with the correct arguments.
+<code>.calledWith('loginSubmit', { foo: 'bar', baz: 'quux' })</code> should be replaced with whatever shape
+of event you're logging. In this example, it's hardcoded to
+<code>('loginSubmit', { foo: 'bar', baz: 'quux' })</code>.</p>
+</li>
+</ol>
+<p>If you've set everything up right, you should see something like this:</p>
+<pre class="z-code"><code><span class="z-text z-plain">  &lt;SubmitButton /&gt;
+</span><span class="z-text z-plain">    ✓ Calls the onClick event when clicked
+</span><span class="z-text z-plain">    ✓ Logs an event when clicked
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">  2 passing (2ms
+</span></code></pre>
+<p>Hooray!</p>
+<h2 id="conclusion"><a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">Conclusion</a></h2>
+<p>React's <code>context</code> can be pretty powerful when used sparingly. Here, I've presented an approach to
+event collection that makes logging from deeply nested React nodes easier, simpler and more
+testable. However, I think it's important to take multiple approaches to event logging depending on
+where the event needs to be fired from. If you can do it without using <code>context</code>, do that! You lose
+some ability to test using a spy in your tests, but it makes component testing simpler with less
+configuration by not requiring a fake context. If you can log an event inside another action
+creator, that's the best way to go if possible. If not, using a context provider leads to a more
+scalable approach for larger apps with deeply nested component trees.</p>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>

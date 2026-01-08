@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>XML sitemaps in React with Typescript</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;typescript&#x2F;2019&#x2F;03&#x2F;14&#x2F;xml-jsx-sitemaps-in-typescript.html&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header ">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+
+<article role="main" class="post ">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>XML sitemaps in React with Typescript</h1>
+
+      <time datetime="2019-03-14">
+        <a href="https://wapl.es/typescript/2019/03/14/xml-jsx-sitemaps-in-typescript.html/">March 14, 2019</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p>I maintain the <a href="https://repositive.io">Repositive website</a> which uses React for the frontend and a
+server that supports server side rendering for the speed and SEO benefits of SSR. I'm currently in
+the process of porting it over to Typescript which is kickass, but the type checker kept borking on
+the XML tags used in the sitemap component. What follows is a quick "note to self" on how to fix
+that error. There might be <em>much</em> better solutions out there, but this is the one that worked for
+me.</p>
+<span id="continue-reading"></span>
+<p>A slimmed down sitemap component is listed below. It's rendered on the NodeJS server so search
+engines <em>et al</em> can pick it up without having to execute any JS.</p>
+<pre data-lang="typescript" class="language-typescript z-code"><code class="language-typescript" data-lang="typescript"><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">staticRoutes</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-array z-literal z-ts"> <span class="z-meta z-brace z-square z-ts">[</span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-array z-literal z-ts">  <span class="z-comment z-block z-ts"><span class="z-punctuation z-definition z-comment z-ts">/*</span> snip <span class="z-punctuation z-definition z-comment z-ts">*/</span></span>
+</span></span></span><span class="z-source z-ts"><span class="z-meta z-var z-expr z-ts"><span class="z-meta z-array z-literal z-ts"><span class="z-meta z-brace z-square z-ts">]</span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span><span class="z-source z-ts">
+</span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-storage z-type z-class z-ts">class</span> <span class="z-entity z-name z-type z-class z-ts">Sitemap</span> <span class="z-storage z-modifier z-ts">extends</span> <span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-other z-inherited-class z-ts">Component</span> <span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts">  <span class="z-meta z-definition z-method z-ts"><span class="z-entity z-name z-function z-ts">render</span></span><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span><span class="z-meta z-return z-type z-ts"><span class="z-keyword z-operator z-type z-annotation z-ts">:</span> <span class="z-support z-type z-primitive z-ts">any</span> </span><span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">baseUrl</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>https://foobar.io<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">now</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-new z-expr z-ts"><span class="z-keyword z-operator z-new z-ts">new</span> <span class="z-entity z-name z-type z-ts">Date</span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-brace z-round z-ts">)</span></span><span class="z-meta z-function-call z-ts"><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-function z-ts">toISOString</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-brace z-round z-ts">)</span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-var z-expr z-ts"><span class="z-storage z-type z-ts">const</span> <span class="z-meta z-var-single-variable z-expr z-ts"><span class="z-meta z-definition z-variable z-ts"><span class="z-variable z-other z-constant z-ts">staticRoutes</span></span> </span><span class="z-keyword z-operator z-assignment z-ts">=</span> <span class="z-variable z-other z-readwrite z-ts">routes</span></span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">      <span class="z-meta z-function-call z-ts"><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-function z-ts">filter</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-arrow z-ts"><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-variable z-parameter z-ts">r</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> </span><span class="z-variable z-other z-object z-ts">r</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-object z-property z-ts">sitemap</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">show</span><span class="z-meta z-brace z-round z-ts">)</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">      <span class="z-meta z-function-call z-ts"><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-function z-ts">map</span></span><span class="z-meta z-brace z-round z-ts">(</span><span class="z-meta z-arrow z-ts"><span class="z-meta z-parameters z-ts"><span class="z-punctuation z-definition z-parameters z-begin z-ts">(</span><span class="z-variable z-parameter z-ts">r</span><span class="z-punctuation z-definition z-parameters z-end z-ts">)</span></span> </span><span class="z-meta z-arrow z-ts"><span class="z-storage z-type z-function z-arrow z-ts">=&gt;</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">        <span class="z-keyword z-control z-flow z-ts">return</span> <span class="z-meta z-brace z-round z-ts">(</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">          <span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-variable z-other z-readwrite z-ts">url</span> <span class="z-variable z-other z-readwrite z-ts">key</span><span class="z-keyword z-operator z-assignment z-ts">=</span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>r.<span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">path</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-cast z-expr z-ts">            <span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">loc</span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-meta z-object-literal z-key z-ts"><span class="z-string z-template z-ts"><span class="z-punctuation z-definition z-string z-template z-begin z-ts">`</span><span class="z-meta z-template z-expression z-ts"><span class="z-punctuation z-definition z-template-expression z-begin z-ts">${</span></span><span class="z-meta z-template z-expression z-ts"><span class="z-meta z-embedded z-line z-ts"><span class="z-variable z-other z-readwrite z-ts">baseUrl</span></span><span class="z-punctuation z-definition z-template-expression z-end z-ts">}</span></span><span class="z-meta z-template z-expression z-ts"><span class="z-punctuation z-definition z-template-expression z-begin z-ts">${</span></span><span class="z-meta z-template z-expression z-ts"><span class="z-meta z-embedded z-line z-ts"><span class="z-variable z-other z-object z-ts">r</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-variable z-other z-property z-ts">path</span></span><span class="z-punctuation z-definition z-template-expression z-end z-ts">}</span></span><span class="z-punctuation z-definition z-string z-template z-end z-ts">`</span></span></span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">loc</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-cast z-expr z-ts">            <span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">lastmod</span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">now</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">lastmod</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts"><span class="z-cast z-expr z-ts">            <span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">priority</span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>r.sitemap.<span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">priority</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">priority</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">          <span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">url</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">        <span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-arrow z-ts"><span class="z-meta z-block z-ts">      <span class="z-punctuation z-definition z-block z-ts">}</span></span></span><span class="z-meta z-brace z-round z-ts">)</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">    <span class="z-keyword z-control z-flow z-ts">return</span><span class="z-cast z-expr z-ts"> <span class="z-meta z-brace z-angle z-ts">&lt;</span><span class="z-entity z-name z-type z-ts">urlset</span> <span class="z-entity z-name z-type z-ts">xmlns</span>=<span class="z-string z-quoted z-double z-ts"><span class="z-punctuation z-definition z-string z-begin z-ts">&quot;</span>http://www.sitemaps.org/schemas/sitemap/0.9<span class="z-punctuation z-definition z-string z-end z-ts">&quot;</span></span><span class="z-meta z-brace z-angle z-ts">&gt;</span></span><span class="z-meta z-objectliteral z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span><span class="z-meta z-object z-member z-ts"><span class="z-variable z-other z-readwrite z-ts">staticRoutes</span></span><span class="z-punctuation z-definition z-block z-ts">}</span></span><span class="z-keyword z-operator z-relational z-ts">&lt;</span><span class="z-keyword z-operator z-arithmetic z-ts">/</span><span class="z-variable z-other z-readwrite z-ts">urlset</span><span class="z-keyword z-operator z-relational z-ts">&gt;</span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-meta z-method z-declaration z-ts"><span class="z-meta z-block z-ts">  <span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-class z-ts"><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></code></pre>
+<p>Typescript spews error <code>TS2339</code> when it encounters the lowercase <code>&lt;url&gt;</code>, <code>&lt;urlset&gt;</code>, etc tags. The
+solution I found <a href="https://github.com/Microsoft/TypeScript/issues/15449#issuecomment-385959396">here</a>
+is to add this to the top of the file you want to use custom elements in:</p>
+<pre data-lang="typescript" class="language-typescript z-code"><code class="language-typescript" data-lang="typescript"><span class="z-source z-ts"><span class="z-storage z-modifier z-ts">declare</span> <span class="z-support z-variable z-object z-node z-ts">global</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts">  <span class="z-meta z-namespace z-declaration z-ts"><span class="z-storage z-type z-namespace z-ts">namespace</span> <span class="z-entity z-name z-type z-module z-ts">JSX</span> <span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-namespace z-declaration z-ts"><span class="z-meta z-block z-ts">    <span class="z-meta z-interface z-ts"><span class="z-storage z-type z-interface z-ts">interface</span> <span class="z-entity z-name z-type z-interface z-ts">IntrinsicElements</span> <span class="z-punctuation z-definition z-block z-ts">{</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-namespace z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-interface z-ts"><span class="z-meta z-field z-declaration z-ts">      <span class="z-meta z-definition z-property z-ts"><span class="z-variable z-object z-property z-ts">url</span></span><span class="z-meta z-type z-annotation z-ts"><span class="z-keyword z-operator z-type z-annotation z-ts">:</span> <span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">DetailedHTMLProps</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">HTMLAttributes</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-namespace z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-interface z-ts"><span class="z-meta z-field z-declaration z-ts">      <span class="z-meta z-definition z-property z-ts"><span class="z-variable z-object z-property z-ts">loc</span></span><span class="z-meta z-type z-annotation z-ts"><span class="z-keyword z-operator z-type z-annotation z-ts">:</span> <span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">DetailedHTMLProps</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">HTMLAttributes</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-namespace z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-interface z-ts"><span class="z-meta z-field z-declaration z-ts">      <span class="z-meta z-definition z-property z-ts"><span class="z-variable z-object z-property z-ts">lastmod</span></span><span class="z-meta z-type z-annotation z-ts"><span class="z-keyword z-operator z-type z-annotation z-ts">:</span> <span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">DetailedHTMLProps</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">HTMLAttributes</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-namespace z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-interface z-ts"><span class="z-meta z-field z-declaration z-ts">      <span class="z-meta z-definition z-property z-ts"><span class="z-variable z-object z-property z-ts">priority</span></span><span class="z-meta z-type z-annotation z-ts"><span class="z-keyword z-operator z-type z-annotation z-ts">:</span> <span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">DetailedHTMLProps</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">HTMLAttributes</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-namespace z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-interface z-ts"><span class="z-meta z-field z-declaration z-ts">      <span class="z-meta z-definition z-property z-ts"><span class="z-variable z-object z-property z-ts">urlset</span></span><span class="z-meta z-type z-annotation z-ts"><span class="z-keyword z-operator z-type z-annotation z-ts">:</span> <span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">DetailedHTMLProps</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-module z-ts">React</span><span class="z-punctuation z-accessor z-ts">.</span><span class="z-entity z-name z-type z-ts">HTMLAttributes</span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-begin z-ts">&lt;</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span><span class="z-punctuation z-separator z-comma z-ts">,</span> <span class="z-entity z-name z-type z-ts">HTMLElement</span></span><span class="z-meta z-type z-parameters z-ts"><span class="z-punctuation z-definition z-typeparameters z-end z-ts">&gt;</span></span></span></span><span class="z-punctuation z-terminator z-statement z-ts">;</span>
+</span></span></span></span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-namespace z-declaration z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-interface z-ts">    <span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></span></span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-meta z-namespace z-declaration z-ts"><span class="z-meta z-block z-ts">  <span class="z-punctuation z-definition z-block z-ts">}</span></span></span>
+</span></span><span class="z-source z-ts"><span class="z-meta z-block z-ts"><span class="z-punctuation z-definition z-block z-ts">}</span></span>
+</span></code></pre>
+<p>This works for Typescript 3.3.3. As far as I know, this doesn't blow away React's normal DOM element
+type checking. Naturally you'll have to add any other tags you use to the list above. This fixes the
+Typescript errors, so now I can continue on my merry Typescripty way.</p>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>

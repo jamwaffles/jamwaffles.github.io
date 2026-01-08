@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>Computing the EtherCAT SubDevice SII&#x2F;EEPROM checksum</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;ethercat-sii-eeprom-checksum&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header ">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+
+<article role="main" class="post ">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>Computing the EtherCAT SubDevice SII/EEPROM checksum</h1>
+
+      <time datetime="2025-02-08">
+        <a href="https://wapl.es/ethercat-sii-eeprom-checksum/">February 08, 2025</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p>This is an answer to
+<a href="https://electronics.stackexchange.com/q/33821/2212">this StackExchange question</a> which I'm posting
+here instead as I refuse to add any more of my time or energy to that website.</p>
+<p>I'm using Rust and the <a href="https://crates.io/crates/crc"><code>crc</code></a> crate to calculate the checksum of the
+first 14 bytes of an EtherCAT SubDevice EEPROM. I first tried <code>CRC-8/ROHC</code> (<code>crc::CRC_8_ROHC</code>) as
+suggested <a href="https://electronics.stackexchange.com/a/196840/2212">by @craig-mcqueen</a> but it gave me
+incorrect results when checking a few known-good EEPROM dump files I have.</p>
+<p>I also iterated through every <code>CRC_8_*</code> constant in <code>crc</code> and none of them gave the correct result.</p>
+<p>The SOEM EtherCAT MainDevice has its CRC implementation
+<a href="https://github.com/OpenEtherCATsociety/SOEM/blob/2752dc25882ab24d7cfcad674226b65270fb0c61/test/linux/eepromtool/eepromtool.c#L64">here</a>
+which I used to cross check my Rust "implementation":</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-storage z-type z-rust">const</span> <span class="z-constant z-other z-rust">ECAT_CRC</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-meta z-path z-rust">crc<span class="z-punctuation z-accessor z-rust">::</span></span>Algorithm<span class="z-meta z-generic z-rust"><span class="z-punctuation z-definition z-generic z-begin z-rust">&lt;</span><span class="z-storage z-type z-rust">u8</span><span class="z-punctuation z-definition z-generic z-end z-rust">&gt;</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">crc<span class="z-punctuation z-accessor z-rust">::</span></span>Algorithm <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    width<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">8</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    poly<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x07</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    init<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0xff</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    refin<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-language z-rust">false</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    refout<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-language z-rust">false</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    xorout<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x00</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    check<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x80</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    residue<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x00</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">const</span> <span class="z-constant z-other z-rust">EEPROM_CRC</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-meta z-path z-rust">crc<span class="z-punctuation z-accessor z-rust">::</span></span>Crc<span class="z-meta z-generic z-rust"><span class="z-punctuation z-definition z-generic z-begin z-rust">&lt;</span><span class="z-storage z-type z-rust">u8</span><span class="z-punctuation z-definition z-generic z-end z-rust">&gt;</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">crc<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-path z-rust">Crc<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-generic z-rust"><span class="z-punctuation z-definition z-generic z-begin z-rust">&lt;</span><span class="z-storage z-type z-rust">u8</span><span class="z-punctuation z-definition z-generic z-end z-rust">&gt;</span></span><span class="z-meta z-path z-rust"><span class="z-punctuation z-accessor z-rust">::</span></span>new<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span><span class="z-constant z-other z-rust">ECAT_CRC</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></code></pre>
+<p>This is very close to <code>CRC-8/ROHC</code> but I had to change <code>check</code> from <code>0xd0</code> to <code>0x80</code>. My checksums
+now line up with the presumably more exercised SOEM implementation and the actual value in the
+dumped EEPROM files so I believe it's correct, however I couldn't find a match in
+<a href="https://reveng.sourceforge.io/crc-catalogue/1-15.htm">the catalogue</a> which is weird.</p>
+<p>I've also ported SOEM's implementation over to Rust if you don't want to use a whole crate:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-function z-rust"><span class="z-storage z-type z-function z-rust">fn</span> </span><span class="z-entity z-name z-function z-rust">calc_crc</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">(</span><span class="z-variable z-parameter z-rust">crc</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-keyword z-operator z-rust">&amp;</span><span class="z-storage z-modifier z-rust">mut</span> <span class="z-storage z-type z-rust">u8</span>, <span class="z-variable z-parameter z-rust">b</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-storage z-type z-rust">u8</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-end z-rust">)</span></span></span></span><span class="z-meta z-function z-rust"> </span><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-keyword z-operator z-arithmetic z-rust">*</span>crc <span class="z-keyword z-operator z-assignment z-rust">^=</span> b<span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-keyword z-control z-rust">for</span> <span class="z-keyword z-operator z-rust">_</span> <span class="z-keyword z-operator z-rust">in</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">0</span><span class="z-keyword z-operator z-range z-rust">..</span><span class="z-constant z-numeric z-integer z-decimal z-rust">8</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        <span class="z-keyword z-control z-rust">if</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-arithmetic z-rust">*</span>crc <span class="z-keyword z-operator z-bitwise z-rust">&amp;</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x80</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-comparison z-rust">&gt;</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">0</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-keyword z-operator z-arithmetic z-rust">*</span>crc <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-arithmetic z-rust">*</span>crc <span class="z-keyword z-operator z-comparison z-rust">&lt;</span><span class="z-keyword z-operator z-comparison z-rust">&lt;</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">1</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-bitwise z-rust">^</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x07</span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span> <span class="z-keyword z-control z-rust">else</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-keyword z-operator z-arithmetic z-rust">*</span>crc <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-keyword z-operator z-arithmetic z-rust">*</span>crc <span class="z-keyword z-operator z-comparison z-rust">&lt;</span><span class="z-keyword z-operator z-comparison z-rust">&lt;</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">1</span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">    </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-function z-rust"><span class="z-storage z-type z-function z-rust">fn</span> </span><span class="z-entity z-name z-function z-rust">sii_crc</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">(</span><span class="z-variable z-parameter z-rust">buf</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-keyword z-operator z-rust">&amp;</span>[<span class="z-storage z-type z-rust">u8</span>]</span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-end z-rust">)</span></span></span></span><span class="z-meta z-function z-rust"> <span class="z-meta z-function z-return-type z-rust"><span class="z-punctuation z-separator z-rust">-&gt;</span> <span class="z-storage z-type z-rust">u16</span></span> </span><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> <span class="z-storage z-modifier z-rust">mut</span> crc <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0xff</span><span class="z-storage z-type z-numeric z-rust">u8</span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-keyword z-control z-rust">for</span> i <span class="z-keyword z-operator z-rust">in</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">0</span><span class="z-keyword z-operator z-range z-rust">..</span><span class="z-constant z-numeric z-integer z-decimal z-rust">14</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        <span class="z-support z-function z-rust">calc_crc</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span><span class="z-storage z-modifier z-rust">mut</span> crc<span class="z-punctuation z-separator z-rust">,</span> buf<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">[</span>i<span class="z-punctuation z-section z-group z-end z-rust">]</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">    </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">u16</span><span class="z-meta z-path z-rust"><span class="z-punctuation z-accessor z-rust">::</span></span>from<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>crc</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+<p>Hope this helps :)</p>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>

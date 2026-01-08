@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>Clockwise Triangles Performance: Addendum</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;rust&#x2F;2020&#x2F;07&#x2F;26&#x2F;perf-addendum.html&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header ">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+
+<article role="main" class="post ">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>Clockwise Triangles Performance: Addendum</h1>
+
+      <time datetime="2020-07-26">
+        <a href="https://wapl.es/rust/2020/07/26/perf-addendum.html/">July 26, 2020</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p>A quick update on my <a href="/rust/2020/07/25/optimising-with-cmp-and-ordering.html">previous article</a>.</p>
+<p><a href="https://twitter.com/redbluemonkey/status/1287186446986514432">Nicholas Wilcox (@redbluemonkey) on Twitter</a>
+made a very good point:</p>
+<span id="continue-reading"></span><blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><p lang="en" dir="ltr">Do you need a full sort, or do you just need to reverse the order if it doesn&#39;t already have the correct winding? You can check the winding of any polygon with only the first 3 points using a cross product.</p>&mdash; Nicholas Wilcox (@redbluemonkey) <a href="https://twitter.com/redbluemonkey/status/1287186446986514432?ref_src=twsrc%5Etfw">July 26, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>I might need a full sort for polygons, but with a focus on triangles right now this sounded like a
+good idea to investigate. Am I being nerd-sniped? Hmm.</p>
+<p>Here's the new code as a method on the <code>Triangle</code> struct we defined
+<a href="/rust/2020/07/25/optimising-with-cmp-and-ordering.html">previously</a>:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-storage z-type z-impl z-rust">impl</span> </span><span class="z-meta z-impl z-rust"><span class="z-entity z-name z-impl z-rust">Triangle</span> </span><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust">    <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> ...
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust">
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust">    <span class="z-comment z-line z-documentation z-rust"><span class="z-punctuation z-definition z-comment z-rust">///</span> Create a new triangle with points sorted in a clockwise direction.
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-function z-rust"><span class="z-meta z-function z-rust"><span class="z-storage z-modifier z-rust">pub</span> <span class="z-storage z-type z-function z-rust">fn</span> </span><span class="z-entity z-name z-function z-rust">sorted_clockwise</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">(</span><span class="z-keyword z-operator z-rust">&amp;</span><span class="z-variable z-parameter z-rust">self</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-end z-rust">)</span></span></span></span><span class="z-meta z-function z-rust"> <span class="z-meta z-function z-return-type z-rust"><span class="z-punctuation z-separator z-rust">-&gt;</span> <span class="z-storage z-type z-rust">Self</span></span> </span><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">        <span class="z-storage z-type z-rust">let</span> <span class="z-storage z-type z-rust">Self</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span> p1<span class="z-punctuation z-separator z-rust">,</span> p2<span class="z-punctuation z-separator z-rust">,</span> p3 </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-variable z-language z-rust">self</span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">        <span class="z-storage z-type z-rust">let</span> determinant <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-keyword z-operator z-arithmetic z-rust">-</span>p2<span class="z-punctuation z-accessor z-dot z-rust">.</span>y <span class="z-keyword z-operator z-arithmetic z-rust">*</span> p3<span class="z-punctuation z-accessor z-dot z-rust">.</span>x <span class="z-keyword z-operator z-arithmetic z-rust">+</span> p1<span class="z-punctuation z-accessor z-dot z-rust">.</span>y <span class="z-keyword z-operator z-arithmetic z-rust">*</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p3<span class="z-punctuation z-accessor z-dot z-rust">.</span>x <span class="z-keyword z-operator z-arithmetic z-rust">-</span> p2<span class="z-punctuation z-accessor z-dot z-rust">.</span>x</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-arithmetic z-rust">+</span> p1<span class="z-punctuation z-accessor z-dot z-rust">.</span>x <span class="z-keyword z-operator z-arithmetic z-rust">*</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p2<span class="z-punctuation z-accessor z-dot z-rust">.</span>y <span class="z-keyword z-operator z-arithmetic z-rust">-</span> p3<span class="z-punctuation z-accessor z-dot z-rust">.</span>y</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-arithmetic z-rust">+</span> p2<span class="z-punctuation z-accessor z-dot z-rust">.</span>x <span class="z-keyword z-operator z-arithmetic z-rust">*</span> p3<span class="z-punctuation z-accessor z-dot z-rust">.</span>y<span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">        <span class="z-keyword z-control z-rust">match</span> determinant<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">cmp</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span><span class="z-constant z-numeric z-integer z-decimal z-rust">0</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> Triangle is wound CCW. Swap two points to make it CW.
+</span></span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-meta z-path z-rust">Ordering<span class="z-punctuation z-accessor z-rust">::</span></span>Less <span class="z-keyword z-operator z-rust">=&gt;</span> <span class="z-storage z-type z-rust">Self</span><span class="z-meta z-path z-rust"><span class="z-punctuation z-accessor z-rust">::</span></span>new<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p2<span class="z-punctuation z-separator z-rust">,</span> p1<span class="z-punctuation z-separator z-rust">,</span> p3</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> Triangle is already CW, do nothing.
+</span></span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-meta z-path z-rust">Ordering<span class="z-punctuation z-accessor z-rust">::</span></span>Greater <span class="z-keyword z-operator z-rust">=&gt;</span> <span class="z-keyword z-operator z-arithmetic z-rust">*</span><span class="z-variable z-language z-rust">self</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> Triangle is colinear. Sort points so they lie sequentially along the line.
+</span></span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            <span class="z-meta z-path z-rust">Ordering<span class="z-punctuation z-accessor z-rust">::</span></span>Equal <span class="z-keyword z-operator z-rust">=&gt;</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">                <span class="z-storage z-type z-rust">let</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p1<span class="z-punctuation z-separator z-rust">,</span> p2<span class="z-punctuation z-separator z-rust">,</span> p3</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-support z-function z-rust">sort_yx</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p1<span class="z-punctuation z-separator z-rust">,</span> p2<span class="z-punctuation z-separator z-rust">,</span> p3</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">
+</span></span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">                <span class="z-storage z-type z-rust">Self</span><span class="z-meta z-path z-rust"><span class="z-punctuation z-accessor z-rust">::</span></span>new<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p1<span class="z-punctuation z-separator z-rust">,</span> p2<span class="z-punctuation z-separator z-rust">,</span> p3</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">            </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-impl z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+<p>The <code>determinant</code> calculation is an optimised version of the formula presented
+<a href="https://en.wikipedia.org/wiki/Curve_orientation#Practical_considerations">here</a>. It's actually the
+doubled area of the triangle where counter-clockwise triangles produce negative values. This
+behaviour is useful because we can just swap two of the triangle's points to make it clockwise if
+the result is negative.</p>
+<p>If the determinant is zero, the triangle is colinear. In this instance, we'll sort the triangle's
+points in ascending Y then X direction. This ensures the points always lie on the single line in
+order.</p>
+<p>The <code>sort_yx</code> function above is implemented like this:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-function z-rust"><span class="z-storage z-type z-function z-rust">fn</span> </span><span class="z-entity z-name z-function z-rust">sort_two_yx</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">(</span><span class="z-variable z-parameter z-rust">p1</span><span class="z-punctuation z-separator z-rust">:</span> Point, <span class="z-variable z-parameter z-rust">p2</span><span class="z-punctuation z-separator z-rust">:</span> Point</span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-end z-rust">)</span></span></span></span><span class="z-meta z-function z-rust"> <span class="z-meta z-function z-return-type z-rust"><span class="z-punctuation z-separator z-rust">-&gt;</span> <span class="z-punctuation z-section z-group z-begin z-rust">(</span>Point, Point<span class="z-punctuation z-section z-group z-end z-rust">)</span></span> </span><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> If p1.y is less than p2.y, return it first. Otherwise, if they have the same Y coordinate,
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> the first point becomes the one with the lesser X coordinate.
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-keyword z-control z-rust">if</span> p1<span class="z-punctuation z-accessor z-dot z-rust">.</span>y <span class="z-keyword z-operator z-comparison z-rust">&lt;</span> p2<span class="z-punctuation z-accessor z-dot z-rust">.</span>y <span class="z-keyword z-operator z-logical z-rust">||</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p1<span class="z-punctuation z-accessor z-dot z-rust">.</span>y <span class="z-keyword z-operator z-comparison z-rust">==</span> p2<span class="z-punctuation z-accessor z-dot z-rust">.</span>y <span class="z-keyword z-operator z-logical z-rust">&amp;&amp;</span> p1<span class="z-punctuation z-accessor z-dot z-rust">.</span>x <span class="z-keyword z-operator z-comparison z-rust">&lt;</span> p2<span class="z-punctuation z-accessor z-dot z-rust">.</span>x</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p1<span class="z-punctuation z-separator z-rust">,</span> p2</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">    </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span> <span class="z-keyword z-control z-rust">else</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">        <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p2<span class="z-punctuation z-separator z-rust">,</span> p1</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-block z-rust">    </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-comment z-line z-documentation z-rust"><span class="z-punctuation z-definition z-comment z-rust">///</span> Sort 3 points in order of increasing Y value. If two points have the same Y value, the one with
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-documentation z-rust"><span class="z-punctuation z-definition z-comment z-rust">///</span> the lesser X value is put before.
+</span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-function z-rust"><span class="z-storage z-type z-function z-rust">fn</span> </span><span class="z-entity z-name z-function z-rust">sort_yx</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">(</span><span class="z-variable z-parameter z-rust">p1</span><span class="z-punctuation z-separator z-rust">:</span> Point, <span class="z-variable z-parameter z-rust">p2</span><span class="z-punctuation z-separator z-rust">:</span> Point, <span class="z-variable z-parameter z-rust">p3</span><span class="z-punctuation z-separator z-rust">:</span> Point</span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-end z-rust">)</span></span></span></span><span class="z-meta z-function z-rust"> <span class="z-meta z-function z-return-type z-rust"><span class="z-punctuation z-separator z-rust">-&gt;</span> <span class="z-punctuation z-section z-group z-begin z-rust">(</span>Point, Point, Point<span class="z-punctuation z-section z-group z-end z-rust">)</span></span> </span><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y1<span class="z-punctuation z-separator z-rust">,</span> y2</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-support z-function z-rust">sort_two_yx</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p1<span class="z-punctuation z-separator z-rust">,</span> p2</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y1<span class="z-punctuation z-separator z-rust">,</span> y3</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-support z-function z-rust">sort_two_yx</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>p3<span class="z-punctuation z-separator z-rust">,</span> y1</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y2<span class="z-punctuation z-separator z-rust">,</span> y3</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-support z-function z-rust">sort_two_yx</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y3<span class="z-punctuation z-separator z-rust">,</span> y2</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y1<span class="z-punctuation z-separator z-rust">,</span> y2<span class="z-punctuation z-separator z-rust">,</span> y3</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+<h2 id="benchmarks"><a class="zola-anchor" href="#benchmarks" aria-label="Anchor link for: benchmarks">Benchmarks</a></h2>
+<p>Here's the table from
+<a href="/rust/2020/07/25/optimising-with-cmp-and-ordering.html">the original investigation</a> with this new
+method added in:</p>
+<table><thead><tr><th>Suite</th><th>Result (avg)</th></tr></thead><tbody>
+<tr><td>Straight C port (baseline)</td><td>9.4473 ns</td></tr>
+<tr><td>Use <code>Ordering</code> instead of <code>bool</code></td><td>10.712 ns</td></tr>
+<tr><td>Hoist some repeated comparisons</td><td>10.160 ns</td></tr>
+<tr><td>Convert everything to a big, single <code>match</code></td><td>12.024 ns</td></tr>
+<tr><td><strong>Simplified algorithm</strong></td><td><strong>2.9 ns</strong></td></tr>
+</tbody></table>
+<p>A huge improvement! Thanks internet!</p>
+<p>And we didn't even need to look at the generated assembly.</p>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>Elm: counting groups of items in a list</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+  <meta property="og:image" content="https://wapl.es/images/elm-tag-header.jpg">
+  <meta name="twitter:image" content="https://wapl.es/images/elm-tag-header.jpg" />
+  <meta property="og:image:width" content="2560">
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;elm&#x2F;2017&#x2F;12&#x2F;12&#x2F;elm-counting-occurrences.html&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header post__header--image">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+<div class="post__feature-image">
+  <picture>
+    
+    
+    
+    
+    
+    
+    <source media="(min-width: 2560px)" srcset="images&#x2F;elm-tag-header.jpg" />
+    <source
+      media="(min-width: 1920px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.a306389d5bc0fd62.jpg, images&#x2F;elm-tag-header.jpg 2x"
+    />
+    <source
+      media="(min-width: 1600px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.ce658d9d552e0d31.jpg, images&#x2F;elm-tag-header.jpg 2x"
+    />
+    <source
+      media="(min-width: 1280px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.82fd80f27246a46f.jpg, images&#x2F;elm-tag-header.jpg 2x"
+    />
+    <source
+      media="(min-width: 960px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.1f77aad0f6d5e26e.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.a306389d5bc0fd62.jpg 2x"
+    />
+    <source
+      media="(min-width: 800px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.31b9e2ee8ee41592.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.ce658d9d552e0d31.jpg 2x"
+    />
+    <source
+      media="(max-width: 640px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.4c197edb029012af.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.82fd80f27246a46f.jpg 2x"
+    />
+    <img
+      class="post__feature-image__inner"
+      src="images&#x2F;elm-tag-header.jpg"
+      alt="Blog post header image decoration."
+    />
+  </picture>
+</div>
+
+
+<article role="main" class="post image">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>Elm: counting groups of items in a list</h1>
+
+      <time datetime="2017-12-12">
+        <a href="https://wapl.es/elm/2017/12/12/elm-counting-occurrences.html/">December 12, 2017</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p>So. Elm. It's been an interesting experience for me, coming from a procedural language (JS)
+background. The learning curve is steep, but the functional nature of Elm, along with its compile
+time type safety really pays off. One of the (few!) problems I've found as a newcomer however, is
+that the documentation can be really frustrating sometimes. In this post, I hope to remedy that
+slightly by providing a newcomer's perspective on a little bit of data processing in Elm.</p>
+<span id="continue-reading"></span>
+<p><em>Header photo by <a href="https://unsplash.com/photos/ndP5Oj0sSps">@rawpixel</a></em></p>
+<p>Let's say I've collected a list of tags from questions on StackOverflow. I want to create a unique
+dictionary of tags and the number of times they occur in the dataset. To do that, we'll need to
+process the data from a flat list into a <code>Dict</code> of key/value pairs. The key will be the name of the
+tag, and the value will be the number of occurrences in the dataset.</p>
+<h2 id="starting-at-the-beginning-whoa"><a class="zola-anchor" href="#starting-at-the-beginning-whoa" aria-label="Anchor link for: starting-at-the-beginning-whoa">Starting at the beginning (whoa)</a></h2>
+<p>First, let's just render this <code>List</code> of tags:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">tagList <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    [ <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>elm<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>rust<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>elm<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>rust<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>typescript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">    ]
+</span></code></pre>
+<p>Cool. We'll store that list in a <code>Model</code> to pass to some rendering layer:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell"><span class="z-meta z-import z-haskell"><span class="z-keyword z-other z-haskell">import</span> <span class="z-support z-other z-module z-haskell">List</span></span>
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell"><span class="z-keyword z-other z-haskell">type</span> alias <span class="z-constant z-other z-haskell">Model</span> <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    { tagList <span class="z-keyword z-operator z-haskell">:</span> <span class="z-constant z-other z-haskell">List</span> <span class="z-constant z-other z-haskell">String</span>
+</span><span class="z-source z-haskell">    }
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell">init <span class="z-keyword z-operator z-haskell">:</span> ( <span class="z-constant z-other z-haskell">Model</span><span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-constant z-other z-haskell">Cmd</span> <span class="z-constant z-other z-haskell">Msg</span> )
+</span><span class="z-source z-haskell">init <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    ( { tagList <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">            [ <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>elm<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>rust<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>elm<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>rust<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>typescript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            ]
+</span><span class="z-source z-haskell">      }
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-constant z-other z-haskell">Cmd</span><span class="z-keyword z-operator z-haskell">.</span>none
+</span><span class="z-source z-haskell">    )
+</span></code></pre>
+<p>This will store the list of tags under <code>model.tagList</code>, which we can use in the view to render a
+(not so) pretty list:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">view <span class="z-keyword z-operator z-haskell">:</span> <span class="z-constant z-other z-haskell">Model</span> <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">Html</span> msg
+</span><span class="z-source z-haskell">view model <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    div <span class="z-constant z-language z-empty-list z-haskell">[]</span>
+</span><span class="z-source z-haskell">        [ section <span class="z-constant z-language z-empty-list z-haskell">[]</span>
+</span><span class="z-source z-haskell">            [ text <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>All the tags<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> ul <span class="z-constant z-language z-empty-list z-haskell">[]</span> (<span class="z-constant z-other z-haskell">List</span><span class="z-keyword z-operator z-haskell">.</span>map (<span class="z-keyword z-operator z-haskell">\</span>tag <span class="z-keyword z-operator z-haskell">-&gt;</span> li <span class="z-constant z-language z-empty-list z-haskell">[]</span> [ text tag ]) model<span class="z-keyword z-operator z-haskell">.</span>tagList)
+</span><span class="z-source z-haskell">            ]
+</span><span class="z-source z-haskell">        ]
+</span></code></pre>
+<p>The entire program so far is shown below. It's a pretty standard Elm boilerplate app. The most
+interesting bits are described above; how we store the list, and how we present it.</p>
+<iframe src="https://ellie-app.com/embed/9vWnYkPqxa1/2" style="width:100%; height:400px; border:0; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
+<p>Great, we've got a working Elm program. Next, I'll go into a bit of data processing to turn this
+flat, boring list into a <code>Dict</code> of tags and counts.</p>
+<h2 id="dicts"><a class="zola-anchor" href="#dicts" aria-label="Anchor link for: dicts">Dicts</a></h2>
+<p>As a first step towards grouping the data, we need to start using a <code>Dict</code>. Dicts contain unique
+keys with an associated value. They're the same as <code>Map()</code>s in JavaScript. As a first step we'll
+just render a list of unique tags to keep things understandable. The counts will come later.</p>
+<p>First, the model type needs to change to use an Elm <code>Dict</code> for our list of tags:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell"><span class="z-meta z-import z-haskell"><span class="z-keyword z-other z-haskell">import</span> <span class="z-support z-other z-module z-haskell">Dict</span> exposing <span class="z-meta z-declaration z-exports z-haskell">(..)</span></span>
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell"><span class="z-keyword z-other z-haskell">type</span> alias <span class="z-constant z-other z-haskell">Model</span> <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    { tagList <span class="z-keyword z-operator z-haskell">:</span> <span class="z-constant z-other z-haskell">Dict</span> <span class="z-constant z-other z-haskell">String</span> <span class="z-constant z-other z-haskell">Int</span>
+</span><span class="z-source z-haskell">    }
+</span></code></pre>
+<p><code>tagList</code> is now of type <code>Dict String Int</code>, which is a map of <code>String</code> keys to <code>Int</code> values. This
+will hold the <code>tag -&gt; count</code> mapping.</p>
+<p>We need to write a function to transform the list of tags when the model is initialised, so let's
+write that:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell"><span class="z-meta z-import z-haskell"><span class="z-keyword z-other z-haskell">import</span> <span class="z-support z-other z-module z-haskell">Dict</span> exposing <span class="z-meta z-declaration z-exports z-haskell">(..)</span></span>
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell"><span class="z-comment z-line z-double-dash z-haskell"><span class="z-punctuation z-definition z-comment z-haskell">--</span> ...
+</span></span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell">groupTags <span class="z-keyword z-operator z-haskell">:</span> <span class="z-constant z-other z-haskell">List</span> <span class="z-constant z-other z-haskell">String</span> <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">Dict</span> <span class="z-constant z-other z-haskell">String</span> <span class="z-constant z-other z-haskell">Int</span>
+</span><span class="z-source z-haskell">groupTags tags <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    tags
+</span><span class="z-source z-haskell">        <span class="z-keyword z-operator z-haskell">|&gt;</span> <span class="z-constant z-other z-haskell">List</span><span class="z-keyword z-operator z-haskell">.</span>foldr (<span class="z-keyword z-operator z-haskell">\</span>tag <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>insert tag <span class="z-constant z-numeric z-integer z-decimal z-haskell">0</span>) <span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>empty
+</span></code></pre>
+<p>This function will <code>foldr</code> (<code>Array.reduce()</code> in JavaScript parlance) the tag list and create a
+<code>Dict</code>. The keys will be the <em>unique</em> list of tags from the input, while the values at the moment
+will all be <code>0</code> for simplicity's sake.</p>
+<p>The <code>|&gt;</code> is some syntactic sugar. The above is the same as this:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">groupTags <span class="z-keyword z-operator z-haskell">:</span> <span class="z-constant z-other z-haskell">List</span> <span class="z-constant z-other z-haskell">String</span> <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">Dict</span> <span class="z-constant z-other z-haskell">String</span> <span class="z-constant z-other z-haskell">Int</span>
+</span><span class="z-source z-haskell">groupTags tags <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    <span class="z-constant z-other z-haskell">List</span><span class="z-keyword z-operator z-haskell">.</span>foldr (<span class="z-keyword z-operator z-haskell">\</span>tag <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>insert tag <span class="z-constant z-numeric z-integer z-decimal z-haskell">0</span>) <span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>empty tags
+</span></code></pre>
+<p>The <code>|&gt;</code> operator "fills in" the last argument of <code>List.foldr</code> function with <code>tags</code>.</p>
+<blockquote>
+<p>A quick aside: in
+<a href="http://package.elm-lang.org/packages/elm-lang/core/latest/List#foldr">the docs for <code>foldr</code></a>
+you'll see a signature that looks like this:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">foldr <span class="z-keyword z-operator z-haskell">:</span> (a <span class="z-keyword z-operator z-haskell">-&gt;</span> b <span class="z-keyword z-operator z-haskell">-&gt;</span> b) <span class="z-keyword z-operator z-haskell">-&gt;</span> b <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">List</span> a <span class="z-keyword z-operator z-haskell">-&gt;</span> b
+</span></code></pre>
+<p>This is frustratingly obtuse for a beginner (or at least was for me), so let's rename the
+variables to make it a bit clearer:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">foldr <span class="z-keyword z-operator z-haskell">:</span> (item <span class="z-keyword z-operator z-haskell">-&gt;</span> carry <span class="z-keyword z-operator z-haskell">-&gt;</span> carry result) <span class="z-keyword z-operator z-haskell">-&gt;</span> initialValue <span class="z-keyword z-operator z-haskell">-&gt;</span> inputList <span class="z-keyword z-operator z-haskell">-&gt;</span> returnType
+</span></code></pre>
+<p>The example in the docs is <code>foldr (+) 0 [1,2,3] == 6</code>. I found this pretty confusing, although
+it's wonderfully concise. Rewritten in longer form, it's a bit more understandable:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">foldr (<span class="z-keyword z-operator z-haskell">\</span>item carry <span class="z-keyword z-operator z-haskell">-&gt;</span> carry <span class="z-keyword z-operator z-haskell">+</span> item) <span class="z-constant z-numeric z-integer z-decimal z-haskell">0</span> [<span class="z-constant z-numeric z-integer z-decimal z-haskell">1</span><span class="z-punctuation z-separator z-comma z-haskell">,</span><span class="z-constant z-numeric z-integer z-decimal z-haskell">2</span><span class="z-punctuation z-separator z-comma z-haskell">,</span><span class="z-constant z-numeric z-integer z-decimal z-haskell">3</span>] <span class="z-keyword z-operator z-haskell">==</span> <span class="z-constant z-numeric z-integer z-decimal z-haskell">6</span>
+</span></code></pre>
+<p>Hope that helps!</p>
+</blockquote>
+<p>Anyway, now we can initialise the model:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">init <span class="z-keyword z-operator z-haskell">:</span> ( <span class="z-constant z-other z-haskell">Model</span><span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-constant z-other z-haskell">Cmd</span> <span class="z-constant z-other z-haskell">Msg</span> )
+</span><span class="z-source z-haskell">init <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    ( { tagList <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">            (groupTags
+</span><span class="z-source z-haskell">                [ <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>elm<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">                <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">                <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">                <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>rust<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">                <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>elm<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">                <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>rust<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">                <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">                <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>typescript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">                ]
+</span><span class="z-source z-haskell">            )
+</span><span class="z-source z-haskell">      }
+</span><span class="z-source z-haskell">    <span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-constant z-other z-haskell">Cmd</span><span class="z-keyword z-operator z-haskell">.</span>none
+</span><span class="z-source z-haskell">    )
+</span></code></pre>
+<p>Finally, we can change our render method slightly:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">view <span class="z-keyword z-operator z-haskell">:</span> <span class="z-constant z-other z-haskell">Model</span> <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">Html</span> msg
+</span><span class="z-source z-haskell">view model <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    div <span class="z-constant z-language z-empty-list z-haskell">[]</span>
+</span><span class="z-source z-haskell">        [ section <span class="z-constant z-language z-empty-list z-haskell">[]</span>
+</span><span class="z-source z-haskell">            [ text <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>My tag list<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> ul <span class="z-constant z-language z-empty-list z-haskell">[]</span>
+</span><span class="z-source z-haskell">                (model<span class="z-keyword z-operator z-haskell">.</span>tagList
+</span><span class="z-source z-haskell">                    <span class="z-keyword z-operator z-haskell">|&gt;</span> <span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>keys
+</span><span class="z-source z-haskell">                    <span class="z-keyword z-operator z-haskell">|&gt;</span> <span class="z-constant z-other z-haskell">List</span><span class="z-keyword z-operator z-haskell">.</span>map (<span class="z-keyword z-operator z-haskell">\</span>tag <span class="z-keyword z-operator z-haskell">-&gt;</span> li <span class="z-constant z-language z-empty-list z-haskell">[]</span> [ text tag ])
+</span><span class="z-source z-haskell">                )
+</span><span class="z-source z-haskell">            ]
+</span><span class="z-source z-haskell">        ]
+</span></code></pre>
+<p>Again, the <code>|&gt;</code> could be written like this:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">(<span class="z-constant z-other z-haskell">List</span><span class="z-keyword z-operator z-haskell">.</span>map (<span class="z-keyword z-operator z-haskell">\</span>tag <span class="z-keyword z-operator z-haskell">-&gt;</span> li <span class="z-constant z-language z-empty-list z-haskell">[]</span> [ text tag ] (<span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>keys model<span class="z-keyword z-operator z-haskell">.</span>tagList)))
+</span></code></pre>
+<p>You can see that using the
+<a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Basics">pipeline operator</a> makes things
+much easier to read. Here's a demo:</p>
+<iframe src="https://ellie-app.com/embed/4HDDt9jpTa1/0" style="width:100%; height:400px; border:0; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
+<h1 id="counting-keys"><a class="zola-anchor" href="#counting-keys" aria-label="Anchor link for: counting-keys">Counting keys</a></h1>
+<p>This Dict isn't very useful without some actual data in its keys. To fix that, we need to update
+<code>groupTags</code> to actually count the number of occurrences instead of just setting each value to <code>0</code>.
+Here's what it looks like:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">groupTags <span class="z-keyword z-operator z-haskell">:</span> <span class="z-constant z-other z-haskell">List</span> <span class="z-constant z-other z-haskell">String</span> <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">Dict</span> <span class="z-constant z-other z-haskell">String</span> <span class="z-constant z-other z-haskell">Int</span>
+</span><span class="z-source z-haskell">groupTags tags <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    tags
+</span><span class="z-source z-haskell">        <span class="z-keyword z-operator z-haskell">|&gt;</span> <span class="z-constant z-other z-haskell">List</span><span class="z-keyword z-operator z-haskell">.</span>foldr
+</span><span class="z-source z-haskell">            (<span class="z-keyword z-operator z-haskell">\</span>tag carry <span class="z-keyword z-operator z-haskell">-&gt;</span>
+</span><span class="z-source z-haskell">                <span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>update
+</span><span class="z-source z-haskell">                    tag
+</span><span class="z-source z-haskell">                    (<span class="z-keyword z-operator z-haskell">\</span>existingCount <span class="z-keyword z-operator z-haskell">-&gt;</span>
+</span><span class="z-source z-haskell">                        <span class="z-keyword z-other z-haskell">case</span> existingCount <span class="z-keyword z-other z-haskell">of</span>
+</span><span class="z-source z-haskell">                            <span class="z-constant z-other z-haskell">Just</span> existingCount <span class="z-keyword z-operator z-haskell">-&gt;</span>
+</span><span class="z-source z-haskell">                                <span class="z-constant z-other z-haskell">Just</span> (existingCount <span class="z-keyword z-operator z-haskell">+</span> <span class="z-constant z-numeric z-integer z-decimal z-haskell">1</span>)
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell">                            <span class="z-constant z-other z-haskell">Nothing</span> <span class="z-keyword z-operator z-haskell">-&gt;</span>
+</span><span class="z-source z-haskell">                                <span class="z-constant z-other z-haskell">Just</span> <span class="z-constant z-numeric z-integer z-decimal z-haskell">1</span>
+</span><span class="z-source z-haskell">                    )
+</span><span class="z-source z-haskell">                    carry
+</span><span class="z-source z-haskell">            )
+</span><span class="z-source z-haskell">            <span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>empty
+</span></code></pre>
+<p>Instead of overwriting existing keys with <code>Dict.insert</code> as before, we're now using <code>Dict.update</code>
+which takes three arguments:</p>
+<ul>
+<li><code>tag</code> – they Dict key to search for</li>
+<li><code>updateFunc</code> – how to update the Dict</li>
+<li><code>dictToUpdate</code> – the starting <code>Dict</code> we want to update</li>
+</ul>
+<p>It's important to note that <code>Dict.update</code> will <em>upsert</em> a key; if it doesn't exist, it'll get
+created. <code>Dict.update</code> returns a whole new <code>Dict</code>, with the updated/inserted key/value pair. This is
+where the second argument (<code>updateFunc</code>) comes into play. It is supplied with one argument,
+<code>existingCount</code>, which is a <code>Maybe</code> type. If there's no existing key, this will be <code>Nothing</code>,
+otherwise you'll get <code>Just &lt;dict value type&gt;</code>. In our case, this would be <code>Just Int</code>. The <code>case</code>
+statement will add one to an existing value, or insert a new key into the dict with a starting value
+of <code>1</code>.</p>
+<p>The last thing we need to do is update the view to render tag counts:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell"><span class="z-meta z-import z-haskell"><span class="z-keyword z-other z-haskell">import</span> <span class="z-support z-other z-module z-haskell">Tuple</span></span>
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell"><span class="z-comment z-line z-double-dash z-haskell"><span class="z-punctuation z-definition z-comment z-haskell">--</span> ...
+</span></span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell">view <span class="z-keyword z-operator z-haskell">:</span> <span class="z-constant z-other z-haskell">Model</span> <span class="z-keyword z-operator z-haskell">-&gt;</span> <span class="z-constant z-other z-haskell">Html</span> msg
+</span><span class="z-source z-haskell">view model <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">    div <span class="z-constant z-language z-empty-list z-haskell">[]</span>
+</span><span class="z-source z-haskell">        [ section <span class="z-constant z-language z-empty-list z-haskell">[]</span>
+</span><span class="z-source z-haskell">            [ text <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>My tag list<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span>
+</span><span class="z-source z-haskell">            <span class="z-punctuation z-separator z-comma z-haskell">,</span> ul <span class="z-constant z-language z-empty-list z-haskell">[]</span>
+</span><span class="z-source z-haskell">                (model<span class="z-keyword z-operator z-haskell">.</span>tagList
+</span><span class="z-source z-haskell">                    <span class="z-keyword z-operator z-haskell">|&gt;</span> <span class="z-constant z-other z-haskell">Dict</span><span class="z-keyword z-operator z-haskell">.</span>toList
+</span><span class="z-source z-haskell">                    <span class="z-keyword z-operator z-haskell">|&gt;</span> <span class="z-constant z-other z-haskell">List</span><span class="z-keyword z-operator z-haskell">.</span>map
+</span><span class="z-source z-haskell">                        (<span class="z-keyword z-operator z-haskell">\</span>pair <span class="z-keyword z-operator z-haskell">-&gt;</span>
+</span><span class="z-source z-haskell">                            <span class="z-keyword z-other z-haskell">let</span>
+</span><span class="z-source z-haskell">                                tag <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">                                    <span class="z-constant z-other z-haskell">Tuple</span><span class="z-keyword z-operator z-haskell">.</span>first pair
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell">                                count <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">                                    toString (<span class="z-constant z-other z-haskell">Tuple</span><span class="z-keyword z-operator z-haskell">.</span>second pair)
+</span><span class="z-source z-haskell">                            <span class="z-keyword z-other z-haskell">in</span>
+</span><span class="z-source z-haskell">                                li <span class="z-constant z-language z-empty-list z-haskell">[]</span> [ text (tag <span class="z-keyword z-operator z-haskell">++</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>: <span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span> <span class="z-keyword z-operator z-haskell">++</span> count) ]
+</span><span class="z-source z-haskell">                        )
+</span><span class="z-source z-haskell">                )
+</span><span class="z-source z-haskell">            ]
+</span><span class="z-source z-haskell">        ]
+</span></code></pre>
+<p>Unfortunately this is a bit involved, because <code>Dict.map</code> takes a <code>Dict</code>, therefore must return a
+<code>Dict</code>. We want to return a <code>List</code> of <code>&lt;li&gt;</code> elements, so we can't directly use <code>Dict.map</code>. Argh.</p>
+<p>So first we turn the Dict into a list of tuples with
+<a href="http://package.elm-lang.org/packages/elm-lang/core/latest/Dict#toList"><code>Dict.tolist</code></a>. The data now
+looks like this:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell">[ ( <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>elm<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span><span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-constant z-numeric z-integer z-decimal z-haskell">2</span> )
+</span><span class="z-source z-haskell"><span class="z-punctuation z-separator z-comma z-haskell">,</span> ( <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>javascript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span><span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-constant z-numeric z-integer z-decimal z-haskell">3</span> )
+</span><span class="z-source z-haskell"><span class="z-punctuation z-separator z-comma z-haskell">,</span> ( <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>rust<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span><span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-constant z-numeric z-integer z-decimal z-haskell">2</span> )
+</span><span class="z-source z-haskell"><span class="z-punctuation z-separator z-comma z-haskell">,</span> ( <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>typescript<span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span><span class="z-punctuation z-separator z-comma z-haskell">,</span> <span class="z-constant z-numeric z-integer z-decimal z-haskell">1</span> )
+</span><span class="z-source z-haskell">]
+</span></code></pre>
+<p>Cool, now it's in a list so we can turn that into a bunch of <code>&lt;li&gt;</code> elements with <code>List.map</code>:</p>
+<pre data-lang="haskell" class="language-haskell z-code"><code class="language-haskell" data-lang="haskell"><span class="z-source z-haskell"><span class="z-constant z-other z-haskell">List</span><span class="z-keyword z-operator z-haskell">.</span>map
+</span><span class="z-source z-haskell">    (<span class="z-keyword z-operator z-haskell">\</span>pair <span class="z-keyword z-operator z-haskell">-&gt;</span>
+</span><span class="z-source z-haskell">        <span class="z-keyword z-other z-haskell">let</span>
+</span><span class="z-source z-haskell">            tag <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">                <span class="z-constant z-other z-haskell">Tuple</span><span class="z-keyword z-operator z-haskell">.</span>first pair
+</span><span class="z-source z-haskell">
+</span><span class="z-source z-haskell">            count <span class="z-keyword z-operator z-haskell">=</span>
+</span><span class="z-source z-haskell">                toString (<span class="z-constant z-other z-haskell">Tuple</span><span class="z-keyword z-operator z-haskell">.</span>second pair)
+</span><span class="z-source z-haskell">        <span class="z-keyword z-other z-haskell">in</span>
+</span><span class="z-source z-haskell">            li <span class="z-constant z-language z-empty-list z-haskell">[]</span> [ text (tag <span class="z-keyword z-operator z-haskell">++</span> <span class="z-string z-quoted z-double z-haskell"><span class="z-punctuation z-definition z-string z-begin z-haskell">&quot;</span>: <span class="z-punctuation z-definition z-string z-end z-haskell">&quot;</span></span> <span class="z-keyword z-operator z-haskell">++</span> count) ]
+</span><span class="z-source z-haskell">    )
+</span></code></pre>
+<p>Because this code is looping through a list of tuples, we need to use <code>Tuple.first</code> and
+<code>Tuple.second</code> to extract the tag and count respectively. The last bit is to call <code>toString</code> on the
+count to turn the <code>Int</code> into a <code>String</code>, ready for outputting in HTML.</p>
+<p>Now we've got something that looks like this:</p>
+<iframe src="https://ellie-app.com/embed/shmTqNRBKa1/0" style="width:100%; height:400px; border:0; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
+<p>And we're done! Well done if you made it down here.</p>
+<h2 id="wrapping-up"><a class="zola-anchor" href="#wrapping-up" aria-label="Anchor link for: wrapping-up">Wrapping up</a></h2>
+<p>Hopefully I've helped you understand a bit about how data processing (particularly with <code>Dict</code>s)
+works in Elm with some practical code. During my Elm learning experience, I found there was a gap
+between absolute beginner tutorials and more advanced stuff. Perhaps that's my procedural background
+talking, or perhaps I just need to be smarter. Who knows, but either way the aim of this article was
+to help bridge this gap. Let me know <a href="https://twitter.com/jam_waffles">on Twitter</a> if there's
+something I can do to improve this article, and as always, thanks for read'n.</p>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>

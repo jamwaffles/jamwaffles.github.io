@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>James Waples</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+
+<div class="page-content">
+  <div class="wrapper">
+    <div class="list">
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/ethercrab-0-6/">EtherCrab 0.6 Released</a></h1>
+
+            <time datetime="2025-03-29">
+              <a href="https://wapl.es/ethercrab-0-6/">March 29, 2025</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p><a href="https://crates.io/crates/ethercrab/0.6.0">EtherCrab 0.6.0</a>
+(<a href="https://lib.rs/crates/ethercrab">lib.rs</a>) is out as the next release of this pure Rust EtherCAT
+MainDevice! I'll go over some of the bigger features in this post, and for the full changelog you
+can check it out <a href="https://github.com/ethercrab-rs/ethercrab/blob/master/CHANGELOG.md">here</a>. The
+MSRV has been bumped from 1.77 to 1.81.</p>
+                
+              </p>
+              <a href="https://wapl.es/ethercrab-0-6/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/ethercat-sii-eeprom-checksum/">Computing the EtherCAT SubDevice SII/EEPROM checksum</a></h1>
+
+            <time datetime="2025-02-08">
+              <a href="https://wapl.es/ethercat-sii-eeprom-checksum/">February 8, 2025</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                
+                This is an answer to
+this StackExchange question which I'm posting
+here instead as I refuse to add any more of my time or energy to that website.
+I'm using Rust and the crc crate to calculate the checksum of the
+first 14 bytes of an EtherCAT SubDevice EEPROM. I first tried CRC-8/…
+              </p>
+              <a href="https://wapl.es/ethercat-sii-eeprom-checksum/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/ethercrab-0-5/">EtherCrab 0.5: Not Much In A Name</a></h1>
+
+            <time datetime="2024-07-28">
+              <a href="https://wapl.es/ethercrab-0-5/">July 28, 2024</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I've just released <a href="https://crates.io/crates/ethercrab/0.5.0">EtherCrab 0.5.0</a>
+(<a href="https://lib.rs/crates/ethercrab">lib.rs</a>), the pure Rust EtherCAT MainDevice. This is a smaller
+release than usual, with added support for FreeBSD/NetBSD and a bunch of renamed items in the public
+API. The full changelog can be found
+<a href="https://github.com/ethercrab-rs/ethercrab/blob/master/CHANGELOG.md">here</a>.</p>
+                
+              </p>
+              <a href="https://wapl.es/ethercrab-0-5/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/esp32-tlc5940-rmt/">Rust: Running a TLC5940 with an ESP32 using the RMT peripheral</a></h1>
+
+            <time datetime="2024-06-23">
+              <a href="https://wapl.es/esp32-tlc5940-rmt/">June 23, 2024</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>The <a href="https://www.ti.com/product/TLC5940">TLC5940</a> is a "16-channel LED driver w/EEprom dot
+correction &amp; grayscale PWM control" IC, used for driving up to 16 constant current outputs
+(typically LEDs) using a number of control lines. It's more complex to drive than the
+<a href="https://www.ti.com/product/TLC5947">TLC5947</a> which uses a simple I2C interface, but leaves more
+control to the application developer by letting them set the LED PWM frequency, among other things.</p>
+<p>The TLC5940 uses SPI to transfer brightness data, but also requires an external PWM clock, as well
+as a periodic pulse on the BLANK pin to ensure the outputs remain enabled. This is annoying to do in
+software, but by abusing the RMT peripheral in an ESP32, we can let the microcontroller hardware do
+all of the heavy lifting for us.</p>
+                
+              </p>
+              <a href="https://wapl.es/esp32-tlc5940-rmt/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/ethercrab-0-4-io-uring-derives-ethercat-distributed-clocks/">EtherCrab 0.4: Distributed Clocks, <code>io_uring</code>, Derives, Oh My</a></h1>
+
+            <time datetime="2024-03-31">
+              <a href="https://wapl.es/ethercrab-0-4-io-uring-derives-ethercat-distributed-clocks/">March 31, 2024</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p><a href="https://crates.io/crates/ethercrab/0.4.0">EtherCrab 0.4.0</a>
+(<a href="https://lib.rs/crates/ethercrab">lib.rs</a>), the pure Rust EtherCAT MainDevice is out! I've added a
+lot of features and fixes to this release, including Distributed Clocks support, an <code>io_uring</code>-based
+network driver for better performance, and a brand new set of derive-able traits to make getting
+data into and out of your EtherCAT network easier than ever! The full changelog including breaking
+changes can be found <a href="https://github.com/ethercrab-rs/ethercrab/blob/master/CHANGELOG.md">here</a>, but
+for the rest of this article let's dig a little deeper into some of the headline features.</p>
+                
+              </p>
+              <a href="https://wapl.es/ethercrab-0-4-io-uring-derives-ethercat-distributed-clocks/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/electriq-iqool-aircon-esphome-home-assistant/">Controlling an Electriq iQool AC with ESPHome and Home Assistant</a></h1>
+
+            <time datetime="2024-03-15">
+              <a href="https://wapl.es/electriq-iqool-aircon-esphome-home-assistant/">March 15, 2024</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I recently got a pretty neat all-in-one air conditioner to heat my frigid Scottish garage in the
+winter. CNC machines don't like the cold, and neither do I! My unit is an "electriQ iQool 12000 BTU
+Wall Mounted Air Conditioner with Heating Function", product code <code>IQOOL-SMART15HP</code>. I quite like
+it, but when I got it I <em>really</em> wanted to be able to shout at Siri to turn the garage heat on so
+it'd be warmer by the time I went out. And I succeeded in this mission! By flashing ESPHome to the
+integrated Tuya TYJW2S-5V-YA module, I can now control this AC perfectly from Home Assistant and, by
+extension, Apple's Home app.</p>
+                
+              </p>
+              <a href="https://wapl.es/electriq-iqool-aircon-esphome-home-assistant/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/linuxcnc-simulator-linux-mint-21-3/">Building a LinuxCNC 2.9 simulator on Linux Mint 21.3</a></h1>
+
+            <time datetime="2024-01-10">
+              <a href="https://wapl.es/linuxcnc-simulator-linux-mint-21-3/">January 10, 2024</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>An update on my <a href="https://wapl.es/cnc/2020/01/25/linuxcnc-simulator-build-linux-mint.html/">previous guide for LM 19.3</a> on
+how to set up a LinuxCNC simulator on Linux Mint 21.3 Virginia. The LinuxCNC simulator is useful for
+testing/debugging drivers, gcode parsing and other non-realtime features without having to crawl
+around under your machine's actual control.</p>
+                
+              </p>
+              <a href="https://wapl.es/linuxcnc-simulator-linux-mint-21-3/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/a-collection-of-rust-optimisation-results/">A study of Rust micro-optimisations</a></h1>
+
+            <time datetime="2024-01-06">
+              <a href="https://wapl.es/a-collection-of-rust-optimisation-results/">January 6, 2024</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                
+                In working on ethercrab I found myself down the rabbit hole
+of trying to reduce binary size, in this case for the thumbv7m-none-eabi architecture used in
+embedded. This post is a collection of examples of attempted code size reductions by refactoring
+sometimes the most tiny of fu…
+              </p>
+              <a href="https://wapl.es/a-collection-of-rust-optimisation-results/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/announcing-ethercrab-the-rust-ethercat-controller/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;ethercat.70eae8f45af13ac0.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;ethercat.59c398f2b7809742.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;ethercat.b8aa17e961e8946d.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;ethercat.527f3010f44423c9.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/ethercat.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/announcing-ethercrab-the-rust-ethercat-controller/">Announcing EtherCrab: The 100% Rust EtherCAT controller</a></h1>
+
+            <time datetime="2023-10-12">
+              <a href="https://wapl.es/announcing-ethercrab-the-rust-ethercat-controller/">October 12, 2023</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>The EtherCrab story started with my dream of writing a motion controller in Rust to provide a modern
+alternative to the venerable <a href="https://github.com/LinuxCNC/linuxcnc/">LinuxCNC project</a>. But motion
+controllers are hard, even with the right books, so I did what any good programmer would do:
+procrastinate by implementing an entire industrial fieldbus protocol instead! <strong>Say hello to
+<a href="https://crates.io/crates/ethercrab">EtherCrab</a> - a pure Rust EtherCAT controller that supports
+Linux, macOS, Windows and even <code>no_std</code>.</strong></p>
+<p><strong>Heads up! EtherCrab 0.4.0 was released in March 2024 with some breaking changes. Why not head over
+to <a href="https://wapl.es/ethercrab-0-4-io-uring-derives-ethercat-distributed-clocks/">the announcement post</a> to see what's new?</strong></p>
+                
+              </p>
+              <a href="https://wapl.es/announcing-ethercrab-the-rust-ethercat-controller/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/morefine-s500-fan-mod/">Reducing fan noise on the Morefine S500+</a></h1>
+
+            <time datetime="2023-08-11">
+              <a href="https://wapl.es/morefine-s500-fan-mod/">August 11, 2023</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I got a Ryzen 5625U Morefine S500+ Mini PC
+<a href="https://www.aliexpress.com/item/1005004673937974.html">from Aliexpress</a> for
+<a href="https://github.com/ethercrab-rs/ethercrab">EtherCrab</a> development recently. It's a lovely little
+machine for the price and about 7x faster than my previous dev box. There's one very annoying issue
+though: the noisy little fan installed on the CPU heatsink. Let's fix that.</p>
+                
+              </p>
+              <a href="https://wapl.es/morefine-s500-fan-mod/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2022/07/03/const-builder-pattern.html/">A const builder pattern in Rust</a></h1>
+
+            <time datetime="2022-07-03">
+              <a href="https://wapl.es/rust/2022/07/03/const-builder-pattern.html/">July 3, 2022</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>During the creation of <a href="https://github.com/ethercrab-rs/ethercrab">EtherCrab</a>, a pure-Rust EtherCAT
+master, one of the core structs in the crate started growing quite a few const generic parameters.
+Here's a reduced example of what I'm talking about:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-storage z-type z-struct z-rust">struct</span> </span><span class="z-meta z-struct z-rust"><span class="z-meta z-generic z-rust"><span class="z-entity z-name z-struct z-rust">Client</span><span class="z-meta z-generic z-rust"><span class="z-punctuation z-definition z-generic z-begin z-rust">&lt;</span><span class="z-storage z-modifier z-rust">const</span> N<span class="z-punctuation z-separator z-rust">:</span> <span class="z-storage z-type z-rust">usize</span>, <span class="z-storage z-modifier z-rust">const</span> D<span class="z-punctuation z-separator z-rust">:</span> <span class="z-storage z-type z-rust">usize</span>, <span class="z-storage z-modifier z-rust">const</span> TIMEOUT<span class="z-punctuation z-separator z-rust">:</span> <span class="z-storage z-type z-rust">u64</span><span class="z-punctuation z-definition z-generic z-end z-rust">&gt;</span></span></span></span><span class="z-meta z-struct z-rust"> </span><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">foo</span><span class="z-punctuation z-separator z-type z-rust">:</span> [<span class="z-storage z-type z-rust">u8</span>; N],
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">bar</span><span class="z-punctuation z-separator z-type z-rust">:</span> [<span class="z-storage z-type z-rust">u8</span>; D],
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">idx</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">u8</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+                
+              </p>
+              <a href="https://wapl.es/rust/2022/07/03/const-builder-pattern.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2021/07/24/dont-forget-to-change-pin-mode.html/">Weird high frequency behaviour on your STM32 pins? Change the mode!</a></h1>
+
+            <time datetime="2021-07-24">
+              <a href="https://wapl.es/rust/2021/07/24/dont-forget-to-change-pin-mode.html/">July 24, 2021</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>A quick PSA in case you're at a loss as to why you're seeing strange behaviour from your STM32 MCU
+pins when running higher frequencies through them like I was.</p>
+<p>After successfully getting MCO (Microcontroller Clock Output) working on the only STM32L031 I could
+find in the universe, I was seeing some strange behaviour when attempting to push the output
+frequency above 2MHz.</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2021/07/24/dont-forget-to-change-pin-mode.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2020/07/26/perf-addendum.html/">Clockwise Triangles Performance: Addendum</a></h1>
+
+            <time datetime="2020-07-26">
+              <a href="https://wapl.es/rust/2020/07/26/perf-addendum.html/">July 26, 2020</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>A quick update on my <a href="/rust/2020/07/25/optimising-with-cmp-and-ordering.html">previous article</a>.</p>
+<p><a href="https://twitter.com/redbluemonkey/status/1287186446986514432">Nicholas Wilcox (@redbluemonkey) on Twitter</a>
+made a very good point:</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2020/07/26/perf-addendum.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/rust/2020/07/25/optimising-with-cmp-and-ordering.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;triangle-sort.773bad9fbb176430.png, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;triangle-sort.22f68a22cf7979c6.png 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;triangle-sort.ad173f996f16bdd3.png, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;triangle-sort.d3c63e6d71d04cdd.png 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/triangle-sort.png" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2020/07/25/optimising-with-cmp-and-ordering.html/">Optimising Rust: Clockwise Triangles</a></h1>
+
+            <time datetime="2020-07-25">
+              <a href="https://wapl.es/rust/2020/07/25/optimising-with-cmp-and-ordering.html/">July 25, 2020</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Welcome to another pointless tangent into the exciting world of line joints in
+<a href="https://crates.io/crates/embedded-graphics">embedded-graphics</a>! <code>embedded-graphics</code> is an integer
+only, iterator based no-std graphics library for environments with low resource availability. This
+time, we'll be looking at some not-so-great optimisations made to a point sorting function.</p>
+<p><strong>Update: A kind Twitter user pointed out a more optimised solution for triangles which you can find
+<a href="/rust/2020/07/26/perf-addendum.html">here</a>.</strong></p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2020/07/25/optimising-with-cmp-and-ordering.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/embedded-graphics/2020/07/09/integer-graphics-line-intersection.html/">Integer Graphics: Line Intersection</a></h1>
+
+            <time datetime="2020-07-09">
+              <a href="https://wapl.es/rust/embedded-graphics/2020/07/09/integer-graphics-line-intersection.html/">July 9, 2020</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Graphics can be a tricky topic, particularly when attempting to find anything on the internet these
+days that provides solution in terms of integer-only maths.
+<a href="https://crates.io/crates/embedded-graphics">embedded-graphics</a> is a (mostly) integer-only library,
+so in pursuing a solution to good line joints for the <code>Polyline</code> and <code>Polygon</code> shape
+implementations, a bit of interweb detective work was required.</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/embedded-graphics/2020/07/09/integer-graphics-line-intersection.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/cnc/2020/02/23/linuxcnc-jog-wheel-setup.html/">Setting up an MPG Jog Pendant in LinuxCNC</a></h1>
+
+            <time datetime="2020-02-23">
+              <a href="https://wapl.es/cnc/2020/02/23/linuxcnc-jog-wheel-setup.html/">February 23, 2020</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>CNC jog pendants are super useful devices for quick setup and configuration of CNC machines. A quick
+search for
+<a href="https://www.aliexpress.com/wholesale?catId=0&amp;initiative_id=SB_20200223040744&amp;SearchText=cnc+jog+wheel">CNC jog pendant</a>
+on AliExpress turns up a bunch of results. For this post, I'll cover connecting a wired jog pendant
+with ESTOP to a Mesa 5i25 FPGA card to control a 3 axis CNC mill.</p>
+                
+              </p>
+              <a href="https://wapl.es/cnc/2020/02/23/linuxcnc-jog-wheel-setup.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/cnc/rust/2020/01/27/writing-a-linuxcnc-driver.html/">Announcing linuxcnc-hal: write LinuxCNC HAL components in Rust</a></h1>
+
+            <time datetime="2020-01-27">
+              <a href="https://wapl.es/cnc/rust/2020/01/27/writing-a-linuxcnc-driver.html/">January 27, 2020</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I'd like to announce two crates I've been working to integrate Rust components into LinuxCNC. You
+can find them at <a href="https://crates.io/crates/linuxcnc-hal">linuxcnc-hal</a> (high-level interface) and
+<a href="https://crates.io/crates/linuxcnc-hal-sys">linuxcnc-hal-sys</a> (low-level interface). The rest of
+this post is a getting started tutorial, so follow along if you have a cool idea for a custom bit of
+CNC hardware and an itch to write the interface in Rust!</p>
+                
+              </p>
+              <a href="https://wapl.es/cnc/rust/2020/01/27/writing-a-linuxcnc-driver.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/cnc/2020/01/25/linuxcnc-simulator-build-linux-mint.html/">Building a LinuxCNC 2.8 simulator on Linux Mint 19.3</a></h1>
+
+            <time datetime="2020-01-25">
+              <a href="https://wapl.es/cnc/2020/01/25/linuxcnc-simulator-build-linux-mint.html/">January 25, 2020</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p><strong>This guide has been upated for Linux Mint 21.3. Check it out
+<a href="https://wapl.es/linuxcnc-simulator-linux-mint-21-3/">here</a>.</strong></p>
+<p>A quick guide on how to set up a LinuxCNC simulator on Linux Mint. The LinuxCNC simulator is useful
+for testing/debugging drivers, gcode parsing and other non-realtime features without having to crawl
+around under your machine's actual control.</p>
+                
+              </p>
+              <a href="https://wapl.es/cnc/2020/01/25/linuxcnc-simulator-build-linux-mint.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2019/06/16/embedded-graphics-0-5-0.html/">Embedded graphics 0.5.0</a></h1>
+
+            <time datetime="2019-06-16">
+              <a href="https://wapl.es/rust/2019/06/16/embedded-graphics-0-5-0.html/">June 16, 2019</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Version 0.5.0 is released! This is a pretty big one, focussed around ergonomics. There are new
+macros to make drawing and positioning primitives and text much less noisy, as well as changes to
+the <code>Drawing</code> trait to remove the explicit <code>.into_iter()</code> call when passing objects to it.</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2019/06/16/embedded-graphics-0-5-0.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2019/06/03/diesel-and-tower-web.html/">Persistent state with Tower Web</a></h1>
+
+            <time datetime="2019-06-03">
+              <a href="https://wapl.es/rust/2019/06/03/diesel-and-tower-web.html/">June 3, 2019</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>We're building a new product at <a href="https://repositive.io/">work</a>, for which we've decided to use Rust
+and <a href="https://crates.io/crates/tower-web">tower-web</a> for the backend. There don't seem to be any
+Tower examples using state in request handlers, so this is a quick copypasta showing how to add
+Diesel so request handlers can do database operations.</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2019/06/03/diesel-and-tower-web.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/typescript/2019/03/14/xml-jsx-sitemaps-in-typescript.html/">XML sitemaps in React with Typescript</a></h1>
+
+            <time datetime="2019-03-14">
+              <a href="https://wapl.es/typescript/2019/03/14/xml-jsx-sitemaps-in-typescript.html/">March 14, 2019</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I maintain the <a href="https://repositive.io">Repositive website</a> which uses React for the frontend and a
+server that supports server side rendering for the speed and SEO benefits of SSR. I'm currently in
+the process of porting it over to Typescript which is kickass, but the type checker kept borking on
+the XML tags used in the sitemap component. What follows is a quick "note to self" on how to fix
+that error. There might be <em>much</em> better solutions out there, but this is the one that worked for
+me.</p>
+                
+              </p>
+              <a href="https://wapl.es/typescript/2019/03/14/xml-jsx-sitemaps-in-typescript.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/rust/2019/03/04/embedded-graphics-0.4.7-bmp-support.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;tinybmp-header.b3ec9c262ef0d45f.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;tinybmp-header.abd8f9f179f4da87.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;tinybmp-header.785789a824af94e9.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;tinybmp-header.3119ea6cc3fb3573.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/tinybmp-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2019/03/04/embedded-graphics-0.4.7-bmp-support.html/">Embedded Graphics 0.4.7 and TinyBMP 0.1.0</a></h1>
+
+            <time datetime="2019-03-04">
+              <a href="https://wapl.es/rust/2019/03/04/embedded-graphics-0.4.7-bmp-support.html/">March 4, 2019</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p><a href="https://crates.io/crates/embedded-graphics">Embedded graphics</a> 0.4.7 has been released, along with
+a new sister crate, <a href="https://crates.io/crates/tinybmp">tinybmp</a>! TinyBMP aims to parse BMP-format
+image data using no dynamic allocations. It targets embedded environments but can be used in any
+place a small BMP parser is required. Thanks to TinyBMP, Embedded Graphics now supports loading this
+simple image format. The header photo was made using Embedded Graphics and the
+<a href="https://crates.io/crates/ssd1331">SSD1331 driver</a> in pure Rust. In this post, I'll talk through how
+the BMP file is parsed in no_std environments with <a href="https://crates.io/crates/nom">nom</a> and how to
+get BMP images working with embedded_graphics.</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2019/03/04/embedded-graphics-0.4.7-bmp-support.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2019/02/17/rust-cross-compile-linux-to-macos.html/">Cross compiling Rust from Linux to macOS</a></h1>
+
+            <time datetime="2019-02-17">
+              <a href="https://wapl.es/rust/2019/02/17/rust-cross-compile-linux-to-macos.html/">February 17, 2019</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I've recently been working on a Rust project at <a href="https://repositive.io/">work</a> which requires
+compiling for Linux (GNU), Linux (musl - for Alpine Linux) and macOS. I use Linux Mint nearly all
+the time, so building for macOS targets has required asking very nicely to borrow a spare Macbook
+Air. This is naturally a bit crap, so I set out to find a Linux-only solution to cross compile for
+macOS using <a href="https://github.com/tpoechtrager/osxcross">osxcross</a>. A weekend of pain later, and I
+have the following post. Hopefully it spares you a weekend of your own pain.</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2019/02/17/rust-cross-compile-linux-to-macos.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/electronics/rust/2019/02/13/sh1106-driver.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;sh1106-header.670413f672e62bf2.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;sh1106-header.36fc439615d83402.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;sh1106-header.b94a14ae0c8fee5b.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;sh1106-header.a1fb648432a8a05a.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/sh1106-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/electronics/rust/2019/02/13/sh1106-driver.html/">Announcing the SH1106 OLED display driver</a></h1>
+
+            <time datetime="2019-02-13">
+              <a href="https://wapl.es/electronics/rust/2019/02/13/sh1106-driver.html/">February 13, 2019</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Similar to the <a href="/electronics/rust/2018/04/30/ssd1306-driver.html">SSD1306</a> covered previously, the
+SH1106 OLED display is a small, self contained module perfect for hacking into a project or
+prototype. It's available on AliExpress and eBay for peanuts, but is lacking a Rust driver. Until
+now with the <a href="https://crates.io/crates/sh1106"><code>sh1106</code> crate</a>!</p>
+                
+              </p>
+              <a href="https://wapl.es/electronics/rust/2019/02/13/sh1106-driver.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2018/12/13/optimising-new.html/">Optimising out calls to <code>new()</code></a></h1>
+
+            <time datetime="2018-12-13">
+              <a href="https://wapl.es/rust/2018/12/13/optimising-new.html/">December 13, 2018</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Rust (and LLVM) are <em>really</em> good at optimising things.</p>
+<p>I have a struct, <code>TrajectoryStep</code>, that I pass to some methods in my program. I don't want to use
+positional arguments as it's impossible to tell what <code>some_func(f32, f32, f32)</code> might actually
+require. It looks like this:</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2018/12/13/optimising-new.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/typescript/2018/12/10/default-arguments-for-cooler-testing.html/">Default arguments for cooler testing</a></h1>
+
+            <time datetime="2018-12-10">
+              <a href="https://wapl.es/typescript/2018/12/10/default-arguments-for-cooler-testing.html/">December 10, 2018</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>In my <a href="/typescript/2018/12/10/typechecking-helper-functions-in-typescript.html">other post</a> about
+creating properly typechecked helper functions in Typescript, I missed something out from the
+examples that's present in the real code: default parameters! There's a function, <code>createEvent</code>,
+that returns an object with a dynamically generated UUID value in it. It also includes the current
+timestamp. This is great from the programmer's point of view as there's no need to wire up these
+values manually, but it sucks for unit tests because the values always change! The solution is to
+use
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters">default parameters</a>
+to keep the ergonomics of a clean public API, but still support unit testing and special cases
+gracefully.</p>
+                
+              </p>
+              <a href="https://wapl.es/typescript/2018/12/10/default-arguments-for-cooler-testing.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/typescript/2018/12/10/typechecking-helper-functions-in-typescript.html/">Typechecking builder functions in Typescript</a></h1>
+
+            <time datetime="2018-12-10">
+              <a href="https://wapl.es/typescript/2018/12/10/typechecking-helper-functions-in-typescript.html/">December 10, 2018</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I've been working on toasting a lot of our tech debt <a href="https://repositive.io">at Repositive</a>
+recently. We use an event driven microservice architecture which has various benefits, but some
+drawbacks concerning what data is sent where due in part to the liberal use of <code>any</code> in our
+Typescript codebases. During my refactoring rampage, I encountered some places where event objects
+were missing fields or otherwise weren't being generated properly. To this end, I set out to create
+a type-checked solution to this problem.</p>
+                
+              </p>
+              <a href="https://wapl.es/typescript/2018/12/10/typechecking-helper-functions-in-typescript.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/linux/2018/09/03/linux-mint-19-office-365.html/">Office 365 in Linux Mint 19: Calendar, Email, Notifications</a></h1>
+
+            <time datetime="2018-09-03">
+              <a href="https://wapl.es/linux/2018/09/03/linux-mint-19-office-365.html/">September 3, 2018</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <ol>
+<li>Install Evolution with the Exchange addons</li>
+</ol>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">apt</span></span><span class="z-meta z-function-call z-arguments z-shell"> install evolution evolution-ews evolution-plugins</span>
+</span></code></pre>
+                
+              </p>
+              <a href="https://wapl.es/linux/2018/09/03/linux-mint-19-office-365.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/electronics/rust/2018/04/30/ssd1306-driver.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;ssd1306-header.1b5967609a94c35e.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;ssd1306-header.f1669c4c801e13fc.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;ssd1306-header.6ee80089ca409bcd.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;ssd1306-header.85409931be5639e2.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/ssd1306-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/electronics/rust/2018/04/30/ssd1306-driver.html/">Announcing the SSD1306 OLED display driver</a></h1>
+
+            <time datetime="2018-04-30">
+              <a href="https://wapl.es/electronics/rust/2018/04/30/ssd1306-driver.html/">April 30, 2018</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>As part of the
+<a href="https://github.com/rust-lang-nursery/embedded-wg/issues/39">weekly driver initiative</a>, myself
+(<a href="https://github.com/jamwaffles"><strong>@jamwaffles</strong></a>),
+<a href="https://github.com/therealprof"><strong>@therealprof</strong></a> and <a href="https://github.com/scowcron"><strong>@scowcron</strong></a>
+have been working on
+<a href="https://crates.io/crates/ssd1306">a Rust driver for the common as mud SSD1306-based OLED display modules</a>.
+This little chip is found in the majority of inexpensive OLED display modules found on Ebay and
+AliExpress. It supports either an SPI or I2C interface, both of which the driver supports.</p>
+                
+              </p>
+              <a href="https://wapl.es/electronics/rust/2018/04/30/ssd1306-driver.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2018/02/19/cross-platform-gdb-safe-path.html/">Setting the GDB safe-path cross platform</a></h1>
+
+            <time datetime="2018-02-19">
+              <a href="https://wapl.es/rust/2018/02/19/cross-platform-gdb-safe-path.html/">February 19, 2018</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I've been developing an embedded Rust app (yay!) on Windows (blegh) recently. The Rust team have put
+incredible effort into making Rust itself work great in Windows environments, but the tooling around
+it can be difficult to get working correctly. My current problem was making GDB load a <code>.gdbinit</code>
+file from the current projecting when doing <code>xargo run</code>. Here's how I fixed it in <code>.cargo/config</code>:</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2018/02/19/cross-platform-gdb-safe-path.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/elm/2017/12/12/elm-counting-occurrences.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.7279666737d3de4c.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.56fbf438dc52bd07.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.4c197edb029012af.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;elm-tag-header.82fd80f27246a46f.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/elm-tag-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/elm/2017/12/12/elm-counting-occurrences.html/">Elm: counting groups of items in a list</a></h1>
+
+            <time datetime="2017-12-12">
+              <a href="https://wapl.es/elm/2017/12/12/elm-counting-occurrences.html/">December 12, 2017</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>So. Elm. It's been an interesting experience for me, coming from a procedural language (JS)
+background. The learning curve is steep, but the functional nature of Elm, along with its compile
+time type safety really pays off. One of the (few!) problems I've found as a newcomer however, is
+that the documentation can be really frustrating sometimes. In this post, I hope to remedy that
+slightly by providing a newcomer's perspective on a little bit of data processing in Elm.</p>
+                
+              </p>
+              <a href="https://wapl.es/elm/2017/12/12/elm-counting-occurrences.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/rust/2017/10/06/git2-rs-cloning-private-github-repos.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;private-repo-clone-header.0bc21171422a1613.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;private-repo-clone-header.88e0624a8e005c73.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;private-repo-clone-header.2b6601ff4793ea09.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;private-repo-clone-header.881f539815e27915.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/private-repo-clone-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2017/10/06/git2-rs-cloning-private-github-repos.html/">Cloning private Github repos in Rust</a></h1>
+
+            <time datetime="2017-10-06">
+              <a href="https://wapl.es/rust/2017/10/06/git2-rs-cloning-private-github-repos.html/">October 6, 2017</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Cloning a private Github repo using SSH auth in Rust has proved to be a pretty gnarly problem (for
+my anyway), so I thought I'd share this quick tutorial to help anyone else out that might be
+struggling with the same issue. I'm using <a href="https://github.com/alexcrichton/git2-rs">git2-rs</a> which
+has good interface documentation, but <em>very few pieces of example code</em>, so I set out to fix that
+somewhat with this post.</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2017/10/06/git2-rs-cloning-private-github-repos.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/web/2017/09/21/analytics-events-with-redux-and-react.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.d5280a2bdbe199e1.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.d69380506db6fcad.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.a3312b6e48aba974.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logging-header.30529c1fa82abd39.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/logging-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/web/2017/09/21/analytics-events-with-redux-and-react.html/">Logging analytics events in a testable way with React and Redux</a></h1>
+
+            <time datetime="2017-09-21">
+              <a href="https://wapl.es/web/2017/09/21/analytics-events-with-redux-and-react.html/">September 21, 2017</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>One of my main responsibilites at <a href="https://www.totallymoney.com/">TotallyMoney</a> was to take care of
+the in-house analytics/event logging framework. Like lots of companies, understanding what users do
+and how they interact with a product is to get good insight on. In this regard, people reinvent the
+logging wheel with various <a href="https://en.wiktionary.org/wiki/krimskrams">krimskrams</a> attached, me
+being no exception. What I want to show in this post is how to integrate an event logging framework
+into a React/Redux application in a way that's scaleable and testable. Unit testable logging is
+important when the rest of the business relies heavily on the events and the data in them like many
+companies do.</p>
+                
+              </p>
+              <a href="https://wapl.es/web/2017/09/21/analytics-events-with-redux-and-react.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/workshop/2016/11/12/scraping-without-a-scraper.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;scraping-header.e225fbe248379af3.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;scraping-header.c5e024faa87fec92.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;scraping-header.015c26ee71ab7d92.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;scraping-header.c91f0f31a99a8aa9.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/scraping-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/workshop/2016/11/12/scraping-without-a-scraper.html/">Scraping without a scraper</a></h1>
+
+            <time datetime="2016-11-12">
+              <a href="https://wapl.es/workshop/2016/11/12/scraping-without-a-scraper.html/">November 12, 2016</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>In between watching the rain and emptying all the shmoo out of my air compressor (long overdue), I
+decided to try my hand at some impromptu scraping this weekend. Matters were complicated somewhat
+due to me not owning a scraping tool, but I worked with what I have to make what I think are some
+satisfctory results. This post will be a short log of what went down and will hopefully demonstrate
+that one can achieve reasonably good (i.e. flat) results without having a real scraper.</p>
+                
+              </p>
+              <a href="https://wapl.es/workshop/2016/11/12/scraping-without-a-scraper.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/rust/2016/10/24/rust-christmas-colour-wheel.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;rgw-header.2bd1535b753bdfc0.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;rgw-header.9a3d3ae02a974760.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;rgw-header.1ece30c1c5936026.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;rgw-header.f8cb5ad93c3539c2.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/rgw-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2016/10/24/rust-christmas-colour-wheel.html/">A white (and red and green) Christmas</a></h1>
+
+            <time datetime="2016-10-24">
+              <a href="https://wapl.es/rust/2016/10/24/rust-christmas-colour-wheel.html/">October 24, 2016</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Here's a quick one; I'm making a Christmas display out of a bunch of serially controllable APA106
+RGB LEDs, but how do I turn a value of <code>0 – 255</code> into a glorious RGW (Red Green White) struct with
+the correct colour, and the correct wrapping rules?</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2016/10/24/rust-christmas-colour-wheel.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/rust/2016/04/26/rust-logentries-docker.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logentries-header.4aa9eac654b6b8cb.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logentries-header.1aa33cc2e5d7b5dd.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logentries-header.abefe19bd605ee6d.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;logentries-header.05d4a1ec007f9056.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/logentries-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/rust/2016/04/26/rust-logentries-docker.html/">Parsing Logentries output safely using Rust</a></h1>
+
+            <time datetime="2016-04-26">
+              <a href="https://wapl.es/rust/2016/04/26/rust-logentries-docker.html/">April 26, 2016</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>I'm fascinated by Rust for it's safety and speed, but also because it's simple to write low level
+code in what feels like a high level language. To that end, I've been working on a small Rust
+project at <a href="http://www.totallymoney.com">TotallyMoney.com</a> (where I work) for the last week or so to
+see if it's viable for production use. It's a simple service that polls a
+<a href="https://logentries.com">Logentries</a> endpoint for JSON, parses it and saves some values in a
+Postgres database. It's not a very complicated task, but I saw this as a good opportunity to try
+Rust in a production-ish role.</p>
+                
+              </p>
+              <a href="https://wapl.es/rust/2016/04/26/rust-logentries-docker.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/airsoft/2016/03/07/gng-p90-mag-fix.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;p90-header.24dd88287aaad9f7.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;p90-header.e89642bb2bc769a9.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;p90-header.73d3a3b05ed3c1d0.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;p90-header.fbd4cfeea7635981.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/p90-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/airsoft/2016/03/07/gng-p90-mag-fix.html/">G&amp;G P90 hicap mag feeding fix(ish)</a></h1>
+
+            <time datetime="2016-03-07">
+              <a href="https://wapl.es/airsoft/2016/03/07/gng-p90-mag-fix.html/">March 7, 2016</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Disclaimer: This is an article for an <em>airsoft</em> gun only. None of this pertains to real firearms.</p>
+<p>I have a G&amp;G P90 (in tan, in case you were wondering) and like many others suffer from the hicap
+mags failing to feed. Half filling them kind of works, but the feed mechanism always seems to jam.
+I've got a half solution here in this article. It doesn't completely fix the problem, but my hicaps
+feed a lot more reliably now, particularly in semi-auto, than they did before.</p>
+                
+              </p>
+              <a href="https://wapl.es/airsoft/2016/03/07/gng-p90-mag-fix.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/cnc/2016/02/04/cnc-steppers-bipolar-parallel-faster-smoother.html/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;stepper-header.d7e1f5610b1db8e5.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;stepper-header.9d49068618dbcef2.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;stepper-header.a57765886b0157e1.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;stepper-header.7ea4f9438d8f5063.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/stepper-header.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/cnc/2016/02/04/cnc-steppers-bipolar-parallel-faster-smoother.html/">Faster, smoother, better, stronger (at high speeds): bipolar parallel stepper wiring</a></h1>
+
+            <time datetime="2016-02-04">
+              <a href="https://wapl.es/cnc/2016/02/04/cnc-steppers-bipolar-parallel-faster-smoother.html/">February 4, 2016</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Quick tip: if you're looking for higher maximum speeds with your bipolar stepper motors, try wiring
+the windings in parallel instead of series. According to
+<a href="http://digital.ni.com/public.nsf/allkb/B1CC4C64ABBC7D3C86257BC70017B9E2">a short National Instruments article</a>,
+it can increase torque at higher speeds, reducing the chance that the motor will stall during fast
+rapids.</p>
+                
+              </p>
+              <a href="https://wapl.es/cnc/2016/02/04/cnc-steppers-bipolar-parallel-faster-smoother.html/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+      <article class="list__post">
+          
+              <div class="image-holder show">
+                <a href="https://wapl.es/huanyang-linuxcnc-2-7-speed-control/" class="inner">
+                  <picture>
+                    
+                    
+                    
+                    
+                    <source media="(min-width: 970px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.3fa351526df3b5b1.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.c150f67785d3fa6f.jpg 2x">
+                    <source media="(max-width: 640px)" srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.5f2a206b4693de41.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.64ff52832254098a.jpg 2x">
+                    <img class="post__feature-image__inner" src="https://wapl.es/images/huanyang-header-2.jpg" alt="Blog post header image decoration.">
+                  </picture>
+              </a>
+            </div>
+          
+
+          <header>
+            <h1><a href="https://wapl.es/huanyang-linuxcnc-2-7-speed-control/">Spindle speed control using LinuxCNC 2.7 with a Huanyang inverter</a></h1>
+
+            <time datetime="2015-12-04">
+              <a href="https://wapl.es/huanyang-linuxcnc-2-7-speed-control/">December 4, 2015</a>
+            </time>
+          </header>
+
+          <div class="list__post__excerpt">
+              <p>
+                <p>Huanyang branded VFD drives are ubiquitous on eBay and other sites like AliExpress. I bought one
+some time ago with a 1.5KW spindle and have been controlling the speed manually with the difficult
+to use control panel on the front. It is, however, possible to control the VFD from within LinuxCNC
+using the <a href="http://linuxcnc.org/docs/html/gcode/m-code.html#mcode:m3-m4-m5"><code>M3</code> and <code>M5</code> commands</a>
+(I haven't been able to get <code>M4</code>, reverse rotation, working yet). What's also neat is we can get the
+machine to wait for the spindle to come up to speed before moving to the next line of GCode.</p>
+                
+              </p>
+              <a href="https://wapl.es/huanyang-linuxcnc-2-7-speed-control/" class="readmore">Continue Reading</a>
+          </div>
+      </article>
+      
+
+      
+
+
+
+
+    </div>
+  </div>
+</div>
+
+<footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>
