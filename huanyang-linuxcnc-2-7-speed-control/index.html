@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>Spindle speed control using LinuxCNC 2.7 with a Huanyang inverter</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+  <meta property="og:image" content="https://wapl.es/images/huanyang-header-2.jpg">
+  <meta name="twitter:image" content="https://wapl.es/images/huanyang-header-2.jpg" />
+  <meta property="og:image:width" content="2560">
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;huanyang-linuxcnc-2-7-speed-control&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header post__header--image">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+<div class="post__feature-image">
+  <picture>
+    
+    
+    
+    
+    
+    
+    <source media="(min-width: 2560px)" srcset="images&#x2F;huanyang-header-2.jpg" />
+    <source
+      media="(min-width: 1920px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.a69e30f06d12a0e5.jpg, images&#x2F;huanyang-header-2.jpg 2x"
+    />
+    <source
+      media="(min-width: 1600px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.71c9bccfb21d71a9.jpg, images&#x2F;huanyang-header-2.jpg 2x"
+    />
+    <source
+      media="(min-width: 1280px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.64ff52832254098a.jpg, images&#x2F;huanyang-header-2.jpg 2x"
+    />
+    <source
+      media="(min-width: 960px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.fe06eb89e0da54a3.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.a69e30f06d12a0e5.jpg 2x"
+    />
+    <source
+      media="(min-width: 800px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.07ee9372bc169f38.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.71c9bccfb21d71a9.jpg 2x"
+    />
+    <source
+      media="(max-width: 640px)"
+      srcset="https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.5f2a206b4693de41.jpg, https:&#x2F;&#x2F;wapl.es&#x2F;processed_images&#x2F;huanyang-header-2.64ff52832254098a.jpg 2x"
+    />
+    <img
+      class="post__feature-image__inner"
+      src="images&#x2F;huanyang-header-2.jpg"
+      alt="Blog post header image decoration."
+    />
+  </picture>
+</div>
+
+
+<article role="main" class="post image">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>Spindle speed control using LinuxCNC 2.7 with a Huanyang inverter</h1>
+
+      <time datetime="2015-12-04">
+        <a href="https://wapl.es/huanyang-linuxcnc-2-7-speed-control/">December 04, 2015</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p>Huanyang branded VFD drives are ubiquitous on eBay and other sites like AliExpress. I bought one
+some time ago with a 1.5KW spindle and have been controlling the speed manually with the difficult
+to use control panel on the front. It is, however, possible to control the VFD from within LinuxCNC
+using the <a href="http://linuxcnc.org/docs/html/gcode/m-code.html#mcode:m3-m4-m5"><code>M3</code> and <code>M5</code> commands</a>
+(I haven't been able to get <code>M4</code>, reverse rotation, working yet). What's also neat is we can get the
+machine to wait for the spindle to come up to speed before moving to the next line of GCode.</p>
+<span id="continue-reading"></span>
+<p>The first thing I tried was <a href="https://en.wikipedia.org/wiki/Pulse-density_modulation">PDM</a> using
+signals from the parallel port. This doesn't set the speed accurately <em>at all</em> and the PDM/speed
+conversion curve is hilariously inaccurate. If you want to try this method for whatever reason,
+there's a
+<a href="http://wiki.linuxcnc.org/cgi-bin/wiki.pl?VFD_Digital/Analog_Interface">guide in the LinuxCNC documentation</a>.</p>
+<p>Most Huanyang VFDs have an RS-485 two-wire interface, so let's use this to communicate with the
+drive from LinuxCNC. These inverters supposedly support Modbus but aren't compliant, so a custom HAL
+component for LinuxCNC is required. Since LinuxCNC 2.7,
+<a href="http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html">this component</a> is now bundled with the
+default image as a HAL component, so all we need to do is set it up properly. Easy!</p>
+<h1 id="hardware-required"><a class="zola-anchor" href="#hardware-required" aria-label="Anchor link for: hardware-required">Hardware required</a></h1>
+<ul>
+<li>A computer running LinuxCNC 2.7+ with at least one USB port</li>
+<li>A USB ↔ RS-485 converter. I got one on eBay for less than a fiver. You could use an RS-232 to
+RS-485 converter too</li>
+<li>Huanyang VFD</li>
+<li>Two core signal (light gauge) wire to hook up between the VFD and converter. I used one of the
+twisted pairs out of an ethernet cable. The twistedness might help over very long distances as
+RS-485 is differential. For shop use it doesn't really matter.</li>
+</ul>
+<h1 id="vfd-configuration"><a class="zola-anchor" href="#vfd-configuration" aria-label="Anchor link for: vfd-configuration">VFD configuration</a></h1>
+<p>We first need to change some settings in the VFD. Most of these settings are identical to those
+defined in <a href="http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html">the hy_vfd man page</a> so look there
+if you need more information. Running <code>hy_vfd --help</code> from a terminal will give you the same
+helptext.</p>
+<p>Change the following registers to make the VFD listen on the RS-485 bus for control signals:</p>
+<table><thead><tr><th>Register</th><th>Value</th><th></th></tr></thead><tbody>
+<tr><td><strong>PD001</strong></td><td><code>2</code></td><td>Listen for run commands on the RS-485 bus</td></tr>
+<tr><td><strong>PD002</strong></td><td><code>2</code></td><td>Listen for frequency/speed commands on the RS-485 bus</td></tr>
+<tr><td><strong>PD164</strong></td><td><code>3</code></td><td>Baud rate - 38400 baud</td></tr>
+<tr><td><strong>PD165</strong></td><td><code>3</code></td><td>Communication data method to 8N1 RTU</td></tr>
+</tbody></table>
+<p>Check your VFD manual for other values for these registers. I've included a PDF of the manual
+<a href="/files/hy-vfd-manual.pdf">here</a> if you've lost the one included with your VFD.</p>
+<!-- - My spindle would go no lower than 3000 RPM. Change the [whichever the lowest freq register is] value to [new value]. I can get as low as 600 RPM now, not bothered about going lower. TODO: Add this note to the register configs in the VFD config block -->
+<h1 id="linuxcnc-configuration"><a class="zola-anchor" href="#linuxcnc-configuration" aria-label="Anchor link for: linuxcnc-configuration">LinuxCNC Configuration</a></h1>
+<p>For completeness' sake, I'm making available my entire machine config
+[here]({{ site.files }}/hy-vfd-config-rs485.zip) to help make configuring the VFD clearer if you
+need it. Read on for step by step config instructions and make reference to the config files in the
+download if need be. It's provided purely as an example of what to add to it to get the Huanyang VFD
+working, so don't use it on your machine verbatim.</p>
+<p>I didn't need most of the signals made available by the <code>hy_vfd</code> module so I didn't add them to the
+configuration. You can add them yourself by looking at the HAL meter in LinuxCNC for the names.</p>
+<p><strong>Note:</strong> Using stepconf again will overwrite some of your custom settings. The INI and other config
+files will have to be edited by hand, which is not that hard. You can always use stepconf to test
+things without saving and then edit the files manually later.</p>
+<h2 id="custom-hal"><a class="zola-anchor" href="#custom-hal" aria-label="Anchor link for: custom-hal"><code>custom.hal</code></a></h2>
+<pre class="z-code"><code><span class="z-text z-plain"># Include your customized HAL commands here
+</span><span class="z-text z-plain"># This file will not be overwritten when you run stepconf again
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># Load the Huanyang VFD user component
+</span><span class="z-text z-plain">loadusr -Wn spindle-vfd hy_vfd -n spindle-vfd -t 1 -d /dev/ttyUSB0 -p none -r 38400 -s 1
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">#net vfd-comms halui.machine.is-on =&gt; spindle-vfd.enable
+</span><span class="z-text z-plain">setp spindle-vfd.enable 1
+</span><span class="z-text z-plain">net spindle-fwd motion.spindle-forward =&gt; spindle-vfd.spindle-forward
+</span><span class="z-text z-plain">net spindle-reverse motion.spindle-reverse =&gt; spindle-vfd.spindle-reverse
+</span><span class="z-text z-plain">net spindle-speed-cmd  motion.spindle-speed-out-abs =&gt; spindle-vfd.speed-command
+</span><span class="z-text z-plain">net spindle-on motion.spindle-on =&gt; spindle-vfd.spindle-on
+</span><span class="z-text z-plain">net spindle-at-speed motion.spindle-at-speed =&gt; spindle-vfd.spindle-at-speed
+</span></code></pre>
+<p>It's worth explaining this line in more detail:</p>
+<pre class="z-code"><code><span class="z-text z-plain">loadusr -Wn spindle-vfd hy_vfd -n spindle-vfd -t 1 -d /dev/ttyUSB0 -p none -r 38400 -s 1
+</span></code></pre>
+<ul>
+<li>Assumes the serial port is located at <code>/dev/ttyUSB0</code> (because I'm using a USB converter here). If
+you're using a serial port directly, use <code>/dev/ttys0</code> or similar.</li>
+<li><code>-p none -s 1</code> assumes the VFD's PD165 register is set to <code>3</code>, which is 8N1 for RTU (Remote
+Terminal Unit) mode. The hy_vfd HAL module doesn't support ASCII modes.</li>
+<li><code>-r 38400</code> sets the communication speed to 38400 baud. You need to make sure PD164 is set to <code>3</code>
+to match this value.</li>
+</ul>
+<p>All options for the <code>hy_vfd</code> command are explained in
+<a href="http://linuxcnc.org/docs/html/man/man1/hy_vfd.1.html">the user manual</a>.</p>
+<h2 id="custom-postgui-hal"><a class="zola-anchor" href="#custom-postgui-hal" aria-label="Anchor link for: custom-postgui-hal"><code>custom_postgui.hal</code></a></h2>
+<pre class="z-code"><code><span class="z-text z-plain"># Include your customized HAL commands here
+</span><span class="z-text z-plain"># The commands in this file are run after the AXIS GUI (including PyVCP panel) starts
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">net spindle-at-speed =&gt; pyvcp.spindle-at-speed
+</span><span class="z-text z-plain">net pyvcp-spindle-rpm spindle-vfd.spindle-speed-fb =&gt; pyvcp.spindle-speed
+</span><span class="z-text z-plain">net pyvcp-modbus-ok spindle-vfd.hycomm-ok =&gt; pyvcp.hycomm-ok
+</span></code></pre>
+<h2 id="custompanel-xml"><a class="zola-anchor" href="#custompanel-xml" aria-label="Anchor link for: custompanel-xml"><code>custompanel.xml</code></a></h2>
+<p>We want/need to display some info about the VFD in the LinuxCNC interface, so we'll write a PyVCP
+panel to do so.</p>
+<p>This panel is a stripped down version of the default supplied in the original hy-vfd module. There
+is a downloadable ZIP in the
+<a href="http://www.cnczone.com/forums/phase-converters/91847-software-8.html#post_704008">original forum thread</a>
+containing the complete panel XML if you wish to set up extra fields. Note that you'll have to add
+more signals in your <code>.hal</code> files, and change the signal names in the PyVCP XML.</p>
+<p>All I need from the panel is the spindle RPM, a spindle-at-speed indicator and a Modbus comm OK
+light. It currently looks like this (panel on the right):</p>
+<p><img src="/images/linuxcnc-spindle.png" alt="LinuxCNC with custom Huanyang panel screenshot" /></p>
+<p>And here's the PyVCP XML to generate it:</p>
+<pre data-lang="xml" class="language-xml z-code"><code class="language-xml" data-lang="xml"><span class="z-text z-xml"><span class="z-meta z-tag z-preprocessor z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;?</span><span class="z-entity z-name z-tag z-xml">xml</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">version</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-single z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&#39;</span>1.0<span class="z-punctuation z-definition z-string z-end z-xml">&#39;</span></span> <span class="z-entity z-other z-attribute-name z-localname z-xml">encoding</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-single z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&#39;</span>UTF-8<span class="z-punctuation z-definition z-string z-end z-xml">&#39;</span></span><span class="z-punctuation z-definition z-tag z-end z-xml">?&gt;</span></span>
+</span><span class="z-text z-xml"><span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">pyvcp</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">	<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">labelframe</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">text</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>Huanyang VFD<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">		<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">font</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>(&quot;Helvetica&quot;,12)<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">font</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">		<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">table</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablerow</span><span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablespan</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">columns</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>2<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>nsew<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot; &quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">font</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>(&quot;Helvetica&quot;,2)<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">font</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablerow</span><span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>w<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;Modbus Communication:&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>e<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">led</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">halpin</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;hycomm-ok&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">halpin</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">size</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;10&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">size</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">on_color</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;green&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">on_color</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">off_color</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;red&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">off_color</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">led</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablerow</span><span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>w<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;Spindle at speed:&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>e<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">led</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">halpin</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;spindle-at-speed&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">halpin</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">size</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;10&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">size</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">on_color</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;green&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">on_color</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">off_color</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;red&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">off_color</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">led</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablerow</span><span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot; &quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">		<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">table</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">		<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">table</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>nsew<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablerow</span><span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>nsew<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;Spindle Speed (RPM)&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">font</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>(&quot;Helvetica&quot;,10)<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">font</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablerow</span><span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>nsew<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot; &quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">text</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">font</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>(&quot;Helvetica&quot;,2)<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">font</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">label</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablerow</span><span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">tablesticky</span> <span class="z-entity z-other z-attribute-name z-localname z-xml">sticky</span><span class="z-punctuation z-separator z-key-value z-xml">=</span><span class="z-string z-quoted z-double z-xml"><span class="z-punctuation z-definition z-string z-begin z-xml">&quot;</span>nsew<span class="z-punctuation z-definition z-string z-end z-xml">&quot;</span></span> <span class="z-punctuation z-definition z-tag z-end z-xml">/&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">bar</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">halpin</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>&quot;spindle-speed&quot;<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">halpin</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">				<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;</span><span class="z-entity z-name z-tag z-localname z-xml">max_</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>24000<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">max_</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">			<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">bar</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">		<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">table</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml">	<span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">labelframe</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span><span class="z-text z-xml"><span class="z-meta z-tag z-xml"><span class="z-punctuation z-definition z-tag z-begin z-xml">&lt;/</span><span class="z-entity z-name z-tag z-localname z-xml">pyvcp</span><span class="z-punctuation z-definition z-tag z-end z-xml">&gt;</span></span>
+</span></code></pre>
+<p>It would be cool to have a tachometer type gauge and perhaps some more info, but this shows all the
+information I need.</p>
+<h3 id="machine-ini"><a class="zola-anchor" href="#machine-ini" aria-label="Anchor link for: machine-ini"><code>Machine.ini</code></a></h3>
+<p>We need to get LinuxCNC to load the custom panel and wiring. To do so, modify the machine <code>.ini</code>
+file. This is the <code>.ini</code> file inside the folder created by Stepconf. If your machine is called
+<code>Allie</code> like mine, this will be <code>Allie/Allie.ini</code>.</p>
+<p>Find the <code>[DISPLAY]</code> section and add the following line to load the custom control panel (assuming
+you called the file <code>custompanel.xml</code>):</p>
+<pre class="z-code"><code><span class="z-text z-plain">PYVCP = custompanel.xml
+</span></code></pre>
+<p>Next, find the <code>[HAL]</code> section and add these lines if they're not already present:</p>
+<pre class="z-code"><code><span class="z-text z-plain">HALFILE = custom.hal
+</span><span class="z-text z-plain">POSTGUI_HALFILE = custom_postgui.hal
+</span></code></pre>
+<h2 id="usage"><a class="zola-anchor" href="#usage" aria-label="Anchor link for: usage">Usage</a></h2>
+<ul>
+<li>Start LinuxCNC</li>
+<li>You should see the custom control panel on the right</li>
+<li>Home all axes to allow manual control if required</li>
+<li>Go to the MDI panel (<kbd>F5</kbd>) and type <code>M3 S5000</code> to start the spindle at 5k RPM. Run <code>M5</code>
+to stop. The display on the VFD when set to show frequency should show a value close to 5000 RPM.
+You should also be able to use <code>M4</code> (reverse rotation), but you'll need to set <code>PD023</code> to <code>1</code> on
+the VFD to enable it (untested).</li>
+<li>To see the spindle-at-speed indicator in action, enter <code>M3 240000</code> from stopped to see the
+<code>spindle-at-speed</code> LED stay red until 24k RPM is reached after a couple of seconds. It is
+important that this works otherwise LinuxCNC won't wait for the spindle to come up to speed before
+starting a cut.</li>
+</ul>
+<h2 id="final-notes-and-gotchas"><a class="zola-anchor" href="#final-notes-and-gotchas" aria-label="Anchor link for: final-notes-and-gotchas">Final notes and gotchas</a></h2>
+<ul>
+<li>The VFD takes some time to respond to speed commands. <strong>This can be an issue with emergency
+stops</strong> because the spindle won't stop until about 2 seconds after the button is pressed. I've
+ruined a few tools because of this.</li>
+<li>VFD must be on before you open LinuxCNC, otherwise HAL component will not start comms properly
+(component is loaded at startup and only attempts connection on load)</li>
+<li>I had huge trouble getting the VFD to communicate. Simple solution: make sure <code>spindle-vfd.enable</code>
+is set to <code>1</code>.</li>
+<li><code>Modbus comms ok</code> LED in PyVCP goes red during run; possibly because bus is busy reporting values
+back or whatever. We don't really care, you just don't want it red when the spindle is stopped.</li>
+</ul>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>
