@@ -11,7 +11,7 @@ date = "2026-03-16"
 MainDevice! There are some minor breaking changes, but nothing too difficult to migrate. Otherwise,
 not much to report as this is a release to get a couple of features out in the wild before some
 larger breaking changes in future EtherCrab versions. Full changelog is available
-[here](https://github.com/ethercrab-rs/ethercrab/blob/master/CHANGELOG.md).
+[here](https://github.com/ethercrab-rs/ethercrab/blob/main/CHANGELOG.md).
 
 <!-- more -->
 
