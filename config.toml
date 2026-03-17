@@ -12,6 +12,8 @@ generate_feeds = true
 # trailing_slash = false
 
 author = "James Waples"
+# Used in RSS feeds
+title = "Wapl.es Blogroll"
 
 [markdown]
 # Whether to do syntax highlighting
