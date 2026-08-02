@@ -26,6 +26,10 @@ kbd {
   word-wrap: break-word;
   font-size: 0.8rem;
   border: 1px solid var(--font-color);
+  display: inline-block;
+  min-width: 1.5rem;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 body,
