@@ -19,11 +19,20 @@
   box-sizing: border-box;
 }
 
+kbd {
+  background-color: var(--inline-code-background);
+  padding: 2px 4px;
+  border-radius: 3px;
+  word-wrap: break-word;
+  font-size: 0.8rem;
+  border: 1px solid var(--font-color);
+}
+
 body,
 html {
   font-size: 14pt;
-  font-family: "Atkinson Hyperlegible", "Open Sans", "Helvetica Neue", "Helvetica-Neue", helvetica,
-    sans-serif;
+  font-family:
+    "Atkinson Hyperlegible", "Open Sans", "Helvetica Neue", "Helvetica-Neue", helvetica, sans-serif;
   color: var(--font-color);
   background-color: var(--bg-color);
   padding: 0;

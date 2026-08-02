@@ -42,7 +42,8 @@
   }
 }
 
-p {
+p,
+li {
   code {
     background-color: var(--inline-code-background);
     color: var(--blue-dark);
