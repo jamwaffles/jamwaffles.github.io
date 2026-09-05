@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>Setting up an MPG Jog Pendant in LinuxCNC</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;cnc&#x2F;2020&#x2F;02&#x2F;23&#x2F;linuxcnc-jog-wheel-setup.html&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header ">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+
+<article role="main" class="post ">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>Setting up an MPG Jog Pendant in LinuxCNC</h1>
+
+      <time datetime="2020-02-23">
+        <a href="https://wapl.es/cnc/2020/02/23/linuxcnc-jog-wheel-setup.html/">February 23, 2020</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p>CNC jog pendants are super useful devices for quick setup and configuration of CNC machines. A quick
+search for
+<a href="https://www.aliexpress.com/wholesale?catId=0&amp;initiative_id=SB_20200223040744&amp;SearchText=cnc+jog+wheel">CNC jog pendant</a>
+on AliExpress turns up a bunch of results. For this post, I'll cover connecting a wired jog pendant
+with ESTOP to a Mesa 5i25 FPGA card to control a 3 axis CNC mill.</p>
+<span id="continue-reading"></span>
+<p>The config below works for me. The plethora of hardware configs out there mean this article likely
+won't work for you verbatim, but it's my hope that it provides a good starting point for other
+configs.</p>
+<p><strong>Please note that I got this config working on LinuxCNC 2.9.0-pre0. It should also work on 2.8.*,
+but will not work on anything before the joints/axes split.</strong></p>
+<h1 id="hardware"><a class="zola-anchor" href="#hardware" aria-label="Anchor link for: hardware">Hardware</a></h1>
+<div>
+  
+  <img src="https://wapl.es/processed_images/cnc-mpg.f53ef16ed7b2b0da.jpg" />
+</div>
+<p>This is the jog pendant I'll be using.</p>
+<p>It provides estop, axis select, multiplier and encoder outputs on a bunch of bare wires as seen in
+the image. I'm going to connect it to the internal <code>P2</code> connector of a Mesa 5i25 FPGA card, so I'll
+trim the bare wires and solder them to a DB25 cable-end connector in a bit.</p>
+<div>
+  
+  <img src="https://wapl.es/processed_images/mesa-5i25-annotated.dd559718aa56e69d.png" />
+</div>
+<p>I'm using a <a href="/images/mesa-5i25.png">Mesa 5i25</a> FPGA card through a DB25 breakout cable (like
+<a href="https://www.ebay.co.uk/itm//380662654989">this one</a>) connected to <code>P2</code>. Other Mesa cards with
+parallel port breakout options like the 6i25 should also work, but are untested.</p>
+<p>The Mesa card can optionally provide +5V to external circuitry on the last 4 pins of the parallel
+port connector. <strong>This must be enabled for the jog pendant to work.</strong> From the manual, ensure that
+jumper <code>W1</code> is in the <code>UP</code> position.</p>
+<p>For reference, here's an image of the breakout cable:</p>
+<div>
+  
+  <img src="https://wapl.es/processed_images/parport.6af6c8059ef8ddf9.png" />
+</div>
+<h1 id="soldering-up-the-jog-wheel-connector"><a class="zola-anchor" href="#soldering-up-the-jog-wheel-connector" aria-label="Anchor link for: soldering-up-the-jog-wheel-connector">Soldering up the jog wheel connector</a></h1>
+<p>We now need to solder a DB25 connnector to the jog pendant cable so it can be plugged into the Mesa
+card. The exact pinout doesn't matter <em>too</em> much as connections can be remapped in software, but in
+my setup the jog wheel encoder is bound to pins 11 and 12.</p>
+<p>This is the full pinout:</p>
+<table><thead><tr><th>Name</th><th>DB25 connector pin</th><th>Hostmot2 GPIO (we'll use this later)</th><th>Wire colour</th></tr></thead><tbody>
+<tr><td>ESTOP</td><td>4</td><td>gpio.023</td><td>Blue/black</td></tr>
+<tr><td>ESTOP gnd</td><td>21</td><td>-</td><td>Blue</td></tr>
+<tr><td>Encoder +5V</td><td>25</td><td>-</td><td>Red</td></tr>
+<tr><td>Encoder gnd</td><td>20</td><td>-</td><td>Black</td></tr>
+<tr><td>Encoder A</td><td>11</td><td>encoder.01.input-a</td><td>Green</td></tr>
+<tr><td>Encoder B</td><td>12</td><td>encoder.01.input-b</td><td>White</td></tr>
+<tr><td>Encoder A-</td><td>-</td><td>-</td><td>Purple</td></tr>
+<tr><td>Encoder B-</td><td>-</td><td>-</td><td>Purple/black</td></tr>
+<tr><td>Common</td><td>19</td><td>-</td><td>Orange/black</td></tr>
+<tr><td>Select axis X</td><td>1</td><td>gpio.017</td><td>Yellow</td></tr>
+<tr><td>Select axis Y</td><td>14</td><td>gpio.018</td><td>Yellow/black</td></tr>
+<tr><td>Select axis Z</td><td>2</td><td>gpio.019</td><td>Brown</td></tr>
+<tr><td>Select axis 4</td><td>5</td><td>-</td><td>Brown/black</td></tr>
+<tr><td>X1</td><td>15</td><td>gpio.020</td><td>Grey</td></tr>
+<tr><td>X10</td><td>3</td><td>gpio.021</td><td>Grey/black</td></tr>
+<tr><td>X100</td><td>16</td><td>gpio.022</td><td>Orange</td></tr>
+<tr><td>LED+</td><td>-</td><td>-</td><td>Green/black</td></tr>
+<tr><td>LED-</td><td>-</td><td>-</td><td>White/black</td></tr>
+</tbody></table>
+<p><code>Encoder +5V</code>, <code>Encoder gnd</code> and <code>Common</code> are connected to ground and +5V, with the 5V supplied by
+the last 4 pins by enabling the auxiliary power on the Mesa card by setting jumper <code>W1</code> to the <code>UP</code>
+position.</p>
+<p>I'm leaving the inverted signals of the encoder disconnected for simplicity. If you need the noise
+suppression features of differential wiring, you'll need to add some external circuitry to deal with
+that - the Mesa encoder inputs are single-sided.</p>
+<p>I'm also leaving the enable LED disconnected because I can't be bothered to hook it up.</p>
+<h1 id="mesa-card-configuration"><a class="zola-anchor" href="#mesa-card-configuration" aria-label="Anchor link for: mesa-card-configuration">Mesa card configuration</a></h1>
+<p>I'm using the <code>5i25_prob_rfx2</code> bitfile for the Mesa 5i25. It seems to be a pretty general purpose
+config for these cards. Other configs might work, but the pinout could be different so YMMV.</p>
+<p>The pendant is mostly simple GPIO, but you'll need to add an extra encoder to your Mesa config when
+loaded. In your <code>&lt;machine name&gt;.hal</code> file, find the <code>loadrt</code> line and change it:</p>
+<pre data-lang="diff" class="language-diff z-code"><code class="language-diff" data-lang="diff"><span class="z-source z-diff"><span class="z-markup z-deleted z-diff"><span class="z-punctuation z-definition z-deleted z-diff">-</span> loadrt hm2_pci config=&quot;firmware=hm2/5i25/5i25_prob_rfx2 num_encoders=1 num_pwmgens=0 num_stepgens=3&quot;
+</span></span><span class="z-source z-diff"><span class="z-markup z-inserted z-diff"><span class="z-punctuation z-definition z-inserted z-diff">+</span> loadrt hm2_pci config=&quot;firmware=hm2/5i25/5i25_prob_rfx2 num_encoders=2 num_pwmgens=0 num_stepgens=3&quot;
+</span></span></code></pre>
+<p>This will add an extra encoder called <code>encoder.01</code> for the HAL config to use later.</p>
+<p>The above <code>hm2</code> config is for a 3 axis mill with a spingle encoder. Because I'm already using one
+encoder for the spindle, I'm upping the encoder count to <code>2</code>. This puts the second encoder signals
+on pins 11 and 12 of the DB25 connector on <code>P2</code> which we'll use for the jog pendant. If you've got a
+different number of encoders, you might have to change the connector pinout in the table above or
+use a completely different Mesa card/tutorial. Sorry.</p>
+<h1 id="jog-pendant-hal-configuration"><a class="zola-anchor" href="#jog-pendant-hal-configuration" aria-label="Anchor link for: jog-pendant-hal-configuration">Jog pendant HAL configuration</a></h1>
+<p>Create a new HAL file called <code>mpg.hal</code> and add the following:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> MPG (jog wheel) config</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> MPG is plugged into secondary (internal) connector via a DB25 breakout cable. Pinout can be found</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> at https://wapl.es/cnc/2020/02/23/linuxcnc-jog-wheel-setup.html</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> This config requires `numencoders=2` when loading the Mesa component. It uses the second encoder,</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> as the first is connected to the spindle motor</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Add component to mux axis selection into the selected axis</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">loadrt</span></span><span class="z-meta z-function-call z-arguments z-shell"> mux16 names=jogincr</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">addf</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr                  servo-thread</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> --- JOINT-SELECT-A ---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-select-a     <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  hm2_5i25.0.gpio.017.in_not</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> --- JOINT-SELECT-B ---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-select-b     <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  hm2_5i25.0.gpio.018.in_not</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> --- JOINT-SELECT-C ---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-select-c     <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  hm2_5i25.0.gpio.019.in_not</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> --- JOG-INCR-A ---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> jog-incr-a     <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  hm2_5i25.0.gpio.020.in_not</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> --- JOG-INCR-B ---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> jog-incr-b     <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  hm2_5i25.0.gpio.021.in_not</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> --- JOG-INCR-C ---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> jog-incr-c     <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  hm2_5i25.0.gpio.022.in_not</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> --- ESTOP-EXT ---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> estop-ext     <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  hm2_5i25.0.gpio.023.in_not</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> ---jogwheel signals to mesa encoder - shared MPG---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-selected-count     <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  hm2_5i25.0.encoder.01.count</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">  ---mpg signals---</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">       for axis x MPG</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell">    joint.0.jog-vel-mode 1</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> selected-jog-incr    =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.0.jog-scale axis.x.jog-scale</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-select-a       =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.0.jog-enable axis.x.jog-enable</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-selected-count =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.0.jog-counts axis.x.jog-counts</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">       for axis y MPG</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell">    joint.1.jog-vel-mode 1</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> selected-jog-incr    =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.1.jog-scale axis.y.jog-scale</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-select-b       =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.1.jog-enable axis.y.jog-enable</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-selected-count =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.1.jog-counts axis.y.jog-counts</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell">       for axis z MPG</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell">    joint.2.jog-vel-mode 1</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> selected-jog-incr    =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.2.jog-scale axis.z.jog-scale</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-select-c       =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.2.jog-enable axis.z.jog-enable</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> joint-selected-count =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  joint.2.jog-counts axis.z.jog-counts</span>
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> connect selectable mpg jog increments</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash"><span class="z-comment z-line z-number-sign z-shell"><span class="z-punctuation z-definition z-comment z-begin z-shell">#</span></span><span class="z-comment z-line z-number-sign z-shell"> Note that increments of 0.025 scale to 0.1 due to 4x scaling of encoder pulses vs clicks</span><span class="z-comment z-line z-number-sign z-shell">
+</span></span><span class="z-source z-shell z-bash">
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> jog-incr-a           =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  jogincr.sel0</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> jog-incr-b           =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  jogincr.sel1</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> jog-incr-c           =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  jogincr.sel2</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> jog-incr-d           =<span class="z-keyword z-operator z-assignment z-redirection z-shell">&gt;</span>  jogincr.sel3</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">net</span></span><span class="z-meta z-function-call z-arguments z-shell"> selected-jog-incr    <span class="z-keyword z-operator z-assignment z-redirection z-shell">&lt;</span>=  jogincr.out-f</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.debounce-time      0.200000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.use-graycode      False</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.suppress-no-input True</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in00          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in01          0.000250</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in02          0.002500</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in03          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in04          0.025000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in05          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in06          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in07          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in08          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in09          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in10          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in11          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in12          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in13          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in14          0.000000</span>
+</span><span class="z-source z-shell z-bash">    <span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">setp</span></span><span class="z-meta z-function-call z-arguments z-shell"> jogincr.in15          0.000000</span>
+</span></code></pre>
+<p>Some observations:</p>
+<ul>
+<li>I'm using the <code>in_not</code> inverted pin values. The 5i25 has weak pullups, so pins are active low and
+default to high (<code>TRUE</code>).</li>
+<li>I'm using <code>mux16</code> instead of <code>mux4</code> because I'm lazy.</li>
+<li>Because the jog wheel is a quadrature encoder, there are 4 counts per "click". The jog scales of
+<code>0.00025</code>, <code>0.0025</code>, etc are the <code>1x</code>, <code>10x</code> and <code>100x</code> markings on the pendant panel divided
+by 4.</li>
+<li>The <code>selected-jog-incr</code>, <code>joint-select-*</code> and <code>joint-selected-count</code> signals are wired to <strong>both</strong>
+the <code>joint</code> and <code>axis</code> signals. This is required to make the axes move after homing, and is a
+result of the joints/axes split that happened around LinuxCNC 2.8/2.9.</li>
+</ul>
+<p>Finally, to load this extra HAL config into the machine, add a line to the <code>[HAL]</code> section in
+<code>&lt;config name&gt;.ini</code>:</p>
+<pre data-lang="diff" class="language-diff z-code"><code class="language-diff" data-lang="diff"><span class="z-source z-diff">  [HAL]
+</span><span class="z-source z-diff">  HALUI = halui
+</span><span class="z-source z-diff">  HALFILE = &lt;config name&gt;.hal
+</span><span class="z-source z-diff"><span class="z-markup z-inserted z-diff"><span class="z-punctuation z-definition z-inserted z-diff">+</span> HALFILE = mpg.hal
+</span></span><span class="z-source z-diff">  POSTGUI_HALFILE = postgui_call_list.hal
+</span><span class="z-source z-diff">  SHUTDOWN = shutdown.hal
+</span></code></pre>
+<p>Now you should be good. If something's not working check the HAL Meter for GPIO states and
+<code>encoder.01</code> values.</p>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>

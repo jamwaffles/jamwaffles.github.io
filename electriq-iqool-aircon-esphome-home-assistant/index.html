@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>Controlling an Electriq iQool AC with ESPHome and Home Assistant</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;electriq-iqool-aircon-esphome-home-assistant&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header ">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+
+<article role="main" class="post ">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>Controlling an Electriq iQool AC with ESPHome and Home Assistant</h1>
+
+      <time datetime="2024-03-15">
+        <a href="https://wapl.es/electriq-iqool-aircon-esphome-home-assistant/">March 15, 2024</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p>I recently got a pretty neat all-in-one air conditioner to heat my frigid Scottish garage in the
+winter. CNC machines don't like the cold, and neither do I! My unit is an "electriQ iQool 12000 BTU
+Wall Mounted Air Conditioner with Heating Function", product code <code>IQOOL-SMART15HP</code>. I quite like
+it, but when I got it I <em>really</em> wanted to be able to shout at Siri to turn the garage heat on so
+it'd be warmer by the time I went out. And I succeeded in this mission! By flashing ESPHome to the
+integrated Tuya TYJW2S-5V-YA module, I can now control this AC perfectly from Home Assistant and, by
+extension, Apple's Home app.</p>
+<span id="continue-reading"></span><h1 id="investigation"><a class="zola-anchor" href="#investigation" aria-label="Anchor link for: investigation">Investigation</a></h1>
+<p>TL;DR skip to <a href="https://wapl.es/electriq-iqool-aircon-esphome-home-assistant/#esphome-configuration">the ESPHome config</a></p>
+<p>There is vanishingly little documentation for the iQool online, so figuring out some of the finer
+details of this guide took a long time and/or a lot of trial and error. But. It turns out this unit
+is almost identical to the Qlima
+<a href="https://www.qlima.com/monoblock-airco-cooling-and-heating-wdh-229-ptc-white.html">"Monoblock airco cooling and heating WDH 229 PTC white"</a>.
+I read a press release quoting the Electriq CEO saying he goes to the factories that produce
+whitelabelled units for other manufacturers and buys a bunch straight from the source, so this makes
+sense.</p>
+<p>Knowing these units are very similar, this was incredibly useful information as the
+<a href="https://perfion.pvg.eu:7003/Perfion/file.aspx?id=12529765-f6f1-4b24-8bd6-085c9e94f7df">WDH 229 PTC datasheet</a>
+mentions Tuya support. At last! After ages of searching I've found the key piece of information I
+need!</p>
+<p>Do you know what else contains this key piece of information? The long section of the iQool manual
+already in my posession that came with my electriQ iQool 12000 BTU Wall Mounted Air Conditioner with
+Heating Function dedicated to setting up the Tuya app. There goes several hours of my life paid in
+stupid tax...</p>
+<p>Anyway, ESPHome has Tuya compatibility and can talk to Home Assistant, so let's flash that to the
+Wifi module and get much more functionality through HA's fancy home automation. I'll remind you that
+my goal is to shout at Siri to turn on the garage AC (in heat mode because I live in Scotland come
+on). Success will be had.</p>
+<p>The lower level control functions of the aircon are controlled by another microcontroller, so as far
+as I know there's not too much risk in flashing ESPHome or your own firwmare to the Wifi module.
+This other microcontroller also exposes various datapoints to the WiFi module like the measured
+temperature which is nice to be able to report back to Home Assistant.</p>
+<h2 id="quick-aside-ir-remote-spoofing-kinda-works"><a class="zola-anchor" href="#quick-aside-ir-remote-spoofing-kinda-works" aria-label="Anchor link for: quick-aside-ir-remote-spoofing-kinda-works">Quick aside: IR remote spoofing kinda works</a></h2>
+<p>I'm including this section for those who want a solution that doesn't require either replacing the
+Tuya firmware or can't open the unit to flash the module.</p>
+<p>ESPHome can spoof infrared remote controls, so I started there. Doing some debugging with
+<a href="https://github.com/crankyoldgit/IRremoteESP8266">IRremoteESP8266</a>, the protocol seems to <em>almost</em>
+be <code>TROTEC_3550</code> but more often than not the tool just ended up decoding the remote data as
+<code>Pronto</code>, a generic IR waveform encoding format.</p>
+<p>I did get the unit working over IR with Home Assistant using ESPHome's <code>remote_transmitter</code>
+component but it felt quite brittle to me sending raw Pronto codes. I also wanted to read data back
+from the AC which obviously isn't possible with a one way IR link, so I moved on to slightly more
+involved hacks.</p>
+<p>Please let me know if you'd like the Pronto codes - I still have the working ESPHome config floating
+around somewhere.</p>
+<h1 id="firmware-flashing-connections-for-the-the-tyjw2s-5v-ya-tuya-module"><a class="zola-anchor" href="#firmware-flashing-connections-for-the-the-tyjw2s-5v-ya-tuya-module" aria-label="Anchor link for: firmware-flashing-connections-for-the-the-tyjw2s-5v-ya-tuya-module">Firmware flashing connections for the the TYJW2S-5V-YA Tuya module</a></h1>
+<p>This <a href="https://developer.tuya.com/en/docs/iot/tyjw2s5vbl?id=Kaax48319lsfq">module</a> is a small
+breakout board for the
+<a href="https://developer.tuya.com/en/docs/iot/wifie1smodule?id=K9605thnvg3e7">TYWE1S</a> system on module (or
+whatever you want to call it).</p>
+<p>The way I flashed the first ESPHome firmware does require physical access to the WiFi module, but it
+may be possible to hack it over the air by following
+<a href="https://devices.esphome.io/guides/tuya-convert">the ESPHome <code>tuya-convert</code> guide</a>. I was
+comfortable taking my unit apart but if you're not, you should still have an options in that guide.
+That said I'm glad I did crack into my unit as the heat exchanger coil was missing screws! That's
+what you get for buying B-grade I guess. Once ESPHome is flashed once and connects to your WiFi
+successfully, you should be able to flash much more easily OTA.</p>
+<p>You'll need a serial adapter to hook onto the wifi board. I used a
+<a href="https://wiki.sipeed.com/hardware/en/logic_analyzer/combo8/index.html">Sipeed Slogic Combo8</a> but any
+serial adapter will work.</p>
+<p>Once the case is removed, the Tuya module is in a black plastic case on the top left of the unit
+(red arrow in photo below). Unscrewing this is tricky without small screwdrivers as the heat coil is
+in the way, but is doable. Once the module is removed, you'll need to open the snapped together
+plastic case to reveal the module inside.</p>
+<div class="post__2-images">
+  <div>
+    
+    <img src="https://wapl.es/processed_images/open-case.ca55c084bbc0aa0a.jpg" />
+  </div>
+  <div>
+    
+    <img src="https://wapl.es/processed_images/module-front.9fbf7c466a809f91.jpg" />
+  </div>
+</div>
+<h2 id="connections"><a class="zola-anchor" href="#connections" aria-label="Anchor link for: connections">Connections</a></h2>
+<p>The Tuya TYJW2S-5V-YA
+<a href="https://developer.tuya.com/en/docs/iot/tyjw2s5vbl?id=Kaax48319lsfq">datasheet</a> shows the pinout as
+the following:</p>
+<div>
+  
+  <img src="https://wapl.es/processed_images/tuya-pinout.bd9bd761e6cb4e0c.png" />
+</div>
+<p>The lower 4 pins are the interface to the aircon control MCU. The pins up the side (<code>TXD0</code>, <code>RXD0</code>,
+etc) is the programming/debug header. I'm going to use the unit's power from the 4 pin connector, so
+I only connected TXD0, RXD0 and GND to my serial adapter.</p>
+<p>I got a bit... inventive with the wiring.</p>
+<div>
+  
+  <img src="https://wapl.es/processed_images/uart-lol.b1f1ca1ddf4a52ac.jpg" />
+</div>
+<h2 id="flashing-process"><a class="zola-anchor" href="#flashing-process" aria-label="Anchor link for: flashing-process">Flashing process</a></h2>
+<ul>
+<li>Plug in AC unit</li>
+<li>Unplug the 4 pin connector on the WiFi module</li>
+<li>On your PC/laptop, run whatever command you want to send to the module, e.g. <code>esphome run ac.yaml</code>
+or <code>esptool.py</code></li>
+<li>Hold the single button on the module,</li>
+<li>Plug the 4 pin connector to the AC back into the module to repower it, then release the button.
+This puts the module in programming mode.</li>
+<li>The <code>esphome</code>/<code>esptool.py</code> command should start communicating now. You might have to try this
+process a few times to get the command to bite as the timeouts are quite short.</li>
+</ul>
+<p>Once ESPHome is flashed, you can update much more easily over the air.</p>
+<h2 id="optional-back-up-the-original-firmware"><a class="zola-anchor" href="#optional-back-up-the-original-firmware" aria-label="Anchor link for: optional-back-up-the-original-firmware">Optional: back up the original firmware</a></h2>
+<p>For safety's sake I took a backup of the original Tuya firmware by following
+<a href="https://community.blynk.cc/t/how-to-backup-restore-official-firmware-on-any-espressif-esp8266-esp32/34309">this guide</a>.
+Make sure you have <code>esptool</code> installed (usually installed with <code>esphome</code> I think). My device has a
+2MB flash. Here are the commands I used:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">esptool.py</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>port</span> /dev/tty.usbmodem103 flash_id</span>
+</span><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">esptool.py</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>b</span> 115200<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>port</span> /dev/tty.usbmodem103 read_flash 0x000000 0x200000 electriq-iqool-tuya-2m.bin</span>
+</span></code></pre>
+<p>And to write the original firmware back to the device if you need to:</p>
+<pre data-lang="bash" class="language-bash z-code"><code class="language-bash" data-lang="bash"><span class="z-source z-shell z-bash"><span class="z-meta z-function-call z-shell"><span class="z-variable z-function z-shell">esptool.py</span></span><span class="z-meta z-function-call z-arguments z-shell"><span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> -</span>b</span> 115200<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>port</span> /dev/tty.usbmodem103 write_flash<span class="z-variable z-parameter z-option z-shell"><span class="z-punctuation z-definition z-parameter z-shell"> --</span>flash_freq</span> 80m 0x000000 electriq-iqool-tuya-2m.bin</span>
+</span></code></pre>
+<p>Don't forget to change the port to whichever one you're using!</p>
+<p>The original firmware for my unit can be downloaded <a href="/files/electriq-iqool-tuya-2m.bin">here</a> if you
+need to reset to defaults. Do so at your own risk, however. I bear no responsibility for any damage
+or bricking of your unit.</p>
+<p>The IR remote is still usable with ESPHome, and its state is propagated through to HA which is nice,
+however the state on the remote itself can't be updated externally, so any actions sent from the
+remote will clobber any settings in HA, meaning things like temperature setpoint and mode will all
+be changed to match the remote if you change the fan speed for example. Ah well, your phone is the
+remote now!</p>
+<h1 id="esphome-configuration"><a class="zola-anchor" href="#esphome-configuration" aria-label="Anchor link for: esphome-configuration">ESPHome configuration</a></h1>
+<p>The ESPHome configuration is pretty standard, although I did have to use some not-yet-merged (at
+time of writing) features made available in <a href="https://github.com/esphome/esphome/pull/5159">this PR</a>.
+I had to fork that repo again
+<a href="https://github.com/jamwaffles/esphome/tree/fix_tuya_climate_updates">here</a> with some
+<a href="https://github.com/jamwaffles/esphome/commit/90e37a8e101e977decaa22d215bd0576a077dceb">fixes</a> to
+get the changes to compile with an updated ESPHome.</p>
+<p>With luck, by the time you're reading this you can just use the <code>tuya</code> component straight from
+ESPHome, but for now, I'm going to use this config:</p>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-entity z-other z-document z-begin z-yaml">---</span>
+</span><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">esphome</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">name</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">garage-aircon</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> Let aircon unit boot up for 10s and initialise before we start reading stuff from it
+</span></span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">on_boot</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">priority</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">800</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">then</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">      <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">delay</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">10s</span>
+</span><span class="z-source z-yaml">
+</span><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">esp8266</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> Tuya module has 2MB flash
+</span></span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">board</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">esp_wroom_02</span>
+</span></code></pre>
+<p>Next we'll configure logging. Because the AC MCU talks over the UART normally used for logging
+(UART0), we have to disable that, OR use <code>UART1</code> (the <code>TXD1</code> pin on the module):</p>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> Disable logging over UART0 otherwise the AC MCU will be unhappy
+</span></span><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">logger</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">level</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">INFO</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> Set to non-zero value to enable logging
+</span></span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">baud_rate</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">0</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> OR enable through TXD1 pin:
+</span></span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> hardware_uart: UART1
+</span></span></code></pre>
+<p>For additional debugging, we can hook up the LED on the module as a status blinker. This is
+optional, or can at least be removed when you're sure everything is working.</p>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">output</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">platform</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">gpio</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">id</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">heartbeat_led</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">pin</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">number</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">5</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">mode</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">output</span>
+</span><span class="z-source z-yaml">
+</span><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">interval</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">interval</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">1000ms</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">then</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">      <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">output.turn_on</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">heartbeat_led</span>
+</span><span class="z-source z-yaml">      <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">delay</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">100ms</span>
+</span><span class="z-source z-yaml">      <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">output.turn_off</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">heartbeat_led</span>
+</span></code></pre>
+<p>Now we need to set up UART0 to communicate over the 4 pin connector:</p>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">uart</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">id</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">connector_uart</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> Connector TX
+</span></span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">tx_pin</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">number</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">15</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">inverted</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">false</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> Connector RX
+</span></span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">rx_pin</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">number</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">13</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">inverted</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">false</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">mode</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">input</span>
+</span><span class="z-source z-yaml">  <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">baud_rate</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">9600</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> Uncomment to print everything TXed/RXed for debugging
+</span></span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> debug:
+</span></span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span>   dummy_receiver: true
+</span></span></code></pre>
+<p>And enable the <code>tuya</code> component with no additional config:</p>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">tuya</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span></code></pre>
+<p>Now for the real magic: our <code>climate</code> component!</p>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">climate</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">platform</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">tuya</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">name</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">Garage AC</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">id</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">iqool</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">supports_heat</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">true</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">supports_cool</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-language z-boolean z-yaml">true</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">switch_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">1</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">target_temperature_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">2</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">current_temperature_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">3</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">active_state</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">4</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">cooling_value</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">0</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">fanonly_value</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">1</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">drying_value</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">2</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">heating_value</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">3</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">fan_mode</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">5</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">low_value</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">0</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">medium_value</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">1</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">high_value</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">2</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">preset</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">sleep</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">        <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">101</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">swing_mode</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">vertical_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">104</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">visual</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> Optional. Example of visual settings override.
+</span></span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">min_temperature</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">16 °C</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">max_temperature</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">30 °C</span>
+</span><span class="z-source z-yaml">      <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">temperature_step</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-unquoted z-plain z-out z-yaml">1 °C</span>
+</span></code></pre>
+<p>The next part is optional, but if you'd like to log AC state/data in something like Grafana, you'll
+need to add some sensors:</p>
+<pre data-lang="yaml" class="language-yaml z-code"><code class="language-yaml" data-lang="yaml"><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">sensor</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">platform</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>tuya<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">name</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>AC Measured Temperature<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">sensor_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">3</span>
+</span><span class="z-source z-yaml">  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">platform</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>tuya<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">name</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>AC Setpoint<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">sensor_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">2</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> - &quot;0 -&gt; Cool&quot;
+</span></span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> - &quot;1 -&gt; Fan&quot;
+</span></span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> - &quot;2 -&gt; Dry&quot;
+</span></span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> - &quot;3 -&gt; Heat&quot;
+</span></span><span class="z-source z-yaml">  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">platform</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>tuya<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">name</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>AC Mode<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">sensor_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">4</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">accuracy_decimals</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">0</span>
+</span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> - 0 -&gt; Low
+</span></span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> - 1 -&gt; Med
+</span></span><span class="z-source z-yaml">  <span class="z-comment z-line z-number-sign z-yaml"><span class="z-punctuation z-definition z-comment z-line z-number-sign z-yaml">#</span> - 2 -&gt; High
+</span></span><span class="z-source z-yaml">  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">platform</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>tuya<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">name</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>AC Fan Speed<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">sensor_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">5</span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">accuracy_decimals</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">0</span>
+</span><span class="z-source z-yaml">
+</span><span class="z-source z-yaml"><span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">binary_sensor</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span>
+</span><span class="z-source z-yaml">  <span class="z-punctuation z-definition z-block z-sequence z-item z-yaml">-</span> <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">platform</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>tuya<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">name</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-string z-quoted z-double z-yaml"><span class="z-punctuation z-definition z-string z-begin z-yaml">&quot;</span>AC On<span class="z-punctuation z-definition z-string z-end z-yaml">&quot;</span></span>
+</span><span class="z-source z-yaml">    <span class="z-string z-unquoted z-plain z-out z-yaml"><span class="z-entity z-name z-tag z-yaml">sensor_datapoint</span></span><span class="z-punctuation z-separator z-key-value z-mapping z-yaml">:</span> <span class="z-constant z-numeric z-integer z-decimal z-yaml">1</span>
+</span></code></pre>
+<h1 id="final-words-and-some-additional-details"><a class="zola-anchor" href="#final-words-and-some-additional-details" aria-label="Anchor link for: final-words-and-some-additional-details">Final words and some additional details</a></h1>
+<p>This setup has been working flawlessly. I'm really happy I can reuse all original firmware for a
+super clean hack - it's just software! The only thing I couldn't get working is the PTC heater in my
+unit. Apparently this is only controllable through the remote as I didn't find any Tuya datapoints
+that changed when I enabled/disabled the PTC.</p>
+<p>For future reference, here are the mappings I determined by mashing buttons on the remote and
+looking at the log output:</p>
+<table><thead><tr><th>Datapoint</th><th>Function</th></tr></thead><tbody>
+<tr><td>1</td><td>On/off (standby)</td></tr>
+<tr><td>2</td><td>Target temperature in ºC</td></tr>
+<tr><td>3</td><td>Current measured temperature in ºC</td></tr>
+<tr><td>4</td><td>Mode (cool <code>0</code>, fan <code>1</code>, dry <code>2</code>, heat <code>3</code>)</td></tr>
+<tr><td>5</td><td>Fan speed (<code>0</code> low, <code>1</code> medium, <code>2</code> high)</td></tr>
+<tr><td>101</td><td>"Sleep" (quiet mode) preset on/off</td></tr>
+<tr><td>104</td><td>Vertical swing on/off</td></tr>
+</tbody></table>
+<p>And here's what I was reading through from the ESPHome output:</p>
+<pre class="z-code"><code><span class="z-text z-plain">[13:40:56][C][tuya:033]: Tuya:
+</span><span class="z-text z-plain">[13:40:56][C][tuya:048]:   Datapoint 1: switch (value: OFF)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:050]:   Datapoint 2: int value (value: 6)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:054]:   Datapoint 4: enum (value: 0)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:054]:   Datapoint 5: enum (value: 0)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:056]:   Datapoint 106: bitmask (value: 0)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:056]:   Datapoint 111: bitmask (value: 0)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:054]:   Datapoint 19: enum (value: 0)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:050]:   Datapoint 3: int value (value: 13)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:048]:   Datapoint 101: switch (value: OFF)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:048]:   Datapoint 102: switch (value: OFF)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:048]:   Datapoint 104: switch (value: OFF)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:054]:   Datapoint 110: enum (value: 0)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:050]:   Datapoint 105: int value (value: 0)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:050]:   Datapoint 103: int value (value: 0)
+</span><span class="z-text z-plain">[13:40:56][C][tuya:068]:   Product: &#39;{&quot;p&quot;:&quot;2tgd3qnobb1mcgd9&quot;,&quot;v&quot;:&quot;1.0.0&quot;,&quot;m&quot;:1}&#39;
+</span></code></pre>
+<p>I'm curious to know what the bitmasks are - maybe defrost state, errors, something else? Who knows!
+But they were <em>always</em> zero when I inspected them. If I can be bothered, I'll grab some logs when
+the unit is in defrost mode and see if anything changes.</p>
+<!-- ## Home assistant
+
+TODO: Screenshot of AC pane
+
+## Grafana
+
+- I'm using InfluxDB
+- TODO: Screenshots
+- Talk about presenting sensors for logging stuff in Grafana. Link back to section where I add the
+  sensors in ESPHome -->
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>

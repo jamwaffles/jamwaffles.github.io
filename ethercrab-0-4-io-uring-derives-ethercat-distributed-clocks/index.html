@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css?family=Fira+Mono|Open+Sans|Oswald|Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="https://wapl.es/index.css" />
+
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-dark.css" media="(prefers-color-scheme: dark)" />
+  <link rel="stylesheet" type="text/css" href="/syntax-theme-light.css" media="(prefers-color-scheme: light)" />
+  
+   
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="https://wapl.es/atom.xml"> 
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="https://wapl.es/atom.xml"> 
+  
+
+  <title>EtherCrab 0.4: Distributed Clocks, `io_uring`, Derives, Oh My</title>
+  <meta
+    name="description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="og:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+  <meta
+    name="twitter:description"
+    content="Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️"
+  />
+
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width initial-scale=1" />
+
+  
+
+  <link
+    rel="apple-touch-icon"
+    sizes="57x57"
+    href="https://wapl.es/favicon/apple-icon-57x57.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="60x60"
+    href="https://wapl.es/favicon/apple-icon-60x60.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="72x72"
+    href="https://wapl.es/favicon/apple-icon-72x72.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="76x76"
+    href="https://wapl.es/favicon/apple-icon-76x76.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="114x114"
+    href="https://wapl.es/favicon/apple-icon-114x114.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="120x120"
+    href="https://wapl.es/favicon/apple-icon-120x120.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="144x144"
+    href="https://wapl.es/favicon/apple-icon-144x144.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="152x152"
+    href="https://wapl.es/favicon/apple-icon-152x152.png"
+  />
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="https://wapl.es/favicon/apple-icon-180x180.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="192x192"
+    href="https://wapl.es/favicon/android-icon-192x192.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="32x32"
+    href="https://wapl.es/favicon/favicon-32x32.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="96x96"
+    href="https://wapl.es/favicon/favicon-96x96.png"
+  />
+  <link
+    rel="icon"
+    type="image/png"
+    sizes="16x16"
+    href="https://wapl.es/favicon/favicon-16x16.png"
+  />
+  <meta name="msapplication-TileColor" content="#eeeeee" />
+  <meta
+    name="msapplication-TileImage"
+    content="https://wapl.es/favicon/ms-icon-144x144.png"
+  />
+  <meta name="theme-color" content="#eeeeee" />
+
+  <link
+    rel="canonical"
+    href="https:&#x2F;&#x2F;wapl.es&#x2F;ethercrab-0-4-io-uring-derives-ethercat-distributed-clocks&#x2F;"
+  />
+</head>
+
+
+  <body class="">
+    
+<div class="post__header ">
+  <header class="header" role="banner">
+  <div class="wrap">
+    <a class="site-title" href="https:&#x2F;&#x2F;wapl.es/">
+      <h1 class="header__logo">
+        <img src="https://wapl.es/images/logo-100-circle.png" alt="Hello it me, James. This
+        is a picture of a banana trifle." />
+        <span>James Waples&#x27; Internet Hole</span>
+      </h1>
+    </a>
+
+    <aside class="header__links">
+      <a href="/atom.xml" class="header__links__link">
+        <span class="header__links__link__text">RSS</span>
+        <svg alt="RSS" xmlns="http://www.w3.org/2000/svg" viewBox="0 -256 32 32">
+          <path
+            d="M8.7-228.4q0 1.9-1.2 3.1-1.3 1.3-3.1 1.3-1.9 0-3.1-1.3-1.3-1.2-1.3-3 0-1.9 1.3-3.2 1.2-1.2 3-1.2 1.9 0 3.2 1.2 1.2 1.3 1.2 3.1zm11.7 2.8q0 .7-.4 1.1-.4.5-1 .5h-3.2q-.5 0-1-.4-.3-.4-.4-1-.5-5.1-4.2-8.8-3.7-3.7-8.9-4.2-.6 0-1-.5-.3-.4-.3-1v-3q0-.7.5-1 .4-.5 1-.5 3.7.3 7 1.9 3.3 1.5 6 4 2.5 2.7 4 6 1.6 3.3 1.9 7zm11.6 0q0 .7-.4 1.1-.4.5-1 .5h-3.3q-.6 0-1-.4t-.5-1q-.2-4.9-2.3-9.3-2-4.3-5.2-7.6-3.3-3.2-7.7-5.2T1.4-250q-.6 0-1-.4t-.4-1v-3.2q0-.7.5-1 .4-.5 1-.5 6 .3 11.4 2.7 5.5 2.5 9.7 6.7 4.2 4.2 6.7 9.7 2.4 5.4 2.7 11.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+
+      <a href="https://github.com/jamwaffles" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">Github</span>
+        <svg
+          alt="Github"
+          xmlns="http://www.w3.org/2000/svg"
+          width="43.438"
+          height="42.366"
+          viewBox="0 0 11.493 11.209"
+        >
+          <path
+            d="M5.746 0A5.747 5.747 0 003.93 11.2c.287.052.392-.125.392-.278 0-.136-.005-.497-.008-.977-1.598.347-1.935-.77-1.935-.77-.262-.664-.639-.841-.639-.841-.521-.356.04-.35.04-.35.577.041.88.593.88.593.513.878 1.345.625 1.673.477.052-.37.2-.624.364-.768-1.276-.145-2.617-.638-2.617-2.84 0-.627.224-1.14.591-1.542-.059-.145-.256-.73.057-1.52 0 0 .482-.155 1.58.588.458-.127.95-.19 1.438-.193.489.002.98.066 1.44.193 1.096-.743 1.578-.589 1.578-.589.313.792.116 1.376.057 1.521.369.402.59.915.59 1.542 0 2.208-1.343 2.694-2.623 2.836.206.177.39.528.39 1.064 0 .768-.007 1.388-.007 1.576 0 .154.104.333.395.277A5.749 5.749 0 005.746 0"
+            fill="currentColor"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </a>
+
+      <a href="https://wapl.es/cv/" target="_blank" class="header__links__link">
+        <span class="header__links__link__text">CV/Resume</span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+          <!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+            fill="currentColor"
+          />
+        </svg>
+      </a>
+    </aside>
+
+    <hr />
+  </div>
+</header>
+
+</div>
+
+
+<article role="main" class="post ">
+  <header>
+    <a href="https:&#x2F;&#x2F;wapl.es" id="home_link">« Posts list</a>
+    <div class="post__title">
+      <h1>EtherCrab 0.4: Distributed Clocks, <code>io_uring</code>, Derives, Oh My</h1>
+
+      <time datetime="2024-03-31">
+        <a href="https://wapl.es/ethercrab-0-4-io-uring-derives-ethercat-distributed-clocks/">March 31, 2024</a>
+      </time>
+    </div>
+  </header>
+
+  <div class="post__text" id="js-post-content"><p><a href="https://crates.io/crates/ethercrab/0.4.0">EtherCrab 0.4.0</a>
+(<a href="https://lib.rs/crates/ethercrab">lib.rs</a>), the pure Rust EtherCAT MainDevice is out! I've added a
+lot of features and fixes to this release, including Distributed Clocks support, an <code>io_uring</code>-based
+network driver for better performance, and a brand new set of derive-able traits to make getting
+data into and out of your EtherCAT network easier than ever! The full changelog including breaking
+changes can be found <a href="https://github.com/ethercrab-rs/ethercrab/blob/master/CHANGELOG.md">here</a>, but
+for the rest of this article let's dig a little deeper into some of the headline features.</p>
+<span id="continue-reading"></span><div class="callout">
+<p>Are you looking to use Rust in your next EtherCAT deployment? Experiencing jitter or latency issues
+in an existing EtherCrab app? I can help! Send me an email at <a href="mailto:james@wapl.es">james@wapl.es</a>
+to discuss your needs.</p>
+<p>If you're interested in supporting my work on EtherCrab another way, please consider becoming a
+<a href="https://github.com/sponsors/jamwaffles">GitHub sponsor</a>. I quit my job so I really appreciate any
+amount you can spare!</p>
+</div>
+<h1 id="a-quick-note-on-terminology"><a class="zola-anchor" href="#a-quick-note-on-terminology" aria-label="Anchor link for: a-quick-note-on-terminology">A quick note on terminology</a></h1>
+<p>The EtherCAT Technology Group (ETG) historically used the words "master" and "slave" to refer to the
+controller of an EtherCAT network, and a downstream device respectively. These terms were changed by
+the ETG recently to "MainDevice" and "SubDevice".The EtherCrab crate itself hasn't yet made this
+transition, but will be doing so in a future release. This article uses "MainDevice" to refer to the
+EtherCrab <code>Client</code> and "SubDevice" to refer to a <code>Slave</code> or <code>SlaveRef</code>.</p>
+<h1 id="last-thing-i-promise"><a class="zola-anchor" href="#last-thing-i-promise" aria-label="Anchor link for: last-thing-i-promise">Last thing I promise</a></h1>
+<p>Are you using EtherCrab in production or even just as a hobby? <strong>I'm collecting testimonials, so
+please let me know if you are!</strong> I'd love to know where and how EtherCrab is ending up!</p>
+<p>I can be reached via <a href="mailto:james@wapl.es">james@wapl.es</a>,
+<a href="https://mastodon.social/@jamwaffles">@jamwaffles on Mastodon</a> or
+<a href="https://twitter.com/jam_waffles">@jam_waffles on Twitter</a>. Do say hello!</p>
+<p>Righto, onto the snazzy new features.</p>
+<h1 id="distributed-clocks"><a class="zola-anchor" href="#distributed-clocks" aria-label="Anchor link for: distributed-clocks">Distributed clocks</a></h1>
+<p>First up, Distributed Clocks (DC) support. I'm really proud of this feature because DC is complex to
+implement and verifying correct operation is challenging, but I got through all that, and EtherCrab
+now has support for Distributed Clocks! It's currently being used in the field and has solved a
+bunch of problems the user was having with their servo drives without DC enabled, which was great
+to see.</p>
+<h2 id="a-quick-intro-to-distributed-clocks"><a class="zola-anchor" href="#a-quick-intro-to-distributed-clocks" aria-label="Anchor link for: a-quick-intro-to-distributed-clocks">A quick intro to Distributed Clocks</a></h2>
+<p>If you're not familiar with EtherCAT's Distributed Clocks functionality, I'll give a quick intro
+here. Feel free to skip ahead if you don't need the refresher.</p>
+<p>Distributed Clocks, or DC for short, is a fantastic part of EtherCAT that compensates for the fact
+that the clocks in every device in the network suffer from drift, phase noise and incoherence
+relative to each other. It is able to do this by designating a specific SubDevice as a reference
+clock and distributing (hah) that timebase across the network, taking into account propagation
+delays as well as continuously compensating for drift. EtherCAT networks with DC enabled can
+synchronise all SubDevice input and output latching to well within 100ns of each other if desired.</p>
+<p>A SubDevice is much more likely to have a cleaner clock than the MainDevice as it doesn't suffer
+from OS noise like software interrupts, multiple CPU power states, core swapping and the like. This
+cleanliness is distributed to all other SubDevices, absolving the network of nearly all jitter,
+glitches or latency from the MainDevice when it transmits the PDI (Process Data Image).</p>
+<p>A lot of applications don't need levels of timing this accurate (e.g. reading sensor data every half
+a second is pretty relaxed) but for SubDevices like servo drives in Cyclic Synchronous Position
+mode, it is vital to have a regular point in time where inputs and outputs are sampled. If the
+timing is even a little irregular, the drive can error out, or even cause damage to the plant.</p>
+<p>Another common use case for DC is synchronising multiple axes of motion. If the outputs of each axis
+are not latched at the same time, deviations from the planned trajectory can occur. The global DC
+sync pulse coordinates these actions regardless of network size.</p>
+<p>With DC, a SubDevice will buffer the PDI until the next DC sync cycle (SYNC0 pulse), at which time
+it will latch the input/output data. This gives a window of time in which the MainDevice can jitter,
+stall or go on smoko before it sends the next PDI without the SubDevice having to care, as long as
+the MainDevice sends the PDI before the next SYNC0 pulse.</p>
+<h2 id="dc-in-ethercrab"><a class="zola-anchor" href="#dc-in-ethercrab" aria-label="Anchor link for: dc-in-ethercrab">DC in EtherCrab</a></h2>
+<p>As an example of the best possible performance, EtherCrab is capable of sub-10ns coherence between
+two SubDevices. The plot below shows the SYNC0 falling edge of two SubDevices aligned to within ~7ns
+of each other. The green trace exhibits a small amount of jitter as real life is never perfect, but
+still, seven nanoseconds!</p>
+<div>
+  
+  <img src="https://wapl.es/processed_images/lan9252-jitter.6cfa15fdb24419ba.png" />
+</div>
+<p>The MainDevice (EtherCrab) is responsible for repeatedly sending synchronisation frames to keep all
+SubDevice clocks aligned, as well as ensuring the Process Data Image (PDI) is sent at the right time
+within the DC cycle.</p>
+<p>EtherCrab's new <code>tx_rx_dc</code> method will handle sending the sync frame alongside the PDI, but also
+returns a <code>CycleInfo</code> struct containing some timing data that can be used to establish a consistent
+offset into the process data cycle. Here's an example using <code>smol</code> timers:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>_tx<span class="z-punctuation z-separator z-rust">,</span> _rx<span class="z-punctuation z-separator z-rust">,</span> pdu_loop</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-constant z-other z-rust">PDU_STORAGE</span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">try_split</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>can only split once<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> client <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">Client<span class="z-punctuation z-accessor z-rust">::</span></span>new<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>pdu_loop<span class="z-punctuation z-separator z-rust">,</span> <span class="z-meta z-path z-rust">Timeouts<span class="z-punctuation z-accessor z-rust">::</span></span>default<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-meta z-path z-rust">ClientConfig<span class="z-punctuation z-accessor z-rust">::</span></span>default<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> cycle_time <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">Duration<span class="z-punctuation z-accessor z-rust">::</span></span>from_millis<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-constant z-numeric z-integer z-decimal z-rust">5</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> <span class="z-storage z-modifier z-rust">mut</span> group <span class="z-keyword z-operator z-assignment z-rust">=</span> client
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-meta z-path z-rust">init_single_group<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-generic z-rust"><span class="z-punctuation z-definition z-generic z-begin z-rust">&lt;</span>MAX_SUBDEVICES, PDI_LEN<span class="z-punctuation z-definition z-generic z-end z-rust">&gt;</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>ethercat_now</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span>await
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>Init<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> This example enables SYNC0 for every detected SubDevice
+</span></span><span class="z-source z-rust"><span class="z-keyword z-control z-rust">for</span> <span class="z-storage z-modifier z-rust">mut</span> sd <span class="z-keyword z-operator z-rust">in</span> group<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">iter</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>client</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    sd<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">set_dc_sync</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-meta z-path z-rust">DcSync<span class="z-punctuation z-accessor z-rust">::</span></span>Sync0</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> group <span class="z-keyword z-operator z-assignment z-rust">=</span> group
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">into_pre_op_pdi</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>client</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span>await
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>PRE-OP -&gt; PRE-OP with PDI<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">configure_dc_sync</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">        <span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>client<span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">        DcConfiguration <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">            <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> Start SYNC0 100ms in the future
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">            start_delay<span class="z-punctuation z-separator z-rust">:</span> <span class="z-meta z-path z-rust">Duration<span class="z-punctuation z-accessor z-rust">::</span></span>from_millis<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-constant z-numeric z-integer z-decimal z-rust">100</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">            <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> SYNC0 period should be the same as the process data loop in most cases
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">            sync0_period<span class="z-punctuation z-separator z-rust">:</span> cycle_time<span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">            <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> Send process data half way through cycle
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">            sync0_shift<span class="z-punctuation z-separator z-rust">:</span> cycle_time <span class="z-keyword z-operator z-arithmetic z-rust">/</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">2</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">        </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">    </span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span>await
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>DC configuration<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">request_into_op</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>client</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span>await
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>PRE-OP -&gt; SAFE-OP -&gt; OP<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> Wait for all SubDevices in the group to reach OP, whilst sending PDI to allow DC to start correctly.
+</span></span><span class="z-source z-rust"><span class="z-keyword z-control z-rust">while</span> <span class="z-keyword z-operator z-logical z-rust">!</span>group<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">all_op</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>client</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span>await<span class="z-keyword z-operator z-rust">?</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> now <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">Instant<span class="z-punctuation z-accessor z-rust">::</span></span>now<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">        _wkc<span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">        CycleInfo <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">            next_cycle_wait<span class="z-punctuation z-separator z-rust">,</span> <span class="z-keyword z-operator z-range z-rust">..</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">        </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">    </span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> group<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">tx_rx_dc</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>client</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span>await<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>TX/RX<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-path z-rust">smol<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-path z-rust">Timer<span class="z-punctuation z-accessor z-rust">::</span></span>at<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>now <span class="z-keyword z-operator z-arithmetic z-rust">+</span> next_cycle_wait</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span>await<span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> Main application process data cycle
+</span></span><span class="z-source z-rust"><span class="z-keyword z-control z-rust">loop</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> now <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">Instant<span class="z-punctuation z-accessor z-rust">::</span></span>now<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">        _wkc<span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">        CycleInfo <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">            next_cycle_wait<span class="z-punctuation z-separator z-rust">,</span> <span class="z-keyword z-operator z-range z-rust">..</span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-block z-rust">        </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">    </span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span> group<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">tx_rx_dc</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>client</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span>await<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>TX/RX<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> Process data computations happen here
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-path z-rust">smol<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-path z-rust">Timer<span class="z-punctuation z-accessor z-rust">::</span></span>at<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>now <span class="z-keyword z-operator z-arithmetic z-rust">+</span> next_cycle_wait</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span>await<span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></code></pre>
+<p>This example configures a 5ms DC cycle time, and will produce delay values that allow the MainDevice
+to send the PDI 2.5ms or 50% into the cycle. You can find a more complete example
+<a href="https://github.com/ethercrab-rs/ethercrab/blob/cd049d84d144ca279c9c641b13104093daa04481/examples/dc.rs">here</a>.
+DC is tricky to get right, so the example is quite long.</p>
+<p>It's important to use <code>smol::Timer::at</code> (or equivalent for your executor/blocking code) instead of a
+naive delay to compensate for variable computation times in the loop. With the above code, we can
+achieve extraordinarily low jitter from the MainDevice that fits well within the established DC
+cycle:</p>
+<div>
+  
+  <img src="https://wapl.es/processed_images/lan9252-low-std-dev-30s-persist-edit.df858ec88002f64f.png" />
+</div>
+<p>If you decide not to use the <code>next_cycle_wait</code> parameter, <strong>or you use <code>tokio</code></strong>, the jitter will
+look a lot worse. Notice the varying pulse offset on the cyan trace, as well as the atrocious
+standard deviation of nearly 300us:</p>
+<div>
+  
+  <img src="https://wapl.es/processed_images/lan9252-bad-tokio.dfdb5e98dd50ff13.png" />
+</div>
+<p>If you would prefer not to use async timers, I'd recommend the[<code>timerfd</code> crate]
+(https://docs.rs/timerfd/latest/timerfd/) to get best timing accuracy. <code>std::thread::sleep</code> is also
+an enticing option for its simplicity, but is a poor choice due to it not taking into account the
+loop or network processing time.</p>
+<h1 id="io-uring"><a class="zola-anchor" href="#io-uring" aria-label="Anchor link for: io-uring"><code>io_uring</code></a></h1>
+<p>The Linux kernel introduced a new way of doing IO a while back called <code>io_uring</code>. It's touted as a
+more perfomant way to do IO by using a pair of ringbuffers to reduce copies and overhead in the
+system.</p>
+<p>EtherCrab 0.4 adds support for <code>io_uring</code> using the blocking <code>tx_rx_task_io_uring</code> function. This is
+similar to <code>tx_rx_task</code>, however the latter is <code>async</code> and requires an executor to run.
+<code>tx_rx_task_io_uring</code> should be spawned into a new thread so as to not block the rest of the
+application.</p>
+<p>Async performance with <code>smol</code> is pretty solid, but for really tight timing, or applications with
+short process data cycles, <code>io_uring</code> can reduce the TX/RX overhead, leaving a bit of breathing
+room.</p>
+<p>Additionally, because <code>io_uring</code> doesn't rely on an executor that might spawn other threads, we get
+control over where the TX/RX driver is placed. For example, you might want to pin it to a core with
+a specific realtime priority for best network performance. With an executor like <code>smol</code> or <code>tokio</code>,
+you're at the mercy of that crate's thread creation and placement.</p>
+<h2 id="how-it-works"><a class="zola-anchor" href="#how-it-works" aria-label="Anchor link for: how-it-works">How it works</a></h2>
+<p>Whichever network driver is used, it needs to be efficient. Because EtherCrab is fully async
+internally, we can use the <code>Waker</code> machinery provided by Rust to notify the driver when a frame is
+ready to be sent, and allow it to sleep when no work needs to be done.</p>
+<p>When the io-uring driver has been woken and the frame has been sent, it will busy-poll the response
+ring so as to not introduce unnecessary latency. This is a bit inefficient, but network packets are
+returned quickly enough that in reality not much time is spent busy looping.</p>
+<p>If no more frames are ready to send, we simply call <code>thread::park()</code> to put the thread to sleep
+until <code>unpark()</code> is called by a custom <code>Wake</code> trait implementation. Doing a bit of monitoring with
+<code>htop</code> shows basically no CPU usage with a 1ms process data cycle which is great!</p>
+<p>What we've done is essentially make a quite rigid, hyper specific futures executor that is tailored
+to our needs, namely latency and io-uring-ness. But. It works really well. I'll also add that it's
+not too difficult to write your own executor if there are some specific requirements you need.</p>
+<h1 id="custom-derives"><a class="zola-anchor" href="#custom-derives" aria-label="Anchor link for: custom-derives">Custom derives</a></h1>
+<p>EtherCrab 0.4 brings with it two new crates:</p>
+<ul>
+<li><a href="https://crates.io/crates/ethercrab-wire"><code>ethercrab-wire</code></a></li>
+<li><a href="https://crates.io/crates/ethercrab-wire-derive"><code>ethercrab-wire-derive</code></a></li>
+</ul>
+<p>Getting data safely into and out of a process data image has been a challenge in EtherCrab so far,
+largely relying on the user to add something like <code>packed_struct</code>. This is ok, but quite confusing
+because EtherCAT is little endian, which <code>packed_struct</code> doesn't handle that well. The new crates
+listed above provide a first-party, EtherCAT-tailored solution to this. The traits
+<code>EtherCrabWireRead</code>, <code>EtherCrabWireReadWrite</code> and <code>EtherCrabWireWrite</code> as well as <code>#[derive]</code>s for
+each are provided to make it easier to get named structs and other typed data into and out of
+EtherCrab.</p>
+<p>Here's a quick example using the derives:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">derive</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">ethercrab_wire::EtherCrabWireRead</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span><span class="z-source z-rust"><span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bytes <span class="z-keyword z-operator z-rust">=</span> 9</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-storage z-type z-struct z-rust">struct</span> </span><span class="z-meta z-struct z-rust"><span class="z-entity z-name z-struct z-rust">DriveState</span> </span><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bytes <span class="z-keyword z-operator z-rust">=</span> 4</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">actual_position</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">u32</span>,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bytes <span class="z-keyword z-operator z-rust">=</span> 4</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">actual_velocity</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">u32</span>,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bits <span class="z-keyword z-operator z-rust">=</span> 4</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">status_word</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">u8</span>,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bits <span class="z-keyword z-operator z-rust">=</span> 1</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">di0</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">bool</span>,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bits <span class="z-keyword z-operator z-rust">=</span> 1</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">di1</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">bool</span>,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bits <span class="z-keyword z-operator z-rust">=</span> 1</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">di2</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">bool</span>,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bits <span class="z-keyword z-operator z-rust">=</span> 1</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">di3</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">bool</span>,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">derive</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">Copy<span class="z-punctuation z-separator z-rust">,</span> Clone<span class="z-punctuation z-separator z-rust">,</span> ethercrab_wire::EtherCrabWireWrite</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span><span class="z-source z-rust"><span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bytes <span class="z-keyword z-operator z-rust">=</span> 1</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span><span class="z-source z-rust"><span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">repr</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">u8</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span><span class="z-source z-rust"><span class="z-meta z-enum z-rust"><span class="z-storage z-type z-enum z-rust">enum</span> <span class="z-entity z-name z-enum z-rust">ControlState</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-enum z-rust"><span class="z-meta z-block z-rust">    Init <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x01</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-enum z-rust"><span class="z-meta z-block z-rust">    Conf <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0x04</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-enum z-rust"><span class="z-meta z-block z-rust">    Op <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0xaa</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-enum z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">derive</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">ethercrab_wire::EtherCrabWireWrite</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span><span class="z-source z-rust"><span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bytes <span class="z-keyword z-operator z-rust">=</span> 5</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-storage z-type z-struct z-rust">struct</span> </span><span class="z-meta z-struct z-rust"><span class="z-entity z-name z-struct z-rust">DriveControl</span> </span><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bytes <span class="z-keyword z-operator z-rust">=</span> 4</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">target_position</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">u32</span>,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-annotation z-rust"><span class="z-punctuation z-definition z-annotation z-rust">#</span><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-variable z-annotation z-rust">wire</span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust">bytes <span class="z-keyword z-operator z-rust">=</span> 1</span></span><span class="z-meta z-annotation z-parameters z-rust"><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">control_state</span><span class="z-punctuation z-separator z-type z-rust">:</span> ControlState,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> device <span class="z-keyword z-operator z-assignment z-rust">=</span> group<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">slave</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-keyword z-operator z-bitwise z-rust">&amp;</span>client<span class="z-punctuation z-separator z-rust">,</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">0</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">expect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>No devices!<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> i <span class="z-keyword z-operator z-assignment z-rust">=</span> device<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">inputs_raw</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> state <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">DriveState<span class="z-punctuation z-accessor z-rust">::</span></span>unpack_from_slice<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>i</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-keyword z-operator z-rust">?</span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> ctl <span class="z-keyword z-operator z-assignment z-rust">=</span> DriveControl <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    target_position<span class="z-punctuation z-separator z-rust">:</span> <span class="z-constant z-numeric z-integer z-hexadecimal z-rust">0xaabbccdd</span><span class="z-punctuation z-separator z-rust">,</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    control_state<span class="z-punctuation z-separator z-rust">:</span> <span class="z-meta z-path z-rust">ControlState<span class="z-punctuation z-accessor z-rust">::</span></span>Op
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust">ctl<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">pack_to_slice</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>device<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">outputs_raw_mut</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></code></pre>
+<p>The traits are documented as experimental, however EtherCrab uses them internally and they've been
+working very well so far. There are already a
+<a href="https://docs.rs/ethercrab-wire/0.1.3/ethercrab_wire/trait.EtherCrabWireRead.html#foreign-impls">bunch of type impls</a>
+so it should just be a case of hooking them together in a struct for your application.</p>
+<h2 id="but-why"><a class="zola-anchor" href="#but-why" aria-label="Anchor link for: but-why">But why?</a></h2>
+<p>EtherCrab used to use a lot of <code>packed_struct</code> internally, however I was never happy with it. I
+could not for the life of me get the byte/bit orders to where I could use sequential bit offsets.
+For example, a 2 byte struct with 16 1 bit fields would require the use of bit indices like <code>8..15</code>
+for the <em>first</em> 8 fields, then <code>0..7</code> for the <em>last</em> 8, because EtherCAT is little endian. I might
+just be holding <code>packed_struct</code> wrong, but it's also overcautious in its API, with nearly everything
+returning a <code>Result</code>, and no real way of telling the compiler some things are infallible. With these
+reasons in mind, I decided to write my own replacement.</p>
+<p>Other solutions exist that use getters and setters, but due to how many different fields always need
+accessing within EtherCrab, I didn't want to add that level of noise to the code. They might be
+slightly more performant, but EtherCrab spends nearly all of its time waiting for the network
+anyway...</p>
+<h2 id="safety-over-performance"><a class="zola-anchor" href="#safety-over-performance" aria-label="Anchor link for: safety-over-performance">Safety over performance</a></h2>
+<p>As a subscriber to the great idea of the pit of success, these derives are meant to be as safe and
+easy to use as possible. This means things like zeroing out buffers before writing to them, and
+fallibly unpacking fields when decoding with length checks.</p>
+<p>If you need to get rid of this overhead, <code>#[repr(packed)]</code> is always available, but more of a pain
+to use both correctly and safely.</p>
+<h1 id="honourable-mention-multi-pdu-sends"><a class="zola-anchor" href="#honourable-mention-multi-pdu-sends" aria-label="Anchor link for: honourable-mention-multi-pdu-sends">Honourable mention: multi-PDU sends</a></h1>
+<p>If two or more EtherCAT frames needed to be sent at once, EtherCrab 0.3.x would send these in two
+separate Ethernet frames. This is inefficient and became an issue when DC support was added. DC
+requires a sync frame to be sent alongside the PDI, and in 0.3.x this means doubling the amount of
+packets sent over the network, potentially tanking performance.</p>
+<p>EtherCrab 0.4 now sends this sync frame next to the PDI frame, reducing overhead and improving cycle
+latencies.</p>
+<p>There are other places in EtherCrab that don't yet use this functionality, but they're less
+performance sensitive than the application process data cycle.</p>
+<h1 id="conclusion"><a class="zola-anchor" href="#conclusion" aria-label="Anchor link for: conclusion">Conclusion</a></h1>
+<p>EtherCrab 0.4 is the culmination of hundreds of hours of research, implementation and testing. It's
+full of improvements and some really useful new features as discussed above, and I'm really happy to
+see this stuff released!</p>
+<p>The time it takes to develop also costs me money. If you'd like to see continued development on
+EtherCrab, I'd really appreciate you becoming a
+<a href="https://github.com/sponsors/jamwaffles/">GitHub sponsor</a>. I quit my job to work on EtherCrab, and
+could really use the support!</p>
+<p>Either way, do please check out EtherCrab 0.4.0 on
+<a href="https://crates.io/crates/ethercrab/0.4.0">crates.io</a>, <a href="https://lib.rs/crates/ethercrab">lib.rs</a> or
+<a href="https://github.com/ethercrab-rs/ethercrab">GitHub</a>.</p>
+<p>The wire helpers crate is available <a href="https://wapl.es/ethercrab-0-4-io-uring-derives-ethercat-distributed-clocks/crates.io/crates/ethercrab-wire">here</a>, and finally, why not
+take a look at some <a href="https://github.com/ethercrab-rs/ethercrab/tree/master/examples">examples</a> to
+get your Rust EtherCAT journey started?</p>
+<p>If you get stuck, <a href="https://github.com/ethercrab-rs/ethercrab/issues/new">open an issue</a> or
+<a href="https://matrix.to/#/#ethercrab:matrix.org">say hi on Matrix</a>. See you there!</p>
+</div>
+
+  <footer role="contentinfo" class="footer">
+  <a rel="me" href="https://mastodon.social/@jamwaffles">&nbsp;</a>
+
+  <div class="inner">
+    <div class="footer__bio">
+      
+
+      <div class="footer__bio__text">Personal blog of Rust developer and hobby CNC machinist James Waples. Living in Edinburgh, Scotland 🏴󠁧󠁢󠁳󠁣󠁴󠁿 ❤️</div>
+    </div>
+
+    <div class="footer__links">
+      <a href="https:&#x2F;&#x2F;wapl.es">James Waples&#x27; Internet Hole</a>
+
+      <a
+        href="/atom.xml"
+        id="btn_feed"
+        class="btn"
+        title="Feed"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        RSS Feed
+      </a>
+
+       <!-- <a
+        href="https://mastodon.social/@jamwaffles"
+        class="btn"
+        title="@jamwaffles on Mastodon"
+        target="_blank"
+      >
+        <span aria-hidden="true" data-icon=")"></span>
+        Mastodon
+      </a>-->
+
+      <span>Published with <a href="https://www.getzola.org">Zola</a></span>
+    </div>
+  </div>
+</footer>
+
+</article>
+
+
+    
+
+    <script
+      data-goatcounter="https://jamwaffles.goatcounter.com/count"
+      async
+      src="//gc.zgo.at/count.js"
+    ></script>
+  </body>
+</html>
